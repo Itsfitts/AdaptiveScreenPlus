@@ -1,466 +1,468 @@
 <resources>
     <!--
-      桌面 / 应用信息里的显示名（v2.18.1 改）。
-      最近任务卡片走的是另一条路：MainActivity 用 setTaskDescription 把标题设成英文名，
-      所以「桌面中文、后台英文」不需要两套 label，也不会互相打架。
-      英文系统下的名字由 values-en/strings.xml 覆盖。
+      Launcher / App Info display name (changed in v2.18.1).
+      Recent task cards take another route: MainActivity sets the title to English via setTaskDescription,
+      so "Chinese on launcher, English in background" does not need two sets of labels and won\'t conflict.
+      Names under English systems are overridden by values-en/strings.xml.
     -->
-    <string name="app_name">Z flip便携屏扩展</string>
+    <string name="app_name">Z Flip Portable Screen Extension</string>
     <string name="app_name_en">Adaptive Screen++</string>
-    <string name="cover_home_label">副屏桌面</string>
+    <string name="cover_home_label">Secondary Screen Desktop</string>
 
-    <!-- 桌面小组件 -->
-    <string name="widget_panel_title">双屏快捷面板</string>
-    <string name="widget_panel_desc">两个按钮：折叠/展开切换 · 双屏模式</string>
-    <string name="widget_panel_cover_title">双屏快捷面板（外屏）</string>
-    <string name="widget_panel_cover_desc">外屏专用：折叠/展开 · 双屏模式 · 一键投屏 · 自适应旋转</string>
-    <string name="widget_btn_fold">折叠/展开\n切换</string>
-    <string name="widget_btn_dual">双屏模式</string>
-    <string name="widget_btn_sync">自适应旋转</string>
-    <string name="widget_btn_cast">一键投屏</string>
-    <string name="widget_btn_lock">锁横屏</string>
+    <!-- Desktop Widgets -->
+    <string name="widget_panel_title">Dual-Screen Quick Panel</string>
+    <string name="widget_panel_desc">Two buttons: Fold/Unfold Toggle · Dual-Screen Mode</string>
+    <string name="widget_panel_cover_title">Dual-Screen Quick Panel (Cover Screen)</string>
+    <string name="widget_panel_cover_desc">Cover screen exclusive: Fold/Unfold · Dual-Screen Mode · One-Tap Cast · Adaptive Rotation</string>
+    <string name="widget_btn_fold">Fold/Unfold\nToggle</string>
+    <string name="widget_btn_dual">Dual-Screen Mode</string>
+    <string name="widget_btn_sync">Adaptive Rotation</string>
+    <string name="widget_btn_cast">One-Tap Cast</string>
+    <string name="widget_btn_lock">Lock Landscape</string>
 
     <!--
-      老虎机小组件。三格里的「图案」是手机里已装应用的图标 —— 每次开摇现从图标库
-      （AppIconLib）里抽几个，另加一个「七」当彩蛋；池子怎么抽写在 SlotPool 里，
-      所以这两条描述只说玩法、不罗列池子里有什么。
-      stats 那条用位置参数：三个数字的顺序换过一回就乱套，别退回 %d。
+      Slot machine widget. The "patterns" in the three slots are icons of installed apps on the phone —
+      each spin picks a few from the icon library (AppIconLib), plus a "7" as an easter egg;
+      how the pool is drawn is defined in SlotPool,
+      so these two descriptions only describe the gameplay and do not list pool contents.
+      The stats string uses positional parameters: if the order of the three numbers changes it will break, do not revert to %d.
     -->
-    <string name="widget_slot_title">老虎机</string>
-    <string name="widget_slot_desc">三格摇杆摇奖得分，点计分器可切成三个快捷按钮</string>
-    <string name="widget_slot_cover_title">老虎机（外屏）</string>
-    <string name="widget_slot_cover_desc">外屏专用：摇奖得分，计分器可切成三个快捷按钮</string>
+    <string name="widget_slot_title">Slot Machine</string>
+    <string name="widget_slot_desc">Spin the 3-slot lever to score points; tap the score counter to switch to three shortcut buttons</string>
+    <string name="widget_slot_cover_title">Slot Machine (Cover Screen)</string>
+    <string name="widget_slot_cover_desc">Cover screen exclusive: Spin for points; score counter can switch to three shortcut buttons</string>
     <string name="widget_slot_idle">—</string>
-    <string name="widget_slot_ready">点右边的摇杆开摇</string>
-    <string name="widget_slot_stats">已摇 %1$d 次 · 二连 %2$d · 三连 %3$d</string>
-    <string name="widget_slot_double">二连！</string>
-    <string name="widget_slot_triple">三连！！</string>
-    <string name="widget_slot_none">差一点</string>
-    <string name="widget_slot_lever">摇杆</string>
-    <string name="widget_slot_score">得分</string>
-    <string name="widget_slot_win">中奖了！</string>
-    <string name="widget_slot_btn_hint">点格子用功能 · 点摇杆设置</string>
-    <string name="widget_slot_ran">已执行：%1$s</string>
-    <string name="widget_slot_cfg_title">老虎机快捷位</string>
-    <string name="widget_slot_cfg_hint">三个格子各挂一个开关类功能，点哪格执行哪个。</string>
-    <string name="widget_slot_cfg_row">第 %1$d 格：%2$s</string>
-    <string name="widget_slot_cfg_pick">第 %1$d 格挂什么</string>
-    <string name="widget_slot_cfg_none">（不设置）</string>
+    <string name="widget_slot_ready">Tap the lever on the right to spin</string>
+    <string name="widget_slot_stats">Spun %1$d times · Double %2$d · Triple %3$d</string>
+    <string name="widget_slot_double">Double!</string>
+    <string name="widget_slot_triple">Triple!!</string>
+    <string name="widget_slot_none">Almost</string>
+    <string name="widget_slot_lever">Lever</string>
+    <string name="widget_slot_score">Score</string>
+    <string name="widget_slot_win">Jackpot!</string>
+    <string name="widget_slot_btn_hint">Tap slot for function · Tap lever for settings</string>
+    <string name="widget_slot_ran">Executed: %1$s</string>
+    <string name="widget_slot_cfg_title">Slot Machine Shortcuts</string>
+    <string name="widget_slot_cfg_hint">Assign a toggle function to each of the three slots; tap a slot to execute its action.</string>
+    <string name="widget_slot_cfg_row">Slot %1$d: %2$s</string>
+    <string name="widget_slot_cfg_pick">Select action for slot %1$d</string>
+    <string name="widget_slot_cfg_none">(Not set)</string>
 
-    <!-- ===== 「自定义操作」外屏组件（2×2 四格，格子里挂什么自己挑） ===== -->
-    <string name="widget_custom_cover_title">自定义操作</string>
-    <string name="widget_custom_cover_desc">外屏专用：四个按钮各挂一个动作，挂什么自己挑</string>
+    <!-- ===== \"Custom Actions\" Cover Screen Widget (2×2 four slots, pick what to assign to each slot) ===== -->
+    <string name="widget_custom_cover_title">Custom Actions</string>
+    <string name="widget_custom_cover_desc">Cover screen exclusive: Four buttons each assigned an action, pick whatever you like</string>
     <string name="widget_custom_empty">＋</string>
-    <string name="widget_custom_cfg_title">自定义操作 · 设置</string>
-    <string name="widget_custom_cfg_hint">四个按钮各挂一个动作，点哪格执行哪个。点空格子就能设置。</string>
-    <string name="widget_custom_cfg_row">按钮 %1$d：%2$s</string>
-    <string name="widget_custom_cfg_pick">按钮 %1$d 挂什么</string>
+    <string name="widget_custom_cfg_title">Custom Actions · Settings</string>
+    <string name="widget_custom_cfg_hint">Four buttons each assigned an action, tap a slot to execute. Tap an empty slot to configure.</string>
+    <string name="widget_custom_cfg_row">Button %1$d: %2$s</string>
+    <string name="widget_custom_cfg_pick">Select action for button %1$d</string>
 
     <!--
-      ===== 首次打开应用时的弹窗 =====
-      只留「自适应旋转」这一条最容易开错、开了会让人以为软件坏了的提醒；其余功能各自的
-      ⓘ 里都有。正文由用户给定（2026-09-27），照写、别再加功能罗列。
+      ===== Dialog shown when opening the app for the first time =====
+      Keep only the "Adaptive Rotation" warning, which is easiest to toggle by mistake and causes users to think the app is broken;
+      other features have their own ⓘ dialogs.
+      The body text was given by the user (2026-09-27); keep as-is, do not add more feature lists.
     -->
-    <string name="info_app_intro">自适应旋转会根据应用的横竖屏状态自动旋转内屏方向，为手持便携屏设计。\n\n画面可能整体偏转 90 度，固定方向的显示器请勿打开。</string>
+    <string name="info_app_intro">Adaptive Rotation automatically rotates the inner screen orientation based on the app\'s portrait/landscape state, designed for handheld portable monitors.\n\nThe display may rotate by 90 degrees overall; do not enable on fixed-orientation monitors.</string>
 
-    <!-- ===== 「手机状态」外屏组件（2×2 只读：电量 / CPU 温度 / 内存 / 存储） ===== -->
-    <string name="widget_status_cover_title">手机状态</string>
-    <string name="widget_status_cover_desc">外屏专用：电量、CPU 温度、内存占用、存储占用</string>
+    <!-- ===== \"Phone Status\" Cover Screen Widget (2×2 read-only: Battery / CPU Temp / RAM / Storage) ===== -->
+    <string name="widget_status_cover_title">Phone Status</string>
+    <string name="widget_status_cover_desc">Cover screen exclusive: Battery, CPU temperature, RAM usage, storage usage</string>
 
     <!--
-      外屏启动器（v2.18.8）。命名规矩：小组件那两条给"钉到桌面时看到的名字/描述"，
-      launcher_* 其余几条是它自己的界面文案。
-      ⚠ 别写「不用再装 Good Lock」这类对比话术 —— 用户知道来龙去脉，界面里不必提。
+      Cover screen launcher (v2.18.8). Naming rules: widget_* strings are "names/descriptions shown when pinning to desktop",
+      launcher_* other strings are its own UI text.
+      ⚠ Do not write comparison phrasing like "no need to install Good Lock anymore" — the user knows the context, no need to mention it in the UI.
     -->
-    <string name="launcher_widget_name">外屏启动器</string>
-    <string name="launcher_widget_desc">封面屏上的应用启动器：图标网格，点一下就在那块屏打开</string>
-    <string name="launcher_widget_empty">还没挑应用\n点顶栏的齿轮去挑几个</string>
-    <string name="launcher_apps_fmt">已选 %1$d 个</string>
-    <string name="launcher_pick_none">还没选</string>
-    <string name="launcher_title">外屏启动器</string>
-    <string name="launcher_search_hint">搜索应用</string>
-    <string name="launcher_clear">清空</string>
-    <string name="launcher_clear_confirm">把已勾选的应用全部从启动器里移掉？</string>
-    <string name="launcher_done">完成</string>
-    <string name="launcher_picked">已选</string>
-    <string name="launcher_config">打开设置</string>
-    <!-- 「导入」= 从 MultiStar/Good Lock 那份外屏组件白名单里，把用户已经挑好的应用一次性搬过来。
-         不写第三方应用的名字，只说"系统里已有的那份清单"。 -->
-    <string name="launcher_import">导入</string>
-    <string name="launcher_import_confirm">检测到系统里已有一份外屏应用清单（%1$d 个应用），把这份清单导入进来？\n\n导入会覆盖当前已勾选的内容。</string>
-    <string name="launcher_import_none">没有找到可导入的清单。可能这台机器没用过系统自带的那个外屏启动器组件。</string>
-    <string name="launcher_import_done">已导入 %1$d 个应用</string>
-    <string name="launcher_import_fail">读取清单失败，确认 Shizuku 已授权</string>
+    <string name="launcher_widget_name">Cover Screen Launcher</string>
+    <string name="launcher_widget_desc">App launcher for the cover screen: icon grid, tap to launch directly on that screen</string>
+    <string name="launcher_widget_empty">No apps selected yet\nTap the gear icon on the top bar to pick some</string>
+    <string name="launcher_apps_fmt">%1$d selected</string>
+    <string name="launcher_pick_none">None selected</string>
+    <string name="launcher_title">Cover Screen Launcher</string>
+    <string name="launcher_search_hint">Search apps</string>
+    <string name="launcher_clear">Clear</string>
+    <string name="launcher_clear_confirm">Remove all checked apps from the launcher?</string>
+    <string name="launcher_done">Done</string>
+    <string name="launcher_picked">Selected</string>
+    <string name="launcher_config">Open Settings</string>
+    <!-- "Import" = batch import apps already picked by the user from the MultiStar/Good Lock cover screen widget whitelist.
+         Do not mention third-party app names, only say "the list already present in the system". -->
+    <string name="launcher_import">Import</string>
+    <string name="launcher_import_confirm">Detected an existing cover screen app list in the system (%1$d apps). Import this list?\n\nImporting will overwrite currently selected apps.</string>
+    <string name="launcher_import_none">No importable list found. This device might not have used the system\'s built-in cover screen launcher widget.</string>
+    <string name="launcher_import_done">Imported %1$d apps</string>
+    <string name="launcher_import_fail">Failed to read app list; ensure Shizuku is authorized</string>
 
-    <!-- 工具条上的四个图标（内容描述；点排序会轮换，点绿的那个看当前用的是哪种） -->
-    <string name="launcher_search">搜索应用</string>
-    <string name="launcher_sort">切换排序</string>
-    <string name="launcher_look">调整外观</string>
-    <string name="launcher_photo">背景图片</string>
-    <string name="launcher_close">关闭</string>
+    <!-- Four icons on the toolbar (content descriptions; tapping sort cycles through options, tap the green one to see current sort mode) -->
+    <string name="launcher_search">Search apps</string>
+    <string name="launcher_sort">Change Sort</string>
+    <string name="launcher_look">Appearance</string>
+    <string name="launcher_photo">Background Image</string>
+    <string name="launcher_close">Close</string>
 
-    <!-- 背景图片那两颗菜单项与几句提示 -->
-    <string name="launcher_photo_change">更换图片</string>
-    <string name="launcher_photo_remove">移除背景图</string>
-    <string name="launcher_photo_saving">正在处理图片…</string>
-    <string name="launcher_photo_done">背景图已设置</string>
-    <string name="launcher_photo_removed">背景图已移除</string>
-    <string name="launcher_photo_fail">这张图读不出来，换一张试试</string>
+    <!-- Background image menu items and prompts -->
+    <string name="launcher_photo_change">Change Image</string>
+    <string name="launcher_photo_remove">Remove Background Image</string>
+    <string name="launcher_photo_saving">Processing image…</string>
+    <string name="launcher_photo_done">Background image set</string>
+    <string name="launcher_photo_removed">Background image removed</string>
+    <string name="launcher_photo_fail">Unable to read this image, please try another</string>
 
-    <!-- 排序方式的名字。三处共用：配置页的选择器、点排序图标后的提示。 -->
-    <string name="launcher_sort_manual">手动顺序</string>
-    <string name="launcher_sort_name">按名称</string>
-    <string name="launcher_sort_usage">按常用</string>
-    <string name="launcher_sort_now">排序：%1$s</string>
+    <!-- Sorting mode names. Shared across 3 places: config page picker, toast after tapping sort icon. -->
+    <string name="launcher_sort_manual">Manual Order</string>
+    <string name="launcher_sort_name">By Name</string>
+    <string name="launcher_sort_usage">By Most Used</string>
+    <string name="launcher_sort_now">Sort: %1$s</string>
 
-    <!-- 外观面板 -->
-    <string name="launcher_look_cols">一排几个</string>
-    <string name="launcher_look_cols_fmt">%1$d 个</string>
-    <string name="launcher_look_icon">图标大小</string>
-    <string name="launcher_look_gap">行距</string>
-    <string name="launcher_look_label">应用名称</string>
-    <string name="launcher_size_small">小</string>
-    <string name="launcher_size_mid">中</string>
-    <string name="launcher_size_large">大</string>
-    <string name="launcher_gap_tight">紧</string>
-    <string name="launcher_gap_mid">标准</string>
-    <string name="launcher_gap_loose">松</string>
-    <string name="launcher_label_show">显示</string>
-    <string name="launcher_label_hide">隐藏</string>
+    <!-- Appearance panel -->
+    <string name="launcher_look_cols">Columns per row</string>
+    <string name="launcher_look_cols_fmt">%1$d</string>
+    <string name="launcher_look_icon">Icon Size</string>
+    <string name="launcher_look_gap">Row Spacing</string>
+    <string name="launcher_look_label">App Name</string>
+    <string name="launcher_size_small">Small</string>
+    <string name="launcher_size_mid">Medium</string>
+    <string name="launcher_size_large">Large</string>
+    <string name="launcher_gap_tight">Compact</string>
+    <string name="launcher_gap_mid">Standard</string>
+    <string name="launcher_gap_loose">Spacious</string>
+    <string name="launcher_label_show">Show</string>
+    <string name="launcher_label_hide">Hide</string>
 
     <!--
-      外观条第三行：图标形状 + 底板不透明度。
+      Appearance bar third row: Icon shape + Background opacity.
 
-      ⚠ 这组胶囊直接显示百分比（launcher_alpha_fmt），不要写成「淡 / 中 / 浓」——
-        半透明底板用「透明度高」指代不清（更透还是更实？），一个数字没歧义。
-        四档在 LauncherPrefs.ALPHA_CHOICES，改档位要连 drawable 一起改。
-      ⚠ 「图标形状」的默认档是**圆形**（LauncherPrefs.iconShape 里有理由），
-        所以这里「圆形」那条不是可有可无的装饰。
+      ⚠ These capsules directly display percentages (launcher_alpha_fmt), do not write "Light / Medium / Heavy" —
+        for semi-transparent backgrounds, "high transparency" is ambiguous (more transparent or more opaque?); a number is unambiguous.
+        The four levels are in LauncherPrefs.ALPHA_CHOICES; changing levels requires changing drawables together.
+      ⚠ The default for "Icon shape" is **Circle** (reasons documented in LauncherPrefs.iconShape),
+        so the "Circle" entry here is not merely optional decoration.
     -->
-    <string name="launcher_look_shape">图标形状</string>
-    <string name="launcher_look_alpha">不透明度</string>
-    <string name="launcher_shape_app">原样</string>
-    <string name="launcher_shape_round">圆角</string>
-    <string name="launcher_shape_circle">圆形</string>
+    <string name="launcher_look_shape">Icon Shape</string>
+    <string name="launcher_look_alpha">Opacity</string>
+    <string name="launcher_shape_app">Original</string>
+    <string name="launcher_shape_round">Rounded</string>
+    <string name="launcher_shape_circle">Circle</string>
     <string name="launcher_alpha_fmt">%1$d%%</string>
 
-    <!-- 搜索页 -->
-    <string name="launcher_search_title">搜索应用</string>
-    <string name="launcher_search_idle">打几个字就能搜</string>
-    <string name="launcher_search_empty">没有匹配的应用</string>
+    <!-- Search page -->
+    <string name="launcher_search_title">Search Apps</string>
+    <string name="launcher_search_idle">Type a few letters to search</string>
+    <string name="launcher_search_empty">No matching apps found</string>
 
     <!--
-      配置页 v2.19.0 新增：编辑模式开关、拖拽提示、导入/导出、副屏桌面顺序。
-      ⚠ 提示语一律"动词打头、不带句号"（跟这套界面其余部分一致），别写成说明文。
+      Config page v2.19.0 additions: Edit mode toggle, drag hint, import/export, secondary screen desktop order.
+      ⚠ Prompts must "start with a verb and end with no period" (consistent with the rest of this UI), do not write them like explanatory essays.
     -->
-    <string name="launcher_hint_tap">点图标显示/隐藏 · 长按不动＝收藏或卸载 · 拖动＝排序</string>
-    <string name="launcher_hint_fav">只看收藏 · 长按不动＝收藏或卸载 · 拖动＝换位</string>
-    <string name="launcher_fav">收藏夹</string>
-    <string name="launcher_unfav">取消收藏</string>
-    <string name="launcher_uninstall">卸载应用</string>
-    <string name="launcher_uninstall_confirm">卸载「%1$s」？</string>
-    <string name="launcher_uninstall_msg">会把这个应用从手机里删掉，启动器与收藏夹里的记录一起清掉。</string>
-    <string name="launcher_uninstalling">正在卸载「%1$s」…</string>
-    <string name="launcher_uninstall_done">已卸载「%1$s」</string>
-    <string name="launcher_uninstall_fail">卸载失败：%1$s</string>
-    <string name="launcher_uninstall_no_shizuku">需要 Shizuku 授权才能卸载应用</string>
-    <string name="launcher_uninstall_bad_pkg">这个包名不对劲，没敢往下发命令</string>
-    <string name="launcher_fav_added">已收藏「%1$s」</string>
-    <string name="launcher_fav_removed">已取消收藏「%1$s」</string>
-    <string name="launcher_fav_only_on">只看收藏</string>
-    <string name="launcher_fav_only_off">显示全部应用</string>
-    <string name="launcher_fav_count">收藏 %1$d 个</string>
-    <string name="launcher_fav_bar">只看收藏</string>
-    <string name="launcher_hint_drag">松手放下 · 拖到末尾会自己滚</string>
-    <string name="launcher_hint_search">搜索时不排序，清空搜索框再拖</string>
-    <string name="launcher_manual_on">已切到手动顺序</string>
+    <string name="launcher_hint_tap">Tap icon to show/hide · Long press to favorite or uninstall · Drag to sort</string>
+    <string name="launcher_hint_fav">Favorites only · Long press to favorite or uninstall · Drag to reorder</string>
+    <string name="launcher_fav">Favorites</string>
+    <string name="launcher_unfav">Unfavorite</string>
+    <string name="launcher_uninstall">Uninstall App</string>
+    <string name="launcher_uninstall_confirm">Uninstall \"%1$s\"?</string>
+    <string name="launcher_uninstall_msg">This will remove the app from your phone and clear its records from the launcher and favorites.</string>
+    <string name="launcher_uninstalling">Uninstalling \"%1$s\"…</string>
+    <string name="launcher_uninstall_done">Uninstalled \"%1$s\"</string>
+    <string name="launcher_uninstall_fail">Uninstall failed: %1$s</string>
+    <string name="launcher_uninstall_no_shizuku">Shizuku authorization required to uninstall apps</string>
+    <string name="launcher_uninstall_bad_pkg">Invalid package name, command aborted</string>
+    <string name="launcher_fav_added">Added \"%1$s\" to favorites</string>
+    <string name="launcher_fav_removed">Removed \"%1$s\" from favorites</string>
+    <string name="launcher_fav_only_on">Favorites Only</string>
+    <string name="launcher_fav_only_off">Show All Apps</string>
+    <string name="launcher_fav_count">%1$d favorites</string>
+    <string name="launcher_fav_bar">Favorites Only</string>
+    <string name="launcher_hint_drag">Release to drop · Drag to end to auto-scroll</string>
+    <string name="launcher_hint_search">Sorting disabled during search; clear search bar before dragging</string>
+    <string name="launcher_manual_on">Switched to manual order</string>
 
-    <!-- 导入 / 导出：点底栏那个「导入」弹出来的两项 -->
-    <string name="launcher_io_title">清单与顺序</string>
-    <string name="launcher_io_sys">导入系统外屏清单</string>
-    <string name="launcher_io_sys_sub">把系统里那份已有清单整个搬过来（会覆盖当前勾选）</string>
-    <string name="launcher_io_export">把当前顺序写入副屏桌面</string>
-    <string name="launcher_io_export_sub">一次性把当前勾选的顺序写过去；写完两边各走各的，不会自动跟着变</string>
-    <string name="launcher_io_export_done">已把 %1$d 个应用的顺序写入副屏桌面</string>
-    <string name="launcher_io_export_empty">还没挑应用，没东西可写</string>
+    <!-- Import / Export: Two items shown when tapping "Import" on the bottom bar -->
+    <string name="launcher_io_title">App List &amp; Order</string>
+    <string name="launcher_io_sys">Import System Cover Screen List</string>
+    <string name="launcher_io_sys_sub">Import the entire existing list from the system (will overwrite current selections)</string>
+    <string name="launcher_io_export">Export Current Order to Secondary Screen Desktop</string>
+    <string name="launcher_io_export_sub">Write the current selected order to secondary screen desktop in one go; after writing, both operate independently without auto-syncing</string>
+    <string name="launcher_io_export_done">Exported order of %1$d apps to Secondary Screen Desktop</string>
+    <string name="launcher_io_export_empty">No apps selected yet, nothing to export</string>
 
-    <!-- 副屏桌面顺序：启动器排序器里的第四种，以及副屏桌面自己的兜底 -->
-    <string name="launcher_sort_home">副屏桌面顺序</string>
-    <string name="home_order_none">副屏桌面还没有自己的顺序 —— 在启动器里排好后，用「导入 → 把当前顺序写入副屏桌面」写一次</string>
+    <!-- Secondary Screen Desktop order: The 4th mode in launcher sorter, and Secondary Screen Desktop's own fallback -->
+    <string name="launcher_sort_home">Secondary Screen Desktop Order</string>
+    <string name="home_order_none">Secondary Screen Desktop does not have its own order yet — organize in launcher, then tap \"Import → Export Current Order to Secondary Screen Desktop\"</string>
 
-    <!-- 版本与更新 -->
-    <string name="changelog_title">版本与更新</string>
-    <string name="changelog_back">返回</string>
-    <string name="changelog_current">当前版本</string>
-    <!-- 标题旁入口的占位文案；真实版本号由 MainActivity 读 PackageInfo 填进去 -->
-    <string name="version_entry">更新说明</string>
+    <!-- Version & Updates -->
+    <string name="changelog_title">Version &amp; Updates</string>
+    <string name="changelog_back">Back</string>
+    <string name="changelog_current">Current Version</string>
+    <!-- Placeholder text next to title; actual version number is filled by MainActivity reading PackageInfo -->
+    <string name="version_entry">Changelog</string>
 
     <!--
-      ==================== ⓘ 详情文本 ====================
-      界面上所有解释性文字都放在这里，由「ⓘ」点开。
-      他说的「注释」就是指这里，不指代码里的注释 —— 改文案改的是这一块。
-      只写功能 / 用法 / 注意事项：各一段、段间空行；单段 ≤3~4 行，整段 ≤5 段。
-      功能一句带过；用法只列档位，名字已说明功能的不写，状态类就一个字「看」；
-      注意事项尽量涵盖全面，但每条都要短。
-      不解释 adb / Shizuku / Magisk 本身是什么，不打比方，不二次强调，
-      也不在这里逐条介绍设置项 —— 每一项设置旁边都有自己的 ⓘ。
-      规矩全文见用户级 ~/.workbuddy/MEMORY.md，改之前对一眼。
+      ==================== ⓘ Detail Texts ====================
+      All explanatory text in the interface is placed here, opened via "ⓘ".
+      When the user says "comments" they refer to this section, not code comments — modifying copy modifies this area.
+      Only state Function / Usage / Notes: one paragraph each, empty line between paragraphs; single paragraph ≤3~4 lines, total ≤5 paragraphs.
+      Function is stated in one sentence; Usage only lists modes/options, omit what is already self-explanatory by name, for status types just use "View";
+      Notes should be as comprehensive as possible, but each point must be concise.
+      Do not explain what adb / Shizuku / Magisk themselves are, no metaphors, no secondary emphasis,
+      and do not introduce settings items one by one here — each setting item has its own ⓘ next to it.
+      For full rules see user-level ~/.workbuddy/MEMORY.md, verify before changing.
     -->
-    <string name="info_sync">外接屏跟着手机一起转，两边方向一致，旋转后不会留下黑边。这是本应用的核心功能。\n\n需要 Shizuku 授权。</string>
+    <string name="info_sync">The external screen rotates together with the phone with matching orientation, leaving no black borders after rotation. This is the core feature of this app.\n\nRequires Shizuku authorization.</string>
 
-    <string name="info_boot_mode">开机时按手机当时的折叠形态决定进哪块屏；「不设置」= 交给折叠传感器。\n\n用的是和「折叠模式」同一套命令，开机那一刻 Shizuku 必须已经就绪。</string>
-    <string name="info_lock_phone">把手机自己那块屏的方向钉住：横屏锁定 / 竖屏锁定固定不动，自动旋转 = 不干预。\n\n只管手机内屏，不管外接屏 —— 外接屏始终跟随手机的实际方向。\n\n在系统下拉菜单里重新打开「自动旋转」时，这里会自动跟回自动档。</string>
-
-
-    <string name="info_fix_to_user">外接屏忽略应用自己申请的方向，只按手机的实际方向旋转。\n\n只在手机方向被锁定时才出现。某个应用在外接屏上方向不对，可以打开它试试。</string>
-
-    <string name="info_calib">外接屏画面方向不对时，逐个点 0° / 90° / 180° / 270°，看哪个角度的画面是正的，再把它填进上面的「竖屏锁到 / 横屏锁到」。\n\n「恢复系统自动旋转」= 把外接屏交还给系统自己管。</string>
-
-    <string name="info_repair">外接屏画面整体偏移、只剩一角留在屏内时，点一下立刻恢复。\n\n正常情况下用不到 —— 插屏、折叠 / 展开后应用会自己重排。</string>
+    <string name="info_boot_mode">Determines which screen to enter on boot based on the phone\'s fold state at the time; \"Not set\" = left to the fold sensor.\n\nUses the same command set as \"Fold Mode\"; Shizuku must already be ready at the moment of boot.</string>
+    <string name="info_lock_phone">Pins the orientation of the phone\'s own screen: Lock Landscape / Lock Portrait keeps it fixed; Auto-Rotate = no interference.\n\nOnly controls the phone\'s inner screen, not the external screen — the external screen always follows the phone\'s physical orientation.\n\nWhen re-enabling \"Auto-rotate\" in the system quick settings dropdown, this will automatically follow back to auto mode.</string>
 
 
-    <string name="info_res_fields">改手机内屏的分辨率，让内外屏比例一致，不出黑边或拉伸。\n\n按「宽 × 高」填，方向按外接屏竖起来之后算 —— 1920×1080 的横向面板要填 1080×1920。DPI 留空或填 0 = 不改。\n\n「内屏分辨率接管」是独立开关，打开后立即套用。</string>
+    <string name="info_fix_to_user">The external screen ignores orientation requested by the app itself and only rotates according to the phone\'s physical orientation.\n\nOnly appears when phone orientation is locked. If an app displays in the wrong orientation on the external screen, try enabling this.</string>
 
-    <string name="info_refresh_rate">给内屏刷新率定上下界，取代系统自适应：都填 120 就是锁 120，都填 60 就是锁 60。「交回系统」删掉这两个值，重新归系统管。\n\n⚠ 超过 60Hz 的档位要识别到内屏才有效，合盖时在用的是封面屏，只有 60Hz。</string>
+    <string name="info_calib">When the external screen image orientation is incorrect, tap 0° / 90° / 180° / 270° one by one to see which angle displays correctly, then enter it into \"Lock Portrait To / Lock Landscape To\" above.\n\n\"Restore System Auto-Rotate\" = hand the external screen back to the system to manage.</string>
 
-    <string name="info_res_automatch">读外接屏面板的原生像素数，转成竖屏后自动填进上面的输入框。</string>
-
-    <string name="info_res_timing">经「立即应用」加上的分辨率是主动设置的，拔屏、重启都不会被自动清掉；经插屏询问、自动套用加上的，拔屏时还原。\n\n系统里若装着 SecondScreen 之类的同类应用，请把它改成手动模式 —— 两个来源同时写显示参数会让画面错位。</string>
-
-    <string name="info_fold">由应用接管折叠状态：折叠时内容转到封面屏，展开时回到内屏。「恢复自动」= 交还给折叠传感器。\n\n需要 Shizuku 授权。要让内外屏同时点亮、封面屏变成可操作的副屏桌面，用「双屏」选项卡里的「启动双屏模式」。</string>
-
-    <string name="info_shizuku">部分功能要 adb 或 root 权限。adb 走 Shizuku：在 Shizuku 里授权本应用并保持它运行；root 走 Magisk。</string>
-
-    <string name="info_realtime">各项屏幕参数与本应用权限的当前值。</string>
-
-    <string name="dual_about_mode">关于双屏模式</string>
-    <string name="info_onekey">切到内外屏并发，并往封面屏投一张副屏桌面（自带时钟、电量与应用图标），在封面屏上点图标就能在那块屏打开应用。\n\n系统自带的并发只点亮封面屏，上面挂的是空跑的界面。需要 Shizuku 授权。</string>
+    <string name="info_repair">When the external screen image is shifted overall and only a corner remains on screen, tap once to restore immediately.\n\nNormally not needed — the app rearranges automatically after connecting a screen, folding, or unfolding.</string>
 
 
+    <string name="info_res_fields">Modify the phone inner screen resolution to match the aspect ratio of the inner and outer screens, eliminating black borders or stretching.\n\nEnter as \"Width × Height\", oriented based on the external screen standing upright — a 1920×1080 landscape panel should be entered as 1080×1920. Leave DPI empty or enter 0 = keep unchanged.\n\n\"Inner Screen Resolution Override\" is an independent toggle; applied immediately upon enabling.</string>
 
-    <string name="info_launcher">封面屏上的一块应用网格，点图标直接在那块屏打开它，不用先翻开手机。\n\n要到「设置 → 外屏」里把它钉到封面屏（见下一条）；点工具条上的齿轮进配置页。启动应用与卸载都走 Shizuku。</string>
+    <string name="info_refresh_rate">Sets upper and lower bounds for inner screen refresh rate, replacing system adaptive behavior: entering 120 for both locks at 120Hz; entering 60 for both locks at 60Hz. \"Return to System\" deletes these values and returns control to the system.\n\n⚠ Rates exceeding 60Hz only take effect when the inner screen is detected; when closed, the cover screen is active and only supports 60Hz.</string>
 
-    <string name="info_launcher_page">外屏启动器的配置页：挑应用、排顺序、调外观，改完封面屏那块网格跟着变。\n\n点图标 = 加进或移出，左上角是收藏夹；长按图标可收藏或卸载，直接拖就是排序，拖过之后自动切成手动顺序。\n\n顶栏的图片图标设背景图，设过之后配置页与小组件都换成它；这时「不透明度」调的是图上那层黑的浓淡。图标形状只有选「圆形」才能把所有图标统一。\n\n注意：卸载应用要走 Shizuku。</string>
-    <string name="info_launcher_pin">这个组件得你自己在外屏上钉一次。\n\n在「设置 → 外屏」里把「外屏启动器」勾上（也可能写作「小组件」或「外屏应用」），合上手机，在外屏上翻到小组件那一页；没看到就点页面上的「+」，在列表里选它、拖到整页放好。\n\n钉一次即可：以后在配置页勾选或取消应用，这块网格会自己跟着变。</string>
+    <string name="info_res_automatch">Reads native pixel dimensions of the external screen panel, converts them to portrait, and automatically fills them into the input fields above.</string>
 
-    <string name="info_profile">按屏幕身份记住每块外接显示器的参数，下次认出这块屏时自动套用。\n\n「保存本屏设置」= 存下当前这一套。匹配用的是屏幕身份而不是接口号，换个口插进来照样认得。\n\n「方向同步」「自动旋转」只做记录，接屏时不替你改这两个开关；「插屏时弹窗询问」「拔屏后自动还原」同理，都不按屏保存。</string>
+    <string name="info_res_timing">Resolutions applied via \"Apply Now\" are manually set and won\'t be cleared automatically upon disconnecting or rebooting; those applied via connect prompt or auto-apply are restored upon disconnecting.\n\nIf similar apps like SecondScreen are installed, please set them to manual mode — two sources writing display parameters simultaneously causes display misalignment.</string>
 
-    <!-- ==================== Beta 功能页（下方几条 info_beta_*） ==================== -->
-    <string name="info_beta_intro">实验性质的功能都在这儿，围绕外屏，细节可能随时调整。多数要 Shizuku 权限。\n\n副屏与双屏相关的内容已移到主界面的「双屏」选项卡。</string>
-    <string name="info_beta_sub">把副屏桌面（一整页应用网格）投到封面屏上。\n\n它只投内容，不会把手机切进双屏模式，当前在用哪块屏、折叠状态都不动。副屏指的就是封面屏；要 Shizuku 在线。</string>
-    <string name="info_dex">手机接上便携屏之后，在那块屏上开一套三星 DeX 桌面，手机自己照常用。\n\n系统没给第三方留「开 DeX」的接口，这里走的是一条社区通用的路，成不成看系统；命令行的原话会显示在下面那行。\n\n得先插好便携屏；部分系统版本会以「需要 root」为由挡回来，那就只能走系统自己的入口。</string>
-    <string name="info_beta_ext">对折叠后那块封面屏做强制覆盖：分辨率、DPI 与显示方向。\n\n「应用覆盖」生效，「恢复默认」还原成面板原生值。\n\n偏离原生值太多会画面拉伸或裁切。</string>
-    <string name="info_beta_cover_res">封面屏的逻辑分辨率与 DPI。宽、高都填数字；DPI 留空表示这次不动它。\n\n应用瞬间画面会闪一下，属正常现象。</string>
-    <string name="info_beta_preset">把常用的分辨率存成预设。点一行 = 应用该组参数；长按一行 = 删除；右上角可新增或恢复出厂预设。\n\n最多保留 12 组。</string>
-    <string name="info_beta_rotate">把封面屏强制转到指定方向。\n\n「旋转 90°」按 0°→90°→180°→270° 循环，转四次回到原位；「取消固定角度」把钉住的角度放开，交还给系统自己定。</string>
-    <string name="info_cover_autorot">外屏自己的画面不会跟着手机的横竖转，这个开关让它的画面自动转过来。\n\n开：手机横过来，外屏画面跟着转，竖回去也自动回正。关：回到原来的方向。\n\n注意：靠 Shizuku 下发旋转，要无障碍服务在跑；跟内屏那个「自动旋转」互不影响。</string>
-    <string name="info_beta_cmd">把实体按键和自写指令都接到这里：选好按键与动作后，按卡片上的按钮去系统里完成接入。\n\n自定义指令在下面那张卡片里维护。</string>
-    <string name="info_beta_key">把动作绑到实体按键上：电源键走系统的「数字助手」，音量键走无障碍服务。\n\n先选要配哪个键，再点「选择动作」选动作，然后按页面的提示去系统里完成接入。音量键的动作列表里有「无」，选它即这个键不绑动作。\n\n注意：数字助手只能有一个，设了会替换掉原来那个。</string>
-    <string name="info_beta_custom">存好的指令会出现在「侧键操作」的动作列表里，可以挂到键上。\n\n注意：命令以 shell 身份运行，能做到什么取决于 Shizuku 拿到的权限。</string>
-    <string name="info_beta_external">动作里填下面的 action，参数里带 action_key。\n\n内置动作只有下面这几条；自定义指令按 custom:&lt;id&gt; 的形式填，id 显示在指令名的右边。</string>
+    <string name="info_fold">App takes over fold state: content transfers to cover screen when folded, returns to inner screen when unfolded. \"Restore Auto\" = return control to fold sensor.\n\nRequires Shizuku authorization. To keep both inner and outer screens lit simultaneously with the cover screen acting as an interactive secondary desktop, use \"Launch Dual-Screen Mode\" in the \"Dual-Screen\" tab.</string>
 
-    <!-- ==================== 手势增强（v4.2） ==================== -->
+    <string name="info_shizuku">Some features require adb or root permissions. adb uses Shizuku: authorize this app in Shizuku and keep it running; root uses Magisk.</string>
 
-    <string name="info_edge_cutout">让每个应用的画面铺进摄像头那块安全区，系统就不会再压一条黑边。\n\n点一下对所有已装应用下发，几百个包要十几到二十秒，期间下面那行显示进度；改完要重新拉起应用才生效。\n\n注意：靠 Shizuku 执行，换系统版本可能失效。</string>
+    <string name="info_realtime">Current values of screen parameters and permissions for this app.</string>
 
-    <string name="info_cover_recents">合盖时从外屏最下沿正中上滑，停顿一下再松手打开最近任务；直接松手回主界面，往下或横着划放弃。\n\n要无障碍服务在跑才装得上；关掉开关或无障碍断开，手势条立刻撤掉。</string>
+    <string name="dual_about_mode">About Dual-Screen Mode</string>
+    <string name="info_onekey">Switches to concurrent dual screens and projects a secondary desktop to the cover screen (complete with clock, battery, and app icons). Tap icons on the cover screen to open apps on that display.\n\nSystem built-in concurrency only lights up the cover screen with an empty idle interface. Requires Shizuku authorization.</string>
 
-    <string name="info_cover_sidebar">松手才执行，没选中就什么也不做。面板内容勾几项就留几档，先后跟那四行一致；动画有三套，功能一样。\n\n注意：通知要单独给「通知使用权」，跟无障碍是两码事；感应带那一条的触摸会被收走，要无障碍服务在跑才装得上。</string>
 
-    <string name="info_inner_gesture">左右边缘往里划 = 返回，底部上滑 = 回主界面，上滑停一下 = 后台。\n\n注意：横屏时左下、右下两个角不响应，免得打游戏时手掌搭上来误触；竖屏整条边都生效。边缘的触摸会先被接住一下，没往里划的立刻还给下面的应用；要无障碍服务在跑才生效，配合「隐藏三键导航」用才顺。</string>
 
-    <string name="info_nav_immersive">桌面和外屏的三键条一起藏掉，屏幕底部腾出来给自定义全面屏手势让位。\n\n注意：靠 Shizuku 写系统设置；装过 Good Lock 的要先把 NavStar 里的「显示和隐藏按钮」关掉，否则会被它改回去。隐藏后从底部上划，系统仍会短暂把它唤出来。</string>
+    <string name="info_launcher">An app grid on the cover screen; tap icons to open directly on that screen without unfolding your phone first.\n\nPin it to the cover screen in \"Settings → Cover Screen\" (see next note); tap gear on toolbar to enter settings. App launching and uninstallation both use Shizuku.</string>
 
-    <!-- 「Beta 实验室」首次进入时那个说明弹窗上的勾选框 -->
-    <string name="beta_intro_dont_show">默认不再弹出</string>
+    <string name="info_launcher_page">Cover Screen Launcher config page: pick apps, arrange order, adjust appearance. Changes reflect immediately on the cover screen grid.\n\nTap icon = add or remove, top-left is favorites; long-press icon to favorite or uninstall, drag directly to reorder, which automatically switches to manual order.\n\nTop bar image icon sets background image; once set, both config page and widget update. \"Opacity\" adjusts darkness of the black overlay on top of the image. Icon shape must be set to \"Circle\" to unify all icons.\n\nNote: Uninstalling apps requires Shizuku.</string>
+    <string name="info_launcher_pin">You need to pin this widget on the cover screen yourself once.\n\nIn \"Settings → Cover Screen\", check \"Cover Screen Launcher\" (may be labeled \"Widgets\" or \"Cover Screen Apps\"), close the phone, swipe to the widget page on the cover screen; if not visible, tap \"+\" on the page, select it from the list, and drag to place it.\n\nPin once: checking or unchecking apps in the config page will automatically update this grid afterwards.</string>
 
-    <!-- 静态快捷方式的名字。桌面长按图标、日常程序的「应用快捷方式」里显示的就是它。 -->
-    <string name="qa_toggle_fold_short">切换折叠</string>
-    <string name="qa_toggle_fold_long">切换折叠 / 展开</string>
-    <string name="qa_cover_home_short">回外屏主页</string>
-    <string name="qa_cover_home_long">切到折叠并回到外屏主界面</string>
-    <string name="qa_cover_rotate_short">外屏旋转</string>
-    <string name="qa_cover_rotate_long">外屏顺时针旋转 90°</string>
-    <string name="qa_cover_rotate_reset_short">外屏归位</string>
-    <string name="qa_cover_rotate_reset_long">外屏恢复自动旋转</string>
+    <string name="info_profile">Remembers parameters for each external monitor by screen identity, automatically applying them next time this display is recognized.\n\n\"Save Current Screen Settings\" = save current configuration. Matching uses screen identity rather than port number, so it is recognized even when plugged into a different port.\n\n\"Orientation Sync\" and \"Auto-Rotate\" are only recorded and won\'t be toggled for you upon connecting; \"Prompt on Screen Connect\" and \"Auto-Restore on Disconnect\" similarly are not saved per-screen.</string>
+
+    <!-- ==================== Beta Features Page (info_beta_* below) ==================== -->
+    <string name="info_beta_intro">Experimental features centered around the cover screen; details may change at any time. Most require Shizuku permissions.\n\nSecondary screen and dual-screen contents have been moved to the \"Dual-Screen\" tab on the main interface.</string>
+    <string name="info_beta_sub">Projects secondary screen desktop (a full page of app grid) onto the cover screen.\n\nOnly casts content without switching the phone into dual-screen mode; current active screen and fold state remain untouched. Secondary screen refers to the cover screen; requires Shizuku to be active.</string>
+    <string name="info_dex">Opens Samsung DeX desktop on the portable monitor when connected, while the phone itself operates normally.\n\nThe system does not expose a third-party API to \"open DeX\"; this uses a community-wide method whose success depends on the system; the exact command-line output is displayed below.\n\nMust connect portable screen first; some system versions reject this citing \"root required\", in which case you must use the system\'s built-in entry point.</string>
+    <string name="info_beta_ext">Force override for the folded cover screen: resolution, DPI, and display orientation.\n\n\"Apply Override\" takes effect, \"Restore Default\" resets to native panel values.\n\nDeviating too far from native values causes screen stretching or clipping.</string>
+    <string name="info_beta_cover_res">Logical resolution and DPI for the cover screen. Enter numbers for both width and height; leave DPI blank to keep unchanged.\n\nThe screen flashes momentarily upon applying, which is normal.</string>
+    <string name="info_beta_preset">Save frequently used resolutions as presets. Tap a row = apply parameters; long-press a row = delete; top-right can add or restore factory presets.\n\nUp to 12 presets stored.</string>
+    <string name="info_beta_rotate">Force rotate the cover screen to a specified orientation.\n\n\"Rotate 90°\" cycles through 0°→90°→180°→270°, returning to origin after four rotations; \"Clear Fixed Angle\" unpins fixed angle and returns control to system.</string>
+    <string name="info_cover_autorot">Cover screen content does not rotate with phone orientation by default; this toggle enables automatic rotation.\n\nOn: Phone held sideways, cover screen rotates accordingly, returning upright when turned back. Off: Restores original orientation.\n\nNote: Relies on Shizuku for rotation commands; Accessibility service must be running; independent of inner screen \"Auto-Rotate\".</string>
+    <string name="info_beta_cmd">Connect physical keys and custom commands here: after selecting key and action, tap button on card to complete connection in system settings.\n\nManage custom commands in the card below.</string>
+    <string name="info_beta_key">Bind actions to physical keys: Power button uses system \"Digital Assistant\", volume keys use Accessibility service.\n\nSelect key to configure first, tap \"Select Action\" to pick an action, then follow page prompts to complete setup in system. Volume key action list includes \"None\" to unbind actions.\n\nNote: Only one Digital Assistant can be active; setting this replaces the previous one.</string>
+    <string name="info_beta_custom">Saved commands appear in the \"Side Key Actions\" action list and can be assigned to keys.\n\nNote: Commands run as shell identity; capabilities depend on permissions granted to Shizuku.</string>
+    <string name="info_beta_external">Fill in action below, include action_key in parameters.\n\nOnly the built-in actions listed below are supported; custom commands should be entered as custom:&lt;id&gt;, where id is shown to the right of command name.</string>
+
+    <!-- ==================== Gesture Enhancements (v4.2) ==================== -->
+
+    <string name="info_edge_cutout">Extends each app\'s display into the camera cutout safe area so the system no longer overlays a black bar.\n\nTap once to dispatch to all installed apps; hundreds of packages take 10-20 seconds, during which progress is shown below; apps must be relaunched to take effect.\n\nNote: Executed via Shizuku; may fail across system updates.</string>
+
+    <string name="info_cover_recents">When closed, swipe up from bottom center of cover screen, pause briefly and release to open Recent Tasks; release immediately to return home, swipe down or horizontally to cancel.\n\nRequires Accessibility service; turning off toggle or disconnecting Accessibility removes gesture bar immediately.</string>
+
+    <string name="info_cover_sidebar">Triggers on release; does nothing if unselected. Panel keeps as many items as checked, order matches the four rows; three animation styles with identical functions.\n\nNote: Notifications require separate \"Notification Access\", distinct from Accessibility; touches on the trigger strip are intercepted, requires Accessibility service to attach.</string>
+
+    <string name="info_inner_gesture">Swipe inward from left/right edges = Back, swipe up from bottom = Home, swipe up and hold = Recents.\n\nNote: Bottom-left and bottom-right corners ignore gestures in landscape to prevent palm accidental touches while gaming; entire edge is active in portrait. Edge touches are briefly captured; non-inward swipes are returned immediately to underlying app; requires Accessibility service, works best paired with \"Hide 3-Button Navigation\".</string>
+
+    <string name="info_nav_immersive">Hides 3-button navigation bar on both desktop and cover screen simultaneously, freeing screen bottom for custom full-screen gestures.\n\nNote: Writes system settings via Shizuku; users with Good Lock installed must first turn off \"Show and hide button\" in NavStar, otherwise it will revert. Swiping up from bottom after hiding still brings it up briefly.</string>
+
+    <!-- Checkbox on explanation dialog when entering "Beta Labs" for the first time -->
+    <string name="beta_intro_dont_show">Do not show again</string>
+
+    <!-- Static shortcut names. Displayed on launcher long-press icon and Routine "App shortcuts". -->
+    <string name="qa_toggle_fold_short">Toggle Fold</string>
+    <string name="qa_toggle_fold_long">Toggle Fold / Unfold</string>
+    <string name="qa_cover_home_short">Cover Home</string>
+    <string name="qa_cover_home_long">Switch to folded and return to cover home</string>
+    <string name="qa_cover_rotate_short">Rotate Cover</string>
+    <string name="qa_cover_rotate_long">Rotate cover screen 90° clockwise</string>
+    <string name="qa_cover_rotate_reset_short">Reset Cover</string>
+    <string name="qa_cover_rotate_reset_long">Restore cover screen auto-rotate</string>
 
     <!--
-      无障碍服务：系统设置里那条开关显示的文字（v2.19.3 改）。
-      ⚠ 这里走的是 **服务自己的 android:label**（AndroidManifest 里 service@android:label），
-      无障碍列表每条只渲染这个 label、**不渲染应用名** ——
-      所以必须以「应用名」打头，否则用户在列表里按应用名根本找不到，
-      会以为列表里那个是别的 App（v2.19.2 就是这么被坑的）。
+      Accessibility Service: Text displayed on toggle in system settings (changed in v2.19.3).
+      ⚠ This uses **the service\'s own android:label** (service@android:label in AndroidManifest),
+      the accessibility list only renders this label, **not the app name** —
+      so it MUST start with the "app name", otherwise users searching by app name in the list won\'t find it,
+      thinking it belongs to another app (which caused issues in v2.19.2).
     -->
-    <string name="a11y_service_label">Z flip便携屏扩展（Beta 实验室）</string>
-    <string name="a11y_volume_desc">开启后可用长按音量上键或音量下键执行外屏快捷动作。短按音量键不受影响；某一侧没绑动作时，长按也不受影响。</string>
+    <string name="a11y_service_label">Z Flip Portable Screen Extension (Beta Labs)</string>
+    <string name="a11y_volume_desc">When enabled, long-press volume up or down to trigger cover screen shortcuts. Short presses are unaffected; long press is unaffected if no action is assigned to that side.</string>
 
     <!--
-      ==================== 副屏页的名字（v4.0）====================
+      ==================== Secondary Screen Page Names (v4.0) ====================
 
-      这些是**伪应用**的名字：只在副屏桌面（SecondaryHomeActivity）里出现，
-      系统里查不到、外屏启动器的别处（小组件 / 配置页 / 搜索页）也不会有它们
-      —— 来历见 AppRepo.pseudoItems 的注释。
-      ⚠ 副屏遥控板（v4.18 整个删除）与副屏键盘（v4.18 起不再上桌）之后，在用的只剩副屏触控板。
-      叫法统一成"副屏 xxx"，跟"副屏桌面"是一套。
+      These are names of **pseudo-apps**: only appear on Secondary Screen Desktop (SecondaryHomeActivity),
+      not searchable in the system, nor present in Cover Screen Launcher (widgets / config / search)
+      — see comments in AppRepo.pseudoItems.
+      ⚠ After secondary remote (deleted in v4.18) and secondary keyboard (removed from desktop since v4.18), only secondary touchpad remains.
+      Unified naming: "Secondary Screen xxx", matching "Secondary Screen Desktop".
     -->
-    <string name="ext_pad_title">副屏触控板</string>
-    <string name="ext_key_title">副屏键盘</string>
+    <string name="ext_pad_title">Secondary Screen Touchpad</string>
+    <string name="ext_key_title">Secondary Screen Keyboard</string>
     <!--
-      投屏控制（v3.16）。名字刻意不套"副屏 xxx"那套 ——
-      "投屏"这两个字本身已经说明了"往副屏上投"，再加前缀反而绕；
-      而且四个字在网格里排得更整齐。
+      Cast Control (v3.16). Intentionally does not follow "Secondary Screen xxx" pattern —
+      "Cast" already implies projecting onto secondary screen, adding a prefix makes it redundant;
+      also four characters (in Chinese) align neatly in grid.
     -->
-    <string name="ext_cast_title">投屏控制</string>
-
-    <!--
-      状态展示柜（v4.28）。名字用"展示柜"而不是"面板 / 监视器" ——
-      它摆出来的是一整屏读数，不是一两个数字，柜子这个说法更贴。
-    -->
-    <string name="ext_status_title">状态展示柜</string>
+    <string name="ext_cast_title">Cast Control</string>
 
     <!--
-      副屏播放器（v472）。名字套了"副屏 xxx"那套，跟触控板 / 桌面是一组；
-      ⚠ 刻意不叫"音乐播放器" —— 它自己不播任何东西，只是接管系统里正在放的那个。
+      Status Showcase (v4.28). Named "Showcase" rather than "Panel / Monitor" —
+      it displays a whole screen of telemetry readings, not just one or two numbers; "Showcase" fits better.
     -->
-    <string name="ext_player_title">副屏播放器</string>
+    <string name="ext_status_title">Status Showcase</string>
 
-    <!-- Beta 实验室 →「副屏管理」里那组伪应用开关的 ⓘ -->
-    <string name="info_pseudo">决定哪几个伪应用出现在副屏桌面上。\n\n伪应用是我们自己的页面，不算真正的应用：只钉在副屏桌面网格的最前面，系统里、外屏启动器里、搜索页里都不会有它们。</string>
+    <!--
+      Secondary Screen Player (v472). Follows "Secondary Screen xxx" naming, grouped with touchpad / desktop;
+      ⚠ Intentionally not called "Music Player" — it does not play audio itself, only takes over whatever is playing in the system.
+    -->
+    <string name="ext_player_title">Secondary Screen Player</string>
 
-    <string name="info_ext_status" formatted="false">副屏上的一块实时状态面板：CPU 占用与最近一分钟曲线、温度、内存、各簇频率、主屏刷新率，顶栏是时间与电量。\n\n不需要 Shizuku，也不用给权限；这一页不熄屏，当常亮仪表盘用。\n\n颜色是读数的意思：占用 50% / 温度 45℃ 起转黄，80% / 60℃ 起转红。</string>
+    <!-- ⓘ for pseudo-app toggles in Beta Labs → "Secondary Screen Management" -->
+    <string name="info_pseudo">Determines which pseudo-apps appear on the secondary screen desktop.\n\nPseudo-apps are our own internal pages, not real apps: pinned only to the front of the secondary desktop grid, absent from system, cover launcher, and search.</string>
 
-    <!-- 「副屏播放器」页面上的那些字 -->
-    <string name="player_idle_title">没有正在播放的音乐</string>
-    <string name="player_idle_hint">在手机上随便放一首歌，这一页就会跟着显示。</string>
-    <string name="player_need_access">需要「通知使用权」才能读到播放器。</string>
-    <string name="player_lyric_loading">歌词加载中…</string>
-    <string name="player_lyric_none">暂无歌词</string>
-    <string name="player_prev">上一曲</string>
-    <string name="player_play">播放 / 暂停</string>
-    <string name="player_next">下一曲</string>
+    <string name="info_ext_status" formatted="false">A real-time status panel on the secondary screen: CPU usage with past 1-minute graph, temperature, RAM, cluster frequencies, main screen refresh rate, with time and battery on the top bar.\n\nNo Shizuku or extra permissions required; this page keeps screen on as an always-on dashboard.\n\nColors reflect readings: turns yellow at 50% usage / 45°C temp, turns red at 80% usage / 60°C temp.</string>
 
-    <!-- 三个页面的顶栏与触控板底栏 -->
-    <string name="ext_close">关闭</string>
-    <string name="ext_finding">正在读取屏幕信息…</string>
-    <string name="ext_no_screen">读不到屏幕信息：确认 Shizuku 在运行且已授权</string>
-    <string name="ext_self_target">目标屏就是本页所在的屏，指令已忽略</string>
-    <string name="ext_title_none">%1$s · 读不到屏幕</string>
-    <string name="ext_title_fmt">%1$s · 内屏 %2$s</string>
-    <string name="ext_title_inner">%1$s · 内屏</string>
+    <!-- Text on "Secondary Screen Player" page -->
+    <string name="player_idle_title">No music playing</string>
+    <string name="player_idle_hint">Play any song on your phone and this page will follow and display it.</string>
+    <string name="player_need_access">\"Notification Access\" required to read media player.</string>
+    <string name="player_lyric_loading">Loading lyrics…</string>
+    <string name="player_lyric_none">No lyrics available</string>
+    <string name="player_prev">Previous</string>
+    <string name="player_play">Play / Pause</string>
+    <string name="player_next">Next</string>
+
+    <!-- Top bar for 3 pages and touchpad bottom bar -->
+    <string name="ext_close">Close</string>
+    <string name="ext_finding">Reading screen info…</string>
+    <string name="ext_no_screen">Cannot read screen info: verify Shizuku is running and authorized</string>
+    <string name="ext_self_target">Target screen is the current screen, command ignored</string>
+    <string name="ext_title_none">%1$s · Screen unavailable</string>
+    <string name="ext_title_fmt">%1$s · Inner Screen %2$s</string>
+    <string name="ext_title_inner">%1$s · Inner Screen</string>
     <string name="ext_title_dev">%1$s · %2$s %3$s</string>
-    <string name="dev_inner">内屏</string>
-    <string name="dev_cover">封面屏</string>
-    <string name="dev_external">外接屏</string>
+    <string name="dev_inner">Inner Screen</string>
+    <string name="dev_cover">Cover Screen</string>
+    <string name="dev_external">External Screen</string>
 
-    <!-- 触控板 -->
-    <string name="ext_sens">灵敏度</string>
+    <!-- Touchpad -->
+    <string name="ext_sens">Sensitivity</string>
     <string name="ext_sens_btn">%1$.1f×</string>
-    <string name="ext_pad_center_hint">盲滑即动 —— 光标在内屏上</string>
-    <string name="ext_pad_info_fmt">光标 %1$d, %2$d　·　目标屏 %3$d×%4$d　·　%5$s</string>
-    <!-- 注入走的哪条路：无障碍手势（快、跟手）还是 Shizuku + input（慢、会排队）。
-         显示在面板右下角那行，用户一看就知道"为什么这次很卡"。 -->
-    <!-- 触摸走哪条通道（v3.20）：直注 = Shizuku Binder 一发即走（首选）；
-         手势 = 无障碍 dispatchGesture（会排队）；输入 = input 命令（一条 47ms）。 -->
-    <string name="ext_path_direct">直注</string>
-    <string name="ext_path_gesture">手势</string>
-    <string name="ext_path_input">输入</string>
-    <string name="ext_pad_no_target">读不到内屏信息，先确认 Shizuku 在跑</string>
-    <string name="ext_pad_need_overlay">缺少「显示在其他应用上层」权限，光标画不到内屏上</string>
-    <string name="ext_pad_cursor_fail">光标没挂上：检查悬浮窗权限，或稍后再打开本页</string>
-    <string name="ext_grant">去授权</string>
-    <string name="ext_flash_tap">单击 %1$d, %2$d</string>
-    <string name="ext_flash_hold">长按 %1$d, %2$d</string>
-    <string name="ext_flash_drag">拖拽 %1$d,%2$d → %3$d,%4$d</string>
-    <string name="ext_flash_scroll">滚动 %1$d</string>
-    <string name="ext_flash_page_next">翻页 → 下一屏</string>
-    <string name="ext_flash_page_prev">翻页 → 上一屏</string>
-    <!-- 无障碍服务没开时，触摸只能走 input 慢路（每条要起进程、还要等目标屏的响应）。
-         这句就是给用户的那条"怎么才能变快"，点了直接跳系统无障碍设置页。 -->
-    <string name="ext_pad_need_a11y">⚠ 触摸正走慢路 · 点这里开无障碍服务（或先把 Shizuku 连上），拖动才跟手</string>
-    <string name="ext_pad_a11y_toast">在列表里找到「Z flip便携屏扩展」并打开开关即可；Shizuku 也顺手检查一下</string>
-    <string name="ext_page_prev">◀ 翻页</string>
-    <string name="ext_page_next">翻页 ▶</string>
-    <string name="ext_flash_sens">灵敏度 %1$.1f×</string>
-    <string name="ext_click">单击</string>
-    <string name="ext_hold">长按</string>
-    <string name="ext_back">返回</string>
-    <string name="ext_home">主页</string>
-    <!-- 触控板底部的操作提示（一行，详细解释在 ⓘ 里） -->
-    <string name="ext_pad_hint">滑＝移光标 · 轻点＝单击 · 按住＝长按 · 按住拖＝拖拽 · 双指上下＝滚动 · 双指左右＝翻页</string>
+    <string name="ext_pad_center_hint">Slide blindly to move — cursor is on inner screen</string>
+    <string name="ext_pad_info_fmt">Cursor %1$d, %2$d　·　Target %3$d×%4$d　·　%5$s</string>
+    <!-- Injection channel: Accessibility gesture (fast, responsive) or Shizuku + input (slow, queued).
+         Displayed on bottom right of panel so users immediately know "why it is lagging". -->
+    <!-- Touch channel (v3.20): Direct = Shizuku Binder instant dispatch (preferred);
+         Gesture = Accessibility dispatchGesture (queued); Input = input command (47ms each). -->
+    <string name="ext_path_direct">Direct</string>
+    <string name="ext_path_gesture">Gesture</string>
+    <string name="ext_path_input">Input</string>
+    <string name="ext_pad_no_target">Cannot read inner screen info, check if Shizuku is running</string>
+    <string name="ext_pad_need_overlay">Missing \"Display over other apps\" permission, cannot draw cursor on inner screen</string>
+    <string name="ext_pad_cursor_fail">Cursor failed to attach: check overlay permission or reopen this page later</string>
+    <string name="ext_grant">Grant Permission</string>
+    <string name="ext_flash_tap">Tap %1$d, %2$d</string>
+    <string name="ext_flash_hold">Long Press %1$d, %2$d</string>
+    <string name="ext_flash_drag">Drag %1$d,%2$d → %3$d,%4$d</string>
+    <string name="ext_flash_scroll">Scroll %1$d</string>
+    <string name="ext_flash_page_next">Page → Next Screen</string>
+    <string name="ext_flash_page_prev">Page → Previous Screen</string>
+    <!-- When accessibility is off, touch falls back to slow input path (spawns process and awaits target screen response for each event).
+         Prompt directs user on "how to make it faster", tapping opens system accessibility settings. -->
+    <string name="ext_pad_need_a11y">⚠ Touch running on slow path · Tap here to enable Accessibility (or connect Shizuku) for smooth dragging</string>
+    <string name="ext_pad_a11y_toast">Find \"Z Flip Portable Screen Extension\" in list and turn on toggle; check Shizuku as well</string>
+    <string name="ext_page_prev">◀ Page</string>
+    <string name="ext_page_next">Page ▶</string>
+    <string name="ext_flash_sens">Sensitivity %1$.1f×</string>
+    <string name="ext_click">Tap</string>
+    <string name="ext_hold">Long Press</string>
+    <string name="ext_back">Back</string>
+    <string name="ext_home">Home</string>
+    <!-- Operating hint at bottom of touchpad (single line, detailed explanation in ⓘ) -->
+    <string name="ext_pad_hint">Slide = Move cursor · Tap = Click · Hold = Long press · Hold &amp; Drag = Drag · Two fingers up/down = Scroll · Two fingers left/right = Page</string>
 
     <!--
-      ==================== 投屏控制（v3.16）====================
+      ==================== Cast Control (v3.16) ====================
 
-      这个页子把内屏画面投到本屏，触摸直接换算成内屏坐标注进去。
-      顶栏/底栏文案跟触控板一套（ext_close / ext_back / ext_home 直接复用）。
+      This page casts inner screen to current screen, touch is mapped and injected directly into inner screen coordinates.
+      Top/bottom bar text matches touchpad (ext_close / ext_back / ext_home reused).
     -->
-    <string name="cast_start">开始投屏</string>
-    <!-- 全屏（v4.31）：把整块屏让给画面。单向的 —— 全屏之后控件全收起，退出来靠那块屏的返回键 -->
-    <string name="cast_full">全屏</string>
-    <string name="cast_exit_full">退出全屏</string>
+    <string name="cast_start">Start Casting</string>
+    <!-- Fullscreen (v4.31): Allocates entire screen to video. One-way — controls hidden after fullscreen, exit via screen\'s back gesture -->
+    <string name="cast_full">Fullscreen</string>
+    <string name="cast_exit_full">Exit Fullscreen</string>
     <!--
-      两个勾选项（v3.20）。写在按钮旁边那行，不塞进顶栏（封面屏顶栏已经很挤）。
-      「重设」= 投屏前先把内屏的宽高比改成跟画面框一样，画面就铺满了不留黑边；
-      「放大」= 画面里可以双指捏合放大，放大了点得更准（触控板不需要，所以只在投屏页）。
+      Two checkboxes (v3.20). Placed beside the button, not crowded into top bar (cover screen top bar is already tight).
+      "Resize" = adjust inner screen aspect ratio to match cast frame before casting, filling screen without black bars;
+      "Zoom" = allow two-finger pinch to zoom for more precise taps (touchpad doesn\'t need this, so cast page only).
     -->
-    <string name="cast_opt_resize">内屏分辨率重设</string>
-    <string name="cast_opt_zoom">允许放大</string>
-    <!-- 已经投着的时候才去勾「重设」：尺寸在建虚拟显示时就定了，这一趟改不了 -->
-    <string name="cast_opt_resize_late">「内屏分辨率重设」要下次开始投屏时才生效（画面尺寸在投屏那一刻就定下了）</string>
-    <string name="cast_stop">停止</string>
-    <string name="cast_idle">点「开始投屏」，内屏画面就会出现在这里</string>
-    <string name="cast_preparing">正在准备…</string>
-    <string name="cast_state_idle">未投屏</string>
-    <!-- 状态行：内屏尺寸 → 投到本屏，后面跟一句"注入走的哪条路" -->
-    <string name="cast_state_fmt">内屏 %1$s · %2$s</string>
-    <!-- 注入通道（v3.19）：直注 = Shizuku Binder 一发即走；输入 = input 命令，一条 47ms -->
-    <string name="cast_path_direct">直注</string>
-    <string name="cast_path_input">输入</string>
-    <string name="cast_no_target">读不到内屏信息，先确认 Shizuku 在跑</string>
-    <string name="cast_no_shizuku">需要先授权 Shizuku：拿不到内屏的尺寸，点了会偏</string>
+    <string name="cast_opt_resize">Reset Inner Resolution</string>
+    <string name="cast_opt_zoom">Allow Zoom</string>
+    <!-- Checking "Resize" while casting is already active: dimensions are locked when virtual display is created, cannot change mid-session -->
+    <string name="cast_opt_resize_late">\"Reset Inner Resolution\" takes effect on next cast start (frame dimensions are locked upon casting)</string>
+    <string name="cast_stop">Stop</string>
+    <string name="cast_idle">Tap \"Start Casting\" and the inner screen will appear here</string>
+    <string name="cast_preparing">Preparing…</string>
+    <string name="cast_state_idle">Not Casting</string>
+    <!-- Status row: Inner screen dimensions → Cast to current screen, followed by injection path -->
+    <string name="cast_state_fmt">Inner %1$s · %2$s</string>
+    <!-- Injection channel (v3.19): Direct = Shizuku Binder instant dispatch; Input = input command, 47ms each -->
+    <string name="cast_path_direct">Direct</string>
+    <string name="cast_path_input">Input</string>
+    <string name="cast_no_target">Cannot read inner screen info, verify Shizuku is running</string>
+    <string name="cast_no_shizuku">Shizuku authorization required: unable to read inner screen dimensions, taps will misalign</string>
     <!--
-      没有 Shizuku 时的实话（v3.16）。
-      系统那个授权弹窗在副屏上点不到（按内屏尺寸布局，按钮落在屏外），
-      所以没有 Shizuku 就等于"在副屏上投不了" —— 与其让用户卡在「正在准备…」，
-      不如直接告诉他去哪块屏上点。
+      Explanation when Shizuku is missing (v3.16).
+      System permission dialog is unreachable on secondary screen (layout based on inner screen, buttons fall offscreen),
+      so without Shizuku casting cannot start on secondary screen — rather than leaving user stuck on "Preparing…",
+      tell them directly which screen to tap on.
     -->
-    <string name="cast_no_shizuku_dialog">没接通 Shizuku，只能走系统授权弹窗 —— 那个弹窗在副屏上点不到，请到内屏上再点一次「开始投屏」</string>
-    <string name="cast_denied">没拿到投屏授权（授权被取消或拒绝）</string>
-    <string name="cast_stopped">投屏已停止</string>
-    <string name="cast_fail">投屏没起来：%1$s</string>
-    <string name="cast_tap_target_off">⚠ 内屏熄着，投出来是黑屏 —— 先展开手机</string>
-    <string name="cast_hint">画面里直接点 / 拖 · 勾了「允许放大」可双指捏合缩放</string>
-    <string name="cast_recent">后台</string>
-    <!-- ⓘ 正文：功能 / 用法 / 注意事项 -->
-    <string name="cast_info">合盖或只用这块屏时也能操作手机内屏：画面投到本屏，直接点、直接拖。\n\n接通 Shizuku 后点「开始投屏」。\n「全屏」把画面铺满本屏，勾了「内屏分辨率重设」才真铺满。全屏时界面不留控件，退出就从画面最顶上往下拉。\n\n注意：\n· 投屏授权每次都要重新给；没接通 Shizuku 时弹窗在副屏点不到，得去内屏点。\n· 内屏熄着（比如合盖）时投出来是全黑的。\n· 本页放到内屏上会照到自己，会自动搬到另一块屏。\n· 「内屏分辨率重设」临时改内屏分辨率，停止投屏自动还原；强杀本应用可能来不及，去主界面「内屏分辨率」栏点一下还原。\n· 放大后单指仍精确；出现第二根手指时这一下不生效，不会误点。\n· 全屏期间外屏的侧滑栏与手势条暂时收起，退出全屏自动回来。</string>
+    <string name="cast_no_shizuku_dialog">Shizuku not connected, must use system dialog — which is unreachable on secondary screen; please tap \"Start Casting\" on the inner screen instead</string>
+    <string name="cast_denied">Cast permission denied (permission cancelled or rejected)</string>
+    <string name="cast_stopped">Casting stopped</string>
+    <string name="cast_fail">Casting failed to start: %1$s</string>
+    <string name="cast_tap_target_off">⚠ Inner screen is off, cast shows black screen — unfold phone first</string>
+    <string name="cast_hint">Tap / drag directly on screen · Pinch with two fingers to zoom when \"Allow Zoom\" is checked</string>
+    <string name="cast_recent">Recents</string>
+    <!-- ⓘ Body: Function / Usage / Notes -->
+    <string name="cast_info">Operate phone inner screen even when closed or using only this screen: casts display onto this screen with direct tapping and dragging.\n\nConnect Shizuku, then tap \"Start Casting\".\n\"Fullscreen\" fills current screen; check \"Reset Inner Resolution\" to truly eliminate black bars. Controls are hidden in fullscreen; swipe down from top of screen to exit.\n\nNotes:\n· Cast permission must be granted every time; without Shizuku the dialog cannot be reached on secondary screen and must be granted on inner screen.\n· Casting displays black if inner screen is off (e.g. phone closed).\n· Opening this page on inner screen mirrors itself and will automatically move to the other screen.\n· \"Reset Inner Resolution\" temporarily changes inner screen resolution and restores it upon stopping; if app is force-closed, tap restore under \"Inner Screen Resolution\" in main interface.\n· Single-finger tapping remains accurate after zooming; introducing a second finger ignores the tap to avoid misclicks.\n· Sidebar and gesture bars on cover screen are temporarily hidden during fullscreen and return upon exit.</string>
 
-    <!-- 副屏键盘 -->
-    <string name="ext_key_state_idle">先在内屏点一下要输入的地方，再回来打字</string>
-    <string name="ext_key_state_fmt">内屏 %1$s</string>
-    <string name="ext_key_hint">在这里输入要送过去的文字</string>
-    <string name="ext_send">发送</string>
-    <string name="ext_enter">回车</string>
-    <string name="ext_backspace">退格</string>
-    <string name="ext_clear">清空</string>
-    <string name="ext_space">空格</string>
+    <!-- Secondary Screen Keyboard -->
+    <string name="ext_key_state_idle">Tap input field on inner screen first, then return here to type</string>
+    <string name="ext_key_state_fmt">Inner %1$s</string>
+    <string name="ext_key_hint">Type text to send here</string>
+    <string name="ext_send">Send</string>
+    <string name="ext_enter">Enter</string>
+    <string name="ext_backspace">Backspace</string>
+    <string name="ext_clear">Clear</string>
+    <string name="ext_space">Space</string>
     <string name="ext_tab">Tab</string>
     <string name="ext_esc">Esc</string>
-    <string name="ext_key_mode_auto">方式：自动</string>
-    <string name="ext_key_mode_text">方式：直接键入</string>
-    <string name="ext_key_mode_clip">方式：剪贴板</string>
+    <string name="ext_key_mode_auto">Mode: Auto</string>
+    <string name="ext_key_mode_text">Mode: Direct Input</string>
+    <string name="ext_key_mode_clip">Mode: Clipboard</string>
 
 
-    <string name="info_ext_pad">把封面屏当笔记本触控板用，光标显示在目标屏上；面板上不看图，手指盲滑就行。\n\n轻点 = 单击，按住 0.55 秒 = 长按，按住再滑 = 拖拽，双指上下滑 = 滚动，双指左右滑 = 翻页。\n\n注意：注入优先走 Shizuku，不通时自动改走别的路。</string>
-    <string name="info_ext_pad_overlay">光标是挂在内屏上的一层悬浮窗，需要「显示在其他应用上层」权限。\n\n路径：系统设置 → 应用 → 本应用 → 显示在其他应用上层（有的系统放在「特殊应用权限」里）。\n\n不开也能进这页，只是光标不会出现。</string>
-    <string name="info_ext_key">在封面屏上打字，把文字送进内屏那个应用的光标处。\n\n先在内屏点一下要输入的位置，再回来打字、按「发送」。中文与表情走剪贴板粘贴，纯英文数字直接键入。\n\n注意：内屏没有焦点的输入框收不到文字；「发送」发的是输入框里的全部内容，发完清空。</string>
+    <string name="info_ext_pad">Use cover screen as laptop touchpad, cursor displayed on target screen; blind swiping on panel without looking.\n\nTap = Click, hold 0.55s = Long press, hold &amp; slide = Drag, two-finger vertical swipe = Scroll, two-finger horizontal swipe = Page.\n\nNote: Injection prioritizes Shizuku, falls back to alternative paths if unavailable.</string>
+    <string name="info_ext_pad_overlay">Cursor is an overlay window on inner screen requiring \"Display over other apps\" permission.\n\nPath: System Settings → Apps → This App → Display over other apps (some systems place under \"Special app access\").\n\nYou can still enter this page without it, but cursor won\'t appear.</string>
+    <string name="info_ext_key">Type on cover screen to send text to cursor position in inner screen app.\n\nTap input field on inner screen first, return here to type, then tap \"Send\". Non-ASCII and emojis paste via clipboard; pure English and numbers type directly.\n\nNote: Unfocused input fields on inner screen cannot receive text; \"Send\" transmits entire content in text box, then clears.</string>
 
-    <string name="repair_title">修复界面</string>
+    <string name="repair_title">Repair Interface</string>
 
-    <string name="info_adb_wifi">外屏下连了没登记过的 Wi-Fi 时，用它打开系统的无线调试，好让 Shizuku 能启动起来。这个按钮只开不关，需要无障碍权限。\n\n注意：第一次打开当前网络时会自动展开内屏、替你点掉系统确认框再折回；同一个网络第二次就直接打开。代点只在这一个动作里生效。</string>
-    <string name="info_qa_cast">一步做完「启动双屏模式 → 打开投屏控制 → 全屏 → 开始投屏」。\n\n注意：它会切双屏模式，手机内屏那边的落点跟着变；投屏授权靠 Shizuku 预先办掉，没接通就只能去内屏点。</string>
+    <string name="info_adb_wifi">When connected to an unremembered Wi-Fi on cover screen, use this to toggle system Wireless Debugging so Shizuku can start. This button only enables, requires Accessibility permission.\n\nNote: On first enable on current network, inner screen automatically unfolds to dismiss system confirmation dialog, then refolds; subsequent connections on same network toggle directly. Automated tapping only operates during this action.</string>
+    <string name="info_qa_cast">One-step execution of \"Launch Dual-Screen Mode → Open Cast Control → Fullscreen → Start Casting\".\n\nNote: Switches dual-screen mode, affecting inner screen focus; cast permission handled upfront via Shizuku, otherwise must be granted on inner screen.</string>
 
-    <string name="info_repair_app">让应用在外屏上以原生尺寸显示：字体正常、弹窗落在屏内也点得到。\n\n不加进去的应用照样能在外屏打开，但会缩放显示：字忽大忽小、有的弹窗画到屏幕外点不到。</string>
+    <string name="info_repair_app">Run apps on cover screen at native size: normal font size, dialogs stay on-screen and tappable.\n\nApps not added can still run on cover screen, but will scale: text fluctuates in size, some dialogs render offscreen and become untappable.</string>
 
-    <string name="info_repair_list">打开 = 这个应用在外屏上以原生尺寸显示。\n\n一键修复 = 全部打开。一键重置 = 还原到本应用第一次改动之前的名单，从没改过时没法重置。\n\n注意：改的是三星那份名单（设置 → 外屏 → 在外屏运行的应用），不是本应用自己的设置。</string>
+    <string name="info_repair_list">On = Run this app on cover screen at native size.\n\nRepair All = Enable all. Reset All = Restore to list prior to this app\'s first modification; cannot reset if never modified.\n\nNote: Modifies Samsung\'s list (Settings → Cover Screen → Apps allowed on cover screen), not this app\'s own settings.</string>
 
 </resources>
