@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Desktop / app info display name (v2.18.1 change). -->
+    <!-- Recent task cards use a different path: MainActivity sets the title to the English name. -->
+    <!-- Therefore, "desktop Chinese, background English" does not need two sets of labels and they will not clash. -->
+    <!-- English system name is overridden by values-en/strings.xml. -->
+    <string name="app_name">Z flip Portable Screen Extension</string>
+    <string name="app_name_en">Adaptive Screen++</string>
+    <string name="cover_home_label">Secondary Screen Desktop</string>
+
+    <!-- Desktop widget -->
+    <string name="widget_panel_title">Dual‑Screen Quick Panel</string>
+    <string name="widget_panel_desc">Two buttons: Fold/Unfold · Dual‑Screen Mode</string>
+    <string name="widget_panel_cover_title">Dual‑Screen Quick Panel (External)</string>
+    <string name="widget_panel_cover_desc">External‑screen only: Fold/Unfold · Dual‑Screen Mode · One‑Tap Cast · Adaptive Rotation</string>
+    <string name="widget_btn_fold">Fold/Unfold\nToggle</string>
+    <string name="widget_btn_dual">Dual‑Screen Mode</string>
+    <string name="widget_btn_sync">Adaptive Rotation</string>
+    <string name="widget_btn_cast">One‑Tap Cast</string>
+    <string name="widget_btn_lock">Lock Landscape</string>
+
+    <!-- Slot machine widget. The three icons are app icons from the user's installed apps; a "seven" icon is added as an easter egg. -->
+    <string name="widget_slot_title">Slot Machine</string>
+    <string name="widget_slot_desc">Three‑slot lever gives points; tap the counter to turn them into three quick buttons</string>
+    <string name="widget_slot_cover_title">Slot Machine (External)</string>
+    <string name="widget_slot_cover_desc">External‑screen only: Slot points, counter can become three quick buttons</string>
+    <string name="widget_slot_idle">—</string>
+    <string name="widget_slot_ready">Tap the right‑hand lever to start</string>
+    <string name="widget_slot_stats">Shaken %1$d times · Double %2$d · Triple %3$d</string>
+    <string name="widget_slot_double">Double!</string>
+    <string name="widget_slot_triple">Triple!!</string>
+    <string name="widget_slot_none">Almost</string>
+    <string name="widget_slot_lever">Lever</string>
+    <string name="widget_slot_score">Score</string>
+    <string name="widget_slot_win">Won!</string>
+    <string name="widget_slot_btn_hint">Tap a cell for function · Tap lever to set</string>
+    <string name="widget_slot_ran">Executed: %1$s</string>
+    <string name="widget_slot_cfg_title">Slot Machine Quick Config</string>
+    <string name="widget_slot_cfg_hint">Three slots each hold a toggle‑type function; tap a slot to execute its action.</string>
+    <string name="widget_slot_cfg_row">Slot %1$d: %2$s</string>
+    <string name="widget_slot_cfg_pick">Assign to slot %1$d</string>
+    <string name="widget_slot_cfg_none">(Not set)</string>
+</resources>
