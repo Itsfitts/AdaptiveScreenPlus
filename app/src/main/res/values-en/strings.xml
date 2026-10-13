@@ -1,43 +1,468 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Desktop / app info display name (v2.18.1 change). -->
-    <!-- Recent task cards use a different path: MainActivity sets the title to the English name. -->
-    <!-- Therefore, "desktop Chinese, background English" does not need two sets of labels and they will not clash. -->
-    <!-- English system name is overridden by values-en/strings.xml. -->
-    <string name="app_name">Z flip Portable Screen Extension</string>
+    <!--
+      Launcher / App Info display name (changed in v2.18.1).
+      Recent task cards take another route: MainActivity sets the title to English via setTaskDescription,
+      so "Chinese on launcher, English in background" does not need two sets of labels and won\'t conflict.
+      Names under English systems are overridden by values-en/strings.xml.
+    -->
+    <string name="app_name">Z Flip Portable Screen Extension</string>
     <string name="app_name_en">Adaptive Screen++</string>
     <string name="cover_home_label">Secondary Screen Desktop</string>
 
-    <!-- Desktop widget -->
-    <string name="widget_panel_title">Dual‑Screen Quick Panel</string>
-    <string name="widget_panel_desc">Two buttons: Fold/Unfold · Dual‑Screen Mode</string>
-    <string name="widget_panel_cover_title">Dual‑Screen Quick Panel (External)</string>
-    <string name="widget_panel_cover_desc">External‑screen only: Fold/Unfold · Dual‑Screen Mode · One‑Tap Cast · Adaptive Rotation</string>
+    <!-- Desktop Widgets -->
+    <string name="widget_panel_title">Dual-Screen Quick Panel</string>
+    <string name="widget_panel_desc">Two buttons: Fold/Unfold Toggle · Dual-Screen Mode</string>
+    <string name="widget_panel_cover_title">Dual-Screen Quick Panel (Cover Screen)</string>
+    <string name="widget_panel_cover_desc">Cover screen exclusive: Fold/Unfold · Dual-Screen Mode · One-Tap Cast · Adaptive Rotation</string>
     <string name="widget_btn_fold">Fold/Unfold\nToggle</string>
-    <string name="widget_btn_dual">Dual‑Screen Mode</string>
+    <string name="widget_btn_dual">Dual-Screen Mode</string>
     <string name="widget_btn_sync">Adaptive Rotation</string>
-    <string name="widget_btn_cast">One‑Tap Cast</string>
+    <string name="widget_btn_cast">One-Tap Cast</string>
     <string name="widget_btn_lock">Lock Landscape</string>
 
-    <!-- Slot machine widget. The three icons are app icons from the user's installed apps; a "seven" icon is added as an easter egg. -->
+    <!--
+      Slot machine widget. The "patterns" in the three slots are icons of installed apps on the phone —
+      each spin picks a few from the icon library (AppIconLib), plus a "7" as an easter egg;
+      how the pool is drawn is defined in SlotPool,
+      so these two descriptions only describe the gameplay and do not list pool contents.
+      The stats string uses positional parameters: if the order of the three numbers changes it will break, do not revert to %d.
+    -->
     <string name="widget_slot_title">Slot Machine</string>
-    <string name="widget_slot_desc">Three‑slot lever gives points; tap the counter to turn them into three quick buttons</string>
-    <string name="widget_slot_cover_title">Slot Machine (External)</string>
-    <string name="widget_slot_cover_desc">External‑screen only: Slot points, counter can become three quick buttons</string>
+    <string name="widget_slot_desc">Spin the 3-slot lever to score points; tap the score counter to switch to three shortcut buttons</string>
+    <string name="widget_slot_cover_title">Slot Machine (Cover Screen)</string>
+    <string name="widget_slot_cover_desc">Cover screen exclusive: Spin for points; score counter can switch to three shortcut buttons</string>
     <string name="widget_slot_idle">—</string>
-    <string name="widget_slot_ready">Tap the right‑hand lever to start</string>
-    <string name="widget_slot_stats">Shaken %1$d times · Double %2$d · Triple %3$d</string>
+    <string name="widget_slot_ready">Tap the lever on the right to spin</string>
+    <string name="widget_slot_stats">Spun %1$d times · Double %2$d · Triple %3$d</string>
     <string name="widget_slot_double">Double!</string>
     <string name="widget_slot_triple">Triple!!</string>
     <string name="widget_slot_none">Almost</string>
     <string name="widget_slot_lever">Lever</string>
     <string name="widget_slot_score">Score</string>
-    <string name="widget_slot_win">Won!</string>
-    <string name="widget_slot_btn_hint">Tap a cell for function · Tap lever to set</string>
+    <string name="widget_slot_win">Jackpot!</string>
+    <string name="widget_slot_btn_hint">Tap slot for function · Tap lever for settings</string>
     <string name="widget_slot_ran">Executed: %1$s</string>
-    <string name="widget_slot_cfg_title">Slot Machine Quick Config</string>
-    <string name="widget_slot_cfg_hint">Three slots each hold a toggle‑type function; tap a slot to execute its action.</string>
+    <string name="widget_slot_cfg_title">Slot Machine Shortcuts</string>
+    <string name="widget_slot_cfg_hint">Assign a toggle function to each of the three slots; tap a slot to execute its action.</string>
     <string name="widget_slot_cfg_row">Slot %1$d: %2$s</string>
-    <string name="widget_slot_cfg_pick">Assign to slot %1$d</string>
+    <string name="widget_slot_cfg_pick">Select action for slot %1$d</string>
     <string name="widget_slot_cfg_none">(Not set)</string>
+
+    <!-- ===== \"Custom Actions\" Cover Screen Widget (2×2 four slots, pick what to assign to each slot) ===== -->
+    <string name="widget_custom_cover_title">Custom Actions</string>
+    <string name="widget_custom_cover_desc">Cover screen exclusive: Four buttons each assigned an action, pick whatever you like</string>
+    <string name="widget_custom_empty">＋</string>
+    <string name="widget_custom_cfg_title">Custom Actions · Settings</string>
+    <string name="widget_custom_cfg_hint">Four buttons each assigned an action, tap a slot to execute. Tap an empty slot to configure.</string>
+    <string name="widget_custom_cfg_row">Button %1$d: %2$s</string>
+    <string name="widget_custom_cfg_pick">Select action for button %1$d</string>
+
+    <!--
+      ===== Dialog shown when opening the app for the first time =====
+      Keep only the "Adaptive Rotation" warning, which is easiest to toggle by mistake and causes users to think the app is broken;
+      other features have their own ⓘ dialogs.
+      The body text was given by the user (2026-09-27); keep as-is, do not add more feature lists.
+    -->
+    <string name="info_app_intro">Adaptive Rotation automatically rotates the inner screen orientation based on the app\'s portrait/landscape state, designed for handheld portable monitors.\n\nThe display may rotate by 90 degrees overall; do not enable on fixed-orientation monitors.</string>
+
+    <!-- ===== \"Phone Status\" Cover Screen Widget (2×2 read-only: Battery / CPU Temp / RAM / Storage) ===== -->
+    <string name="widget_status_cover_title">Phone Status</string>
+    <string name="widget_status_cover_desc">Cover screen exclusive: Battery, CPU temperature, RAM usage, storage usage</string>
+
+    <!--
+      Cover screen launcher (v2.18.8). Naming rules: widget_* strings are "names/descriptions shown when pinning to desktop",
+      launcher_* other strings are its own UI text.
+      ⚠ Do not write comparison phrasing like "no need to install Good Lock anymore" — the user knows the context, no need to mention it in the UI.
+    -->
+    <string name="launcher_widget_name">Cover Screen Launcher</string>
+    <string name="launcher_widget_desc">App launcher for the cover screen: icon grid, tap to launch directly on that screen</string>
+    <string name="launcher_widget_empty">No apps selected yet\nTap the gear icon on the top bar to pick some</string>
+    <string name="launcher_apps_fmt">%1$d selected</string>
+    <string name="launcher_pick_none">None selected</string>
+    <string name="launcher_title">Cover Screen Launcher</string>
+    <string name="launcher_search_hint">Search apps</string>
+    <string name="launcher_clear">Clear</string>
+    <string name="launcher_clear_confirm">Remove all checked apps from the launcher?</string>
+    <string name="launcher_done">Done</string>
+    <string name="launcher_picked">Selected</string>
+    <string name="launcher_config">Open Settings</string>
+    <!-- "Import" = batch import apps already picked by the user from the MultiStar/Good Lock cover screen widget whitelist.
+         Do not mention third-party app names, only say "the list already present in the system". -->
+    <string name="launcher_import">Import</string>
+    <string name="launcher_import_confirm">Detected an existing cover screen app list in the system (%1$d apps). Import this list?\n\nImporting will overwrite currently selected apps.</string>
+    <string name="launcher_import_none">No importable list found. This device might not have used the system\'s built-in cover screen launcher widget.</string>
+    <string name="launcher_import_done">Imported %1$d apps</string>
+    <string name="launcher_import_fail">Failed to read app list; ensure Shizuku is authorized</string>
+
+    <!-- Four icons on the toolbar (content descriptions; tapping sort cycles through options, tap the green one to see current sort mode) -->
+    <string name="launcher_search">Search apps</string>
+    <string name="launcher_sort">Change Sort</string>
+    <string name="launcher_look">Appearance</string>
+    <string name="launcher_photo">Background Image</string>
+    <string name="launcher_close">Close</string>
+
+    <!-- Background image menu items and prompts -->
+    <string name="launcher_photo_change">Change Image</string>
+    <string name="launcher_photo_remove">Remove Background Image</string>
+    <string name="launcher_photo_saving">Processing image…</string>
+    <string name="launcher_photo_done">Background image set</string>
+    <string name="launcher_photo_removed">Background image removed</string>
+    <string name="launcher_photo_fail">Unable to read this image, please try another</string>
+
+    <!-- Sorting mode names. Shared across 3 places: config page picker, toast after tapping sort icon. -->
+    <string name="launcher_sort_manual">Manual Order</string>
+    <string name="launcher_sort_name">By Name</string>
+    <string name="launcher_sort_usage">By Most Used</string>
+    <string name="launcher_sort_now">Sort: %1$s</string>
+
+    <!-- Appearance panel -->
+    <string name="launcher_look_cols">Columns per row</string>
+    <string name="launcher_look_cols_fmt">%1$d</string>
+    <string name="launcher_look_icon">Icon Size</string>
+    <string name="launcher_look_gap">Row Spacing</string>
+    <string name="launcher_look_label">App Name</string>
+    <string name="launcher_size_small">Small</string>
+    <string name="launcher_size_mid">Medium</string>
+    <string name="launcher_size_large">Large</string>
+    <string name="launcher_gap_tight">Compact</string>
+    <string name="launcher_gap_mid">Standard</string>
+    <string name="launcher_gap_loose">Spacious</string>
+    <string name="launcher_label_show">Show</string>
+    <string name="launcher_label_hide">Hide</string>
+
+    <!--
+      Appearance bar third row: Icon shape + Background opacity.
+
+      ⚠ These capsules directly display percentages (launcher_alpha_fmt), do not write "Light / Medium / Heavy" —
+        for semi-transparent backgrounds, "high transparency" is ambiguous (more transparent or more opaque?); a number is unambiguous.
+        The four levels are in LauncherPrefs.ALPHA_CHOICES; changing levels requires changing drawables together.
+      ⚠ The default for "Icon shape" is **Circle** (reasons documented in LauncherPrefs.iconShape),
+        so the "Circle" entry here is not merely optional decoration.
+    -->
+    <string name="launcher_look_shape">Icon Shape</string>
+    <string name="launcher_look_alpha">Opacity</string>
+    <string name="launcher_shape_app">Original</string>
+    <string name="launcher_shape_round">Rounded</string>
+    <string name="launcher_shape_circle">Circle</string>
+    <string name="launcher_alpha_fmt">%1$d%%</string>
+
+    <!-- Search page -->
+    <string name="launcher_search_title">Search Apps</string>
+    <string name="launcher_search_idle">Type a few letters to search</string>
+    <string name="launcher_search_empty">No matching apps found</string>
+
+    <!--
+      Config page v2.19.0 additions: Edit mode toggle, drag hint, import/export, secondary screen desktop order.
+      ⚠ Prompts must "start with a verb and end with no period" (consistent with the rest of this UI), do not write them like explanatory essays.
+    -->
+    <string name="launcher_hint_tap">Tap icon to show/hide · Long press to favorite or uninstall · Drag to sort</string>
+    <string name="launcher_hint_fav">Favorites only · Long press to favorite or uninstall · Drag to reorder</string>
+    <string name="launcher_fav">Favorites</string>
+    <string name="launcher_unfav">Unfavorite</string>
+    <string name="launcher_uninstall">Uninstall App</string>
+    <string name="launcher_uninstall_confirm">Uninstall \"%1$s\"?</string>
+    <string name="launcher_uninstall_msg">This will remove the app from your phone and clear its records from the launcher and favorites.</string>
+    <string name="launcher_uninstalling">Uninstalling \"%1$s\"…</string>
+    <string name="launcher_uninstall_done">Uninstalled \"%1$s\"</string>
+    <string name="launcher_uninstall_fail">Uninstall failed: %1$s</string>
+    <string name="launcher_uninstall_no_shizuku">Shizuku authorization required to uninstall apps</string>
+    <string name="launcher_uninstall_bad_pkg">Invalid package name, command aborted</string>
+    <string name="launcher_fav_added">Added \"%1$s\" to favorites</string>
+    <string name="launcher_fav_removed">Removed \"%1$s\" from favorites</string>
+    <string name="launcher_fav_only_on">Favorites Only</string>
+    <string name="launcher_fav_only_off">Show All Apps</string>
+    <string name="launcher_fav_count">%1$d favorites</string>
+    <string name="launcher_fav_bar">Favorites Only</string>
+    <string name="launcher_hint_drag">Release to drop · Drag to end to auto-scroll</string>
+    <string name="launcher_hint_search">Sorting disabled during search; clear search bar before dragging</string>
+    <string name="launcher_manual_on">Switched to manual order</string>
+
+    <!-- Import / Export: Two items shown when tapping "Import" on the bottom bar -->
+    <string name="launcher_io_title">App List &amp; Order</string>
+    <string name="launcher_io_sys">Import System Cover Screen List</string>
+    <string name="launcher_io_sys_sub">Import the entire existing list from the system (will overwrite current selections)</string>
+    <string name="launcher_io_export">Export Current Order to Secondary Screen Desktop</string>
+    <string name="launcher_io_export_sub">Write the current selected order to secondary screen desktop in one go; after writing, both operate independently without auto-syncing</string>
+    <string name="launcher_io_export_done">Exported order of %1$d apps to Secondary Screen Desktop</string>
+    <string name="launcher_io_export_empty">No apps selected yet, nothing to export</string>
+
+    <!-- Secondary Screen Desktop order: The 4th mode in launcher sorter, and Secondary Screen Desktop's own fallback -->
+    <string name="launcher_sort_home">Secondary Screen Desktop Order</string>
+    <string name="home_order_none">Secondary Screen Desktop does not have its own order yet — organize in launcher, then tap \"Import → Export Current Order to Secondary Screen Desktop\"</string>
+
+    <!-- Version & Updates -->
+    <string name="changelog_title">Version &amp; Updates</string>
+    <string name="changelog_back">Back</string>
+    <string name="changelog_current">Current Version</string>
+    <!-- Placeholder text next to title; actual version number is filled by MainActivity reading PackageInfo -->
+    <string name="version_entry">Changelog</string>
+
+    <!--
+      ==================== ⓘ Detail Texts ====================
+      All explanatory text in the interface is placed here, opened via "ⓘ".
+      When the user says "comments" they refer to this section, not code comments — modifying copy modifies this area.
+      Only state Function / Usage / Notes: one paragraph each, empty line between paragraphs; single paragraph ≤3~4 lines, total ≤5 paragraphs.
+      Function is stated in one sentence; Usage only lists modes/options, omit what is already self-explanatory by name, for status types just use "View";
+      Notes should be as comprehensive as possible, but each point must be concise.
+      Do not explain what adb / Shizuku / Magisk themselves are, no metaphors, no secondary emphasis,
+      and do not introduce settings items one by one here — each setting item has its own ⓘ next to it.
+      For full rules see user-level ~/.workbuddy/MEMORY.md, verify before changing.
+    -->
+    <string name="info_sync">The external screen rotates together with the phone with matching orientation, leaving no black borders after rotation. This is the core feature of this app.\n\nRequires Shizuku authorization.</string>
+
+    <string name="info_boot_mode">Determines which screen to enter on boot based on the phone\'s fold state at the time; \"Not set\" = left to the fold sensor.\n\nUses the same command set as \"Fold Mode\"; Shizuku must already be ready at the moment of boot.</string>
+    <string name="info_lock_phone">Pins the orientation of the phone\'s own screen: Lock Landscape / Lock Portrait keeps it fixed; Auto-Rotate = no interference.\n\nOnly controls the phone\'s inner screen, not the external screen — the external screen always follows the phone\'s physical orientation.\n\nWhen re-enabling \"Auto-rotate\" in the system quick settings dropdown, this will automatically follow back to auto mode.</string>
+
+
+    <string name="info_fix_to_user">The external screen ignores orientation requested by the app itself and only rotates according to the phone\'s physical orientation.\n\nOnly appears when phone orientation is locked. If an app displays in the wrong orientation on the external screen, try enabling this.</string>
+
+    <string name="info_calib">When the external screen image orientation is incorrect, tap 0° / 90° / 180° / 270° one by one to see which angle displays correctly, then enter it into \"Lock Portrait To / Lock Landscape To\" above.\n\n\"Restore System Auto-Rotate\" = hand the external screen back to the system to manage.</string>
+
+    <string name="info_repair">When the external screen image is shifted overall and only a corner remains on screen, tap once to restore immediately.\n\nNormally not needed — the app rearranges automatically after connecting a screen, folding, or unfolding.</string>
+
+
+    <string name="info_res_fields">Modify the phone inner screen resolution to match the aspect ratio of the inner and outer screens, eliminating black borders or stretching.\n\nEnter as \"Width × Height\", oriented based on the external screen standing upright — a 1920×1080 landscape panel should be entered as 1080×1920. Leave DPI empty or enter 0 = keep unchanged.\n\n\"Inner Screen Resolution Override\" is an independent toggle; applied immediately upon enabling.</string>
+
+    <string name="info_refresh_rate">Sets upper and lower bounds for inner screen refresh rate, replacing system adaptive behavior: entering 120 for both locks at 120Hz; entering 60 for both locks at 60Hz. \"Return to System\" deletes these values and returns control to the system.\n\n⚠ Rates exceeding 60Hz only take effect when the inner screen is detected; when closed, the cover screen is active and only supports 60Hz.</string>
+
+    <string name="info_res_automatch">Reads native pixel dimensions of the external screen panel, converts them to portrait, and automatically fills them into the input fields above.</string>
+
+    <string name="info_res_timing">Resolutions applied via \"Apply Now\" are manually set and won\'t be cleared automatically upon disconnecting or rebooting; those applied via connect prompt or auto-apply are restored upon disconnecting.\n\nIf similar apps like SecondScreen are installed, please set them to manual mode — two sources writing display parameters simultaneously causes display misalignment.</string>
+
+    <string name="info_fold">App takes over fold state: content transfers to cover screen when folded, returns to inner screen when unfolded. \"Restore Auto\" = return control to fold sensor.\n\nRequires Shizuku authorization. To keep both inner and outer screens lit simultaneously with the cover screen acting as an interactive secondary desktop, use \"Launch Dual-Screen Mode\" in the \"Dual-Screen\" tab.</string>
+
+    <string name="info_shizuku">Some features require adb or root permissions. adb uses Shizuku: authorize this app in Shizuku and keep it running; root uses Magisk.</string>
+
+    <string name="info_realtime">Current values of screen parameters and permissions for this app.</string>
+
+    <string name="dual_about_mode">About Dual-Screen Mode</string>
+    <string name="info_onekey">Switches to concurrent dual screens and projects a secondary desktop to the cover screen (complete with clock, battery, and app icons). Tap icons on the cover screen to open apps on that display.\n\nSystem built-in concurrency only lights up the cover screen with an empty idle interface. Requires Shizuku authorization.</string>
+
+
+
+    <string name="info_launcher">An app grid on the cover screen; tap icons to open directly on that screen without unfolding your phone first.\n\nPin it to the cover screen in \"Settings → Cover Screen\" (see next note); tap gear on toolbar to enter settings. App launching and uninstallation both use Shizuku.</string>
+
+    <string name="info_launcher_page">Cover Screen Launcher config page: pick apps, arrange order, adjust appearance. Changes reflect immediately on the cover screen grid.\n\nTap icon = add or remove, top-left is favorites; long-press icon to favorite or uninstall, drag directly to reorder, which automatically switches to manual order.\n\nTop bar image icon sets background image; once set, both config page and widget update. \"Opacity\" adjusts darkness of the black overlay on top of the image. Icon shape must be set to \"Circle\" to unify all icons.\n\nNote: Uninstalling apps requires Shizuku.</string>
+    <string name="info_launcher_pin">You need to pin this widget on the cover screen yourself once.\n\nIn \"Settings → Cover Screen\", check \"Cover Screen Launcher\" (may be labeled \"Widgets\" or \"Cover Screen Apps\"), close the phone, swipe to the widget page on the cover screen; if not visible, tap \"+\" on the page, select it from the list, and drag to place it.\n\nPin once: checking or unchecking apps in the config page will automatically update this grid afterwards.</string>
+
+    <string name="info_profile">Remembers parameters for each external monitor by screen identity, automatically applying them next time this display is recognized.\n\n\"Save Current Screen Settings\" = save current configuration. Matching uses screen identity rather than port number, so it is recognized even when plugged into a different port.\n\n\"Orientation Sync\" and \"Auto-Rotate\" are only recorded and won\'t be toggled for you upon connecting; \"Prompt on Screen Connect\" and \"Auto-Restore on Disconnect\" similarly are not saved per-screen.</string>
+
+    <!-- ==================== Beta Features Page (info_beta_* below) ==================== -->
+    <string name="info_beta_intro">Experimental features centered around the cover screen; details may change at any time. Most require Shizuku permissions.\n\nSecondary screen and dual-screen contents have been moved to the \"Dual-Screen\" tab on the main interface.</string>
+    <string name="info_beta_sub">Projects secondary screen desktop (a full page of app grid) onto the cover screen.\n\nOnly casts content without switching the phone into dual-screen mode; current active screen and fold state remain untouched. Secondary screen refers to the cover screen; requires Shizuku to be active.</string>
+    <string name="info_dex">Opens Samsung DeX desktop on the portable monitor when connected, while the phone itself operates normally.\n\nThe system does not expose a third-party API to \"open DeX\"; this uses a community-wide method whose success depends on the system; the exact command-line output is displayed below.\n\nMust connect portable screen first; some system versions reject this citing \"root required\", in which case you must use the system\'s built-in entry point.</string>
+    <string name="info_beta_ext">Force override for the folded cover screen: resolution, DPI, and display orientation.\n\n\"Apply Override\" takes effect, \"Restore Default\" resets to native panel values.\n\nDeviating too far from native values causes screen stretching or clipping.</string>
+    <string name="info_beta_cover_res">Logical resolution and DPI for the cover screen. Enter numbers for both width and height; leave DPI blank to keep unchanged.\n\nThe screen flashes momentarily upon applying, which is normal.</string>
+    <string name="info_beta_preset">Save frequently used resolutions as presets. Tap a row = apply parameters; long-press a row = delete; top-right can add or restore factory presets.\n\nUp to 12 presets stored.</string>
+    <string name="info_beta_rotate">Force rotate the cover screen to a specified orientation.\n\n\"Rotate 90°\" cycles through 0°→90°→180°→270°, returning to origin after four rotations; \"Clear Fixed Angle\" unpins fixed angle and returns control to system.</string>
+    <string name="info_cover_autorot">Cover screen content does not rotate with phone orientation by default; this toggle enables automatic rotation.\n\nOn: Phone held sideways, cover screen rotates accordingly, returning upright when turned back. Off: Restores original orientation.\n\nNote: Relies on Shizuku for rotation commands; Accessibility service must be running; independent of inner screen \"Auto-Rotate\".</string>
+    <string name="info_beta_cmd">Connect physical keys and custom commands here: after selecting key and action, tap button on card to complete connection in system settings.\n\nManage custom commands in the card below.</string>
+    <string name="info_beta_key">Bind actions to physical keys: Power button uses system \"Digital Assistant\", volume keys use Accessibility service.\n\nSelect key to configure first, tap \"Select Action\" to pick an action, then follow page prompts to complete setup in system. Volume key action list includes \"None\" to unbind actions.\n\nNote: Only one Digital Assistant can be active; setting this replaces the previous one.</string>
+    <string name="info_beta_custom">Saved commands appear in the \"Side Key Actions\" action list and can be assigned to keys.\n\nNote: Commands run as shell identity; capabilities depend on permissions granted to Shizuku.</string>
+    <string name="info_beta_external">Fill in action below, include action_key in parameters.\n\nOnly the built-in actions listed below are supported; custom commands should be entered as custom:&lt;id&gt;, where id is shown to the right of command name.</string>
+
+    <!-- ==================== Gesture Enhancements (v4.2) ==================== -->
+
+    <string name="info_edge_cutout">Extends each app\'s display into the camera cutout safe area so the system no longer overlays a black bar.\n\nTap once to dispatch to all installed apps; hundreds of packages take 10-20 seconds, during which progress is shown below; apps must be relaunched to take effect.\n\nNote: Executed via Shizuku; may fail across system updates.</string>
+
+    <string name="info_cover_recents">When closed, swipe up from bottom center of cover screen, pause briefly and release to open Recent Tasks; release immediately to return home, swipe down or horizontally to cancel.\n\nRequires Accessibility service; turning off toggle or disconnecting Accessibility removes gesture bar immediately.</string>
+
+    <string name="info_cover_sidebar">Triggers on release; does nothing if unselected. Panel keeps as many items as checked, order matches the four rows; three animation styles with identical functions.\n\nNote: Notifications require separate \"Notification Access\", distinct from Accessibility; touches on the trigger strip are intercepted, requires Accessibility service to attach.</string>
+
+    <string name="info_inner_gesture">Swipe inward from left/right edges = Back, swipe up from bottom = Home, swipe up and hold = Recents.\n\nNote: Bottom-left and bottom-right corners ignore gestures in landscape to prevent palm accidental touches while gaming; entire edge is active in portrait. Edge touches are briefly captured; non-inward swipes are returned immediately to underlying app; requires Accessibility service, works best paired with \"Hide 3-Button Navigation\".</string>
+
+    <string name="info_nav_immersive">Hides 3-button navigation bar on both desktop and cover screen simultaneously, freeing screen bottom for custom full-screen gestures.\n\nNote: Writes system settings via Shizuku; users with Good Lock installed must first turn off \"Show and hide button\" in NavStar, otherwise it will revert. Swiping up from bottom after hiding still brings it up briefly.</string>
+
+    <!-- Checkbox on explanation dialog when entering "Beta Labs" for the first time -->
+    <string name="beta_intro_dont_show">Do not show again</string>
+
+    <!-- Static shortcut names. Displayed on launcher long-press icon and Routine "App shortcuts". -->
+    <string name="qa_toggle_fold_short">Toggle Fold</string>
+    <string name="qa_toggle_fold_long">Toggle Fold / Unfold</string>
+    <string name="qa_cover_home_short">Cover Home</string>
+    <string name="qa_cover_home_long">Switch to folded and return to cover home</string>
+    <string name="qa_cover_rotate_short">Rotate Cover</string>
+    <string name="qa_cover_rotate_long">Rotate cover screen 90° clockwise</string>
+    <string name="qa_cover_rotate_reset_short">Reset Cover</string>
+    <string name="qa_cover_rotate_reset_long">Restore cover screen auto-rotate</string>
+
+    <!--
+      Accessibility Service: Text displayed on toggle in system settings (changed in v2.19.3).
+      ⚠ This uses **the service\'s own android:label** (service@android:label in AndroidManifest),
+      the accessibility list only renders this label, **not the app name** —
+      so it MUST start with the "app name", otherwise users searching by app name in the list won\'t find it,
+      thinking it belongs to another app (which caused issues in v2.19.2).
+    -->
+    <string name="a11y_service_label">Z Flip Portable Screen Extension (Beta Labs)</string>
+    <string name="a11y_volume_desc">When enabled, long-press volume up or down to trigger cover screen shortcuts. Short presses are unaffected; long press is unaffected if no action is assigned to that side.</string>
+
+    <!--
+      ==================== Secondary Screen Page Names (v4.0) ====================
+
+      These are names of **pseudo-apps**: only appear on Secondary Screen Desktop (SecondaryHomeActivity),
+      not searchable in the system, nor present in Cover Screen Launcher (widgets / config / search)
+      — see comments in AppRepo.pseudoItems.
+      ⚠ After secondary remote (deleted in v4.18) and secondary keyboard (removed from desktop since v4.18), only secondary touchpad remains.
+      Unified naming: "Secondary Screen xxx", matching "Secondary Screen Desktop".
+    -->
+    <string name="ext_pad_title">Secondary Screen Touchpad</string>
+    <string name="ext_key_title">Secondary Screen Keyboard</string>
+    <!--
+      Cast Control (v3.16). Intentionally does not follow "Secondary Screen xxx" pattern —
+      "Cast" already implies projecting onto secondary screen, adding a prefix makes it redundant;
+      also four characters (in Chinese) align neatly in grid.
+    -->
+    <string name="ext_cast_title">Cast Control</string>
+
+    <!--
+      Status Showcase (v4.28). Named "Showcase" rather than "Panel / Monitor" —
+      it displays a whole screen of telemetry readings, not just one or two numbers; "Showcase" fits better.
+    -->
+    <string name="ext_status_title">Status Showcase</string>
+
+    <!--
+      Secondary Screen Player (v472). Follows "Secondary Screen xxx" naming, grouped with touchpad / desktop;
+      ⚠ Intentionally not called "Music Player" — it does not play audio itself, only takes over whatever is playing in the system.
+    -->
+    <string name="ext_player_title">Secondary Screen Player</string>
+
+    <!-- ⓘ for pseudo-app toggles in Beta Labs → "Secondary Screen Management" -->
+    <string name="info_pseudo">Determines which pseudo-apps appear on the secondary screen desktop.\n\nPseudo-apps are our own internal pages, not real apps: pinned only to the front of the secondary desktop grid, absent from system, cover launcher, and search.</string>
+
+    <string name="info_ext_status" formatted="false">A real-time status panel on the secondary screen: CPU usage with past 1-minute graph, temperature, RAM, cluster frequencies, main screen refresh rate, with time and battery on the top bar.\n\nNo Shizuku or extra permissions required; this page keeps screen on as an always-on dashboard.\n\nColors reflect readings: turns yellow at 50% usage / 45°C temp, turns red at 80% usage / 60°C temp.</string>
+
+    <!-- Text on "Secondary Screen Player" page -->
+    <string name="player_idle_title">No music playing</string>
+    <string name="player_idle_hint">Play any song on your phone and this page will follow and display it.</string>
+    <string name="player_need_access">\"Notification Access\" required to read media player.</string>
+    <string name="player_lyric_loading">Loading lyrics…</string>
+    <string name="player_lyric_none">No lyrics available</string>
+    <string name="player_prev">Previous</string>
+    <string name="player_play">Play / Pause</string>
+    <string name="player_next">Next</string>
+
+    <!-- Top bar for 3 pages and touchpad bottom bar -->
+    <string name="ext_close">Close</string>
+    <string name="ext_finding">Reading screen info…</string>
+    <string name="ext_no_screen">Cannot read screen info: verify Shizuku is running and authorized</string>
+    <string name="ext_self_target">Target screen is the current screen, command ignored</string>
+    <string name="ext_title_none">%1$s · Screen unavailable</string>
+    <string name="ext_title_fmt">%1$s · Inner Screen %2$s</string>
+    <string name="ext_title_inner">%1$s · Inner Screen</string>
+    <string name="ext_title_dev">%1$s · %2$s %3$s</string>
+    <string name="dev_inner">Inner Screen</string>
+    <string name="dev_cover">Cover Screen</string>
+    <string name="dev_external">External Screen</string>
+
+    <!-- Touchpad -->
+    <string name="ext_sens">Sensitivity</string>
+    <string name="ext_sens_btn">%1$.1f×</string>
+    <string name="ext_pad_center_hint">Slide blindly to move — cursor is on inner screen</string>
+    <string name="ext_pad_info_fmt">Cursor %1$d, %2$d　·　Target %3$d×%4$d　·　%5$s</string>
+    <!-- Injection channel: Accessibility gesture (fast, responsive) or Shizuku + input (slow, queued).
+         Displayed on bottom right of panel so users immediately know "why it is lagging". -->
+    <!-- Touch channel (v3.20): Direct = Shizuku Binder instant dispatch (preferred);
+         Gesture = Accessibility dispatchGesture (queued); Input = input command (47ms each). -->
+    <string name="ext_path_direct">Direct</string>
+    <string name="ext_path_gesture">Gesture</string>
+    <string name="ext_path_input">Input</string>
+    <string name="ext_pad_no_target">Cannot read inner screen info, check if Shizuku is running</string>
+    <string name="ext_pad_need_overlay">Missing \"Display over other apps\" permission, cannot draw cursor on inner screen</string>
+    <string name="ext_pad_cursor_fail">Cursor failed to attach: check overlay permission or reopen this page later</string>
+    <string name="ext_grant">Grant Permission</string>
+    <string name="ext_flash_tap">Tap %1$d, %2$d</string>
+    <string name="ext_flash_hold">Long Press %1$d, %2$d</string>
+    <string name="ext_flash_drag">Drag %1$d,%2$d → %3$d,%4$d</string>
+    <string name="ext_flash_scroll">Scroll %1$d</string>
+    <string name="ext_flash_page_next">Page → Next Screen</string>
+    <string name="ext_flash_page_prev">Page → Previous Screen</string>
+    <!-- When accessibility is off, touch falls back to slow input path (spawns process and awaits target screen response for each event).
+         Prompt directs user on "how to make it faster", tapping opens system accessibility settings. -->
+    <string name="ext_pad_need_a11y">⚠ Touch running on slow path · Tap here to enable Accessibility (or connect Shizuku) for smooth dragging</string>
+    <string name="ext_pad_a11y_toast">Find \"Z Flip Portable Screen Extension\" in list and turn on toggle; check Shizuku as well</string>
+    <string name="ext_page_prev">◀ Page</string>
+    <string name="ext_page_next">Page ▶</string>
+    <string name="ext_flash_sens">Sensitivity %1$.1f×</string>
+    <string name="ext_click">Tap</string>
+    <string name="ext_hold">Long Press</string>
+    <string name="ext_back">Back</string>
+    <string name="ext_home">Home</string>
+    <!-- Operating hint at bottom of touchpad (single line, detailed explanation in ⓘ) -->
+    <string name="ext_pad_hint">Slide = Move cursor · Tap = Click · Hold = Long press · Hold &amp; Drag = Drag · Two fingers up/down = Scroll · Two fingers left/right = Page</string>
+
+    <!--
+      ==================== Cast Control (v3.16) ====================
+
+      This page casts inner screen to current screen, touch is mapped and injected directly into inner screen coordinates.
+      Top/bottom bar text matches touchpad (ext_close / ext_back / ext_home reused).
+    -->
+    <string name="cast_start">Start Casting</string>
+    <!-- Fullscreen (v4.31): Allocates entire screen to video. One-way — controls hidden after fullscreen, exit via screen\'s back gesture -->
+    <string name="cast_full">Fullscreen</string>
+    <string name="cast_exit_full">Exit Fullscreen</string>
+    <!--
+      Two checkboxes (v3.20). Placed beside the button, not crowded into top bar (cover screen top bar is already tight).
+      "Resize" = adjust inner screen aspect ratio to match cast frame before casting, filling screen without black bars;
+      "Zoom" = allow two-finger pinch to zoom for more precise taps (touchpad doesn\'t need this, so cast page only).
+    -->
+    <string name="cast_opt_resize">Reset Inner Resolution</string>
+    <string name="cast_opt_zoom">Allow Zoom</string>
+    <!-- Checking "Resize" while casting is already active: dimensions are locked when virtual display is created, cannot change mid-session -->
+    <string name="cast_opt_resize_late">\"Reset Inner Resolution\" takes effect on next cast start (frame dimensions are locked upon casting)</string>
+    <string name="cast_stop">Stop</string>
+    <string name="cast_idle">Tap \"Start Casting\" and the inner screen will appear here</string>
+    <string name="cast_preparing">Preparing…</string>
+    <string name="cast_state_idle">Not Casting</string>
+    <!-- Status row: Inner screen dimensions → Cast to current screen, followed by injection path -->
+    <string name="cast_state_fmt">Inner %1$s · %2$s</string>
+    <!-- Injection channel (v3.19): Direct = Shizuku Binder instant dispatch; Input = input command, 47ms each -->
+    <string name="cast_path_direct">Direct</string>
+    <string name="cast_path_input">Input</string>
+    <string name="cast_no_target">Cannot read inner screen info, verify Shizuku is running</string>
+    <string name="cast_no_shizuku">Shizuku authorization required: unable to read inner screen dimensions, taps will misalign</string>
+    <!--
+      Explanation when Shizuku is missing (v3.16).
+      System permission dialog is unreachable on secondary screen (layout based on inner screen, buttons fall offscreen),
+      so without Shizuku casting cannot start on secondary screen — rather than leaving user stuck on "Preparing…",
+      tell them directly which screen to tap on.
+    -->
+    <string name="cast_no_shizuku_dialog">Shizuku not connected, must use system dialog — which is unreachable on secondary screen; please tap \"Start Casting\" on the inner screen instead</string>
+    <string name="cast_denied">Cast permission denied (permission cancelled or rejected)</string>
+    <string name="cast_stopped">Casting stopped</string>
+    <string name="cast_fail">Casting failed to start: %1$s</string>
+    <string name="cast_tap_target_off">⚠ Inner screen is off, cast shows black screen — unfold phone first</string>
+    <string name="cast_hint">Tap / drag directly on screen · Pinch with two fingers to zoom when \"Allow Zoom\" is checked</string>
+    <string name="cast_recent">Recents</string>
+    <!-- ⓘ Body: Function / Usage / Notes -->
+    <string name="cast_info">Operate phone inner screen even when closed or using only this screen: casts display onto this screen with direct tapping and dragging.\n\nConnect Shizuku, then tap \"Start Casting\".\n\"Fullscreen\" fills current screen; check \"Reset Inner Resolution\" to truly eliminate black bars. Controls are hidden in fullscreen; swipe down from top of screen to exit.\n\nNotes:\n· Cast permission must be granted every time; without Shizuku the dialog cannot be reached on secondary screen and must be granted on inner screen.\n· Casting displays black if inner screen is off (e.g. phone closed).\n· Opening this page on inner screen mirrors itself and will automatically move to the other screen.\n· \"Reset Inner Resolution\" temporarily changes inner screen resolution and restores it upon stopping; if app is force-closed, tap restore under \"Inner Screen Resolution\" in main interface.\n· Single-finger tapping remains accurate after zooming; introducing a second finger ignores the tap to avoid misclicks.\n· Sidebar and gesture bars on cover screen are temporarily hidden during fullscreen and return upon exit.</string>
+
+    <!-- Secondary Screen Keyboard -->
+    <string name="ext_key_state_idle">Tap input field on inner screen first, then return here to type</string>
+    <string name="ext_key_state_fmt">Inner %1$s</string>
+    <string name="ext_key_hint">Type text to send here</string>
+    <string name="ext_send">Send</string>
+    <string name="ext_enter">Enter</string>
+    <string name="ext_backspace">Backspace</string>
+    <string name="ext_clear">Clear</string>
+    <string name="ext_space">Space</string>
+    <string name="ext_tab">Tab</string>
+    <string name="ext_esc">Esc</string>
+    <string name="ext_key_mode_auto">Mode: Auto</string>
+    <string name="ext_key_mode_text">Mode: Direct Input</string>
+    <string name="ext_key_mode_clip">Mode: Clipboard</string>
+
+
+    <string name="info_ext_pad">Use cover screen as laptop touchpad, cursor displayed on target screen; blind swiping on panel without looking.\n\nTap = Click, hold 0.55s = Long press, hold &amp; slide = Drag, two-finger vertical swipe = Scroll, two-finger horizontal swipe = Page.\n\nNote: Injection prioritizes Shizuku, falls back to alternative paths if unavailable.</string>
+    <string name="info_ext_pad_overlay">Cursor is an overlay window on inner screen requiring \"Display over other apps\" permission.\n\nPath: System Settings → Apps → This App → Display over other apps (some systems place under \"Special app access\").\n\nYou can still enter this page without it, but cursor won\'t appear.</string>
+    <string name="info_ext_key">Type on cover screen to send text to cursor position in inner screen app.\n\nTap input field on inner screen first, return here to type, then tap \"Send\". Non-ASCII and emojis paste via clipboard; pure English and numbers type directly.\n\nNote: Unfocused input fields on inner screen cannot receive text; \"Send\" transmits entire content in text box, then clears.</string>
+
+    <string name="repair_title">Repair Interface</string>
+
+    <string name="info_adb_wifi">When connected to an unremembered Wi-Fi on cover screen, use this to toggle system Wireless Debugging so Shizuku can start. This button only enables, requires Accessibility permission.\n\nNote: On first enable on current network, inner screen automatically unfolds to dismiss system confirmation dialog, then refolds; subsequent connections on same network toggle directly. Automated tapping only operates during this action.</string>
+    <string name="info_qa_cast">One-step execution of \"Launch Dual-Screen Mode → Open Cast Control → Fullscreen → Start Casting\".\n\nNote: Switches dual-screen mode, affecting inner screen focus; cast permission handled upfront via Shizuku, otherwise must be granted on inner screen.</string>
+
+    <string name="info_repair_app">Run apps on cover screen at native size: normal font size, dialogs stay on-screen and tappable.\n\nApps not added can still run on cover screen, but will scale: text fluctuates in size, some dialogs render offscreen and become untappable.</string>
+
+    <string name="info_repair_list">On = Run this app on cover screen at native size.\n\nRepair All = Enable all. Reset All = Restore to list prior to this app\'s first modification; cannot reset if never modified.\n\nNote: Modifies Samsung\'s list (Settings → Cover Screen → Apps allowed on cover screen), not this app\'s own settings.</string>
+
 </resources>
