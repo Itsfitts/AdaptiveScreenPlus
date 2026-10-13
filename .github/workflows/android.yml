@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  contents: write
+
 jobs:
   build:
 
@@ -22,5 +25,28 @@ jobs:
         
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
-    - name: Build with Gradle
-      run: ./gradlew build
+    - name: Assemble Release APK
+      run: ./gradlew assembleRelease
+
+    - name: Find APK
+      id: find_apk
+      run: |
+        set -e
+        echo "Searching for APK..."
+        APK_PATH=$(find . -type f -name "*.apk" -print | head -n 1 || true)
+        if [ -z "$APK_PATH" ]; then
+          echo "No APK found" >&2
+          exit 1
+        fi
+        echo "Found $APK_PATH"
+        echo "apk=$APK_PATH" >> $GITHUB_OUTPUT
+
+    - name: Create GitHub prerelease and upload APK
+      uses: ncipollo/release-action@v1
+      with:
+        tag: v${{ github.run_number }}
+        name: "CI build v${{ github.run_number }}"
+        body: "Automated CI build — prerelease"
+        draft: false
+        prerelease: true
+        files: ${{ steps.find_apk.outputs.apk }}
