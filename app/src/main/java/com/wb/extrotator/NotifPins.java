@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Cover DisplayNotificationsPanel<b>左栏</b>那一条「常用应用」的存盘 (v4.22 起) 。
+ * 外屏通知面板<b>左栏</b>那一条「常用应用」的存盘（v4.22 起）。
  *
- * <p>以前面板底下那排「快捷启动」拿的是<b>刚发过Notifications的应用</b> —— 那跟上面那排应用筛选项
- * 本来就是同一批东西，而且点下去经常起不来 (那些应用不一定有 launcher 入口) 。现在换成
+ * <p>以前面板底下那排「快捷启动」拿的是<b>刚发过通知的应用</b> —— 那跟上面那排应用筛选项
+ * 本来就是同一批东西，而且点下去经常起不来（那些应用不一定有 launcher 入口）。现在换成
  * 用户自己挑的常用应用，点一下就是真正启动它。
  *
  * <p>存成一串逗号分隔的包名。包名里不可能出现逗号，所以不担心分隔符打架；
@@ -32,7 +32,7 @@ public final class NotifPins {
         return c.getApplicationContext().getSharedPreferences(SP, Context.MODE_PRIVATE);
     }
 
-    /** 读物: 按存的先后给 (外屏那一列就按这个次序从上往下摆)  */
+    /** 读物：按存的先后给（外屏那一列就按这个次序从上往下摆） */
     public static List<String> list(Context c) {
         List<String> out = new ArrayList<>();
         String s = sp(c).getString(KEY_PINS, "");
@@ -57,7 +57,7 @@ public final class NotifPins {
     }
 
     /**
-     * 加一个。已经在里面就直接算Success (幂等) ；满了Back false，界面那边提示一句。
+     * 加一个。已经在里面就直接算成功（幂等）；满了返回 false，界面那边提示一句。
      */
     public static boolean add(Context c, String pkg) {
         if (pkg == null || pkg.isEmpty()) {
@@ -82,7 +82,7 @@ public final class NotifPins {
         }
     }
 
-    /** 选应用那一页用: 点一下加入、再点一下拿掉 */
+    /** 选应用那一页用：点一下加入、再点一下拿掉 */
     public static void toggle(Context c, String pkg) {
         if (has(c, pkg)) {
             remove(c, pkg);

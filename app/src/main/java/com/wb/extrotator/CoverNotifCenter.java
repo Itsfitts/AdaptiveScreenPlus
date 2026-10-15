@@ -35,47 +35,47 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Cover Display「Notifications中心」—— 侧边栏划到「Notifications」那一环时弹出的那Full ScreenPanel (v4.22 重做) 。
+ * 外屏「通知中心」—— 侧边栏划到「通知」那一环时弹出的那整屏面板（v4.22 重做）。
  *
- * <p><b>这一版长什么样</b> (从上到下、从左到右) :
+ * <p><b>这一版长什么样</b>（从上到下、从左到右）：
  * <pre>
- *   Notifications · N 条                                   全部清除
- *   [WiFi][数据][Bluetooth][Rotation][手电][勿扰][飞行]...  ＋  ×
+ *   通知 · N 条                                   全部清除
+ *   [WiFi][数据][蓝牙][旋转][手电][勿扰][飞行]…  ＋  ×
  *   ┌──┬───────────────────────────────────────┐
- *   │Image│ [全部][微信][QQ] ...                     │  ← 按应用筛
- *   │Image│ 标题                            12:30  │
- *   │Image│ 正文...                                  │
- *   │＋│ ...                                      │
+ *   │图│ [全部][微信][QQ] …                     │  ← 按应用筛
+ *   │图│ 标题                            12:30  │
+ *   │图│ 正文…                                  │
+ *   │＋│ …                                      │
  *   └──┴───────────────────────────────────────┘
  * </pre>
  *
- * <p><b>跟旧版的三处不同</b>:
+ * <p><b>跟旧版的三处不同</b>：
  * <ol>
- *   <li>铺满Full Screen (旧版是个留 5dp 边距的"超级大弹窗") ，底板不透明；</li>
- *   <li>左栏改成<b>用户自己挑的常用应用</b> ({@link NotifPins}) ，点一下真的把它启到外屏；
- *       旧版那排「快捷启动」拿的是"刚发过Notifications的应用"—— 跟上面那排筛选项本来就是同一批，
+ *   <li>铺满整屏（旧版是个留 5dp 边距的"超级大弹窗"），底板不透明；</li>
+ *   <li>左栏改成<b>用户自己挑的常用应用</b>（{@link NotifPins}），点一下真的把它启到外屏；
+ *       旧版那排「快捷启动」拿的是"刚发过通知的应用"—— 跟上面那排筛选项本来就是同一批，
  *       而且那些应用不一定有启动入口，所以经常点了没反应；</li>
- *   <li>顶上多一排<b>QuickOnOff</b> ({@link QuickSettings}) ，而且<b>这一排是用户自己排的</b> ——
+ *   <li>顶上多一排<b>快捷开关</b>（{@link QuickSettings}），而且<b>这一排是用户自己排的</b> ——
  *       点右边那个「＋」进编辑页，可增、可删、可上下调序；在那一排上长按某一格也能直接拿掉。</li>
  * </ol>
  *
  * <p>「选常用应用」不是另外弹一个对话框，而是把右半边就地切成应用列表 —— 这里的窗口是
  * {@code TYPE_ACCESSIBILITY_OVERLAY}，标准的 Dialog/AlertDialog 会落到<b>默认屏</b>
- *  (Internal Screen，用户那块屏是坏的) 上去，等于点了没反应。就地切换没有这个坑。
+ * （内屏，用户那块屏是坏的）上去，等于点了没反应。就地切换没有这个坑。
  *
  * <p>窗口是全屏的 {@code TYPE_ACCESSIBILITY_OVERLAY}，<b>吃掉全部触摸</b>，只带
  * {@code FLAG_NOT_FOCUSABLE} —— 别去碰键盘焦点。⚠ 必须显式给 {@code gravity = TOP|START}
  * 与 {@code FLAG_LAYOUT_NO_LIMITS}，否则 x/y 会变成"相对屏幕中心的偏移"、
- * Full Screen窗口还会被系统条的 inset 顶下去 (这是 v4.21b 返工过一次的坑) 。
+ * 整屏窗口还会被系统条的 inset 顶下去（这是 v4.21b 返工过一次的坑）。
  *
- * <p>数据全走 {@link CoverNotifListener} (它自己持有Notifications使用权) ，这里只读快照、只发清除；
+ * <p>数据全走 {@link CoverNotifListener}（它自己持有通知使用权），这里只读快照、只发清除；
  * 点一条优先用它的 {@code contentIntent}，没有就退成把那个应用拉起来。
  */
 public final class CoverNotifCenter {
 
     private static final String TAG = "CoverNotifCenter";
 
-    /** 面板底色。铺满Full Screen，所以用不透明的，免得底下各种Home透上来花眼 */
+    /** 面板底色。铺满整屏，所以用不透明的，免得底下各种桌面透上来花眼 */
     private static final int C_BG = 0xFF141418;
     private static final int C_TITLE = 0xF2FFFFFF;
     private static final int C_TEXT = 0x99FFFFFF;
@@ -85,20 +85,20 @@ public final class CoverNotifCenter {
     private static final int C_CHIP_ON = 0x335B9DFF;
     private static final int C_TILE = 0x14FFFFFF;
     private static final int C_TILE_ON = 0x3D5B9DFF;
-    /** OnOff没切Success时闪一下的颜色 */
+    /** 开关没切成功时闪一下的颜色 */
     private static final int C_ERR = 0xFFC2453A;
 
     private static final long ANIM_MS = 150L;
-    /** Notifications行最多摆几条 (列表本身能滚，所以给得比旧版宽)  */
+    /** 通知行最多摆几条（列表本身能滚，所以给得比旧版宽） */
     private static final int MAX_ROWS = 30;
-    /** 左栏宽度 / 格子的边长 (dp) 。用户点名"图标都做小一些" */
+    /** 左栏宽度 / 格子的边长（dp）。用户点名"图标都做小一些" */
     private static final int PIN_W = 36;
     private static final int CELL = 36;
     private static final int CELL_ICON = 30;
-    /** QuickOnOff那一格 */
+    /** 快捷开关那一格 */
     private static final int TILE = 34;
     private static final int TILE_ICON = 16;
-    /** 右上角那个「×」的边长 (v4.23 撑大了)  */
+    /** 右上角那个「×」的边长（v4.23 撑大了） */
     private static final int CLOSE = 42;
 
     private static Context displayCtx;
@@ -116,21 +116,21 @@ public final class CoverNotifCenter {
 
     private static Handler ui;
 
-    /** 只看某个应用 (null = 全部)  */
+    /** 只看某个应用（null = 全部） */
     private static String filterPkg;
-    /** 右半边现在是「选常用应用」还是「看Notifications」 */
+    /** 右半边现在是「选常用应用」还是「看通知」 */
     private static boolean picking;
-    /** 下半块现在是「挑快捷OnOff」那一页 (跟 picking 同一种就地换页的做法)  */
+    /** 下半块现在是「挑快捷开关」那一页（跟 picking 同一种就地换页的做法） */
     private static boolean editingQs;
-    /** 挑快捷OnOff那一页的列表容器 */
+    /** 挑快捷开关那一页的列表容器 */
     private static LinearLayout qsEditBox;
-    /** 选应用那一页的列表容器 (应用清单是Recents读的，读完往这里填)  */
+    /** 选应用那一页的列表容器（应用清单是后台读的，读完往这里填） */
     private static LinearLayout pickBox;
 
-    /** 应用清单缓存: 读图标是 IO，且 {@code AppRepo.load} 明确要求Recents线程，读过一次就留着 */
+    /** 应用清单缓存：读图标是 IO，且 {@code AppRepo.load} 明确要求后台线程，读过一次就留着 */
     private static volatile List<AppRepo.Item> appCache;
 
-    /** 左栏图标的位图缓存: 包名 → 位图 (值可能是 null，同样算"查过了"，免得反复读盘)  */
+    /** 左栏图标的位图缓存：包名 → 位图（值可能是 null，同样算"查过了"，免得反复读盘） */
     private static final Map<String, Bitmap> PIN_ICON_CACHE = new HashMap<>();
 
     private CoverNotifCenter() {
@@ -150,10 +150,10 @@ public final class CoverNotifCenter {
         return root != null;
     }
 
-    /** 弹出来 (已经On着就先整个重建一遍，保证是新的)  */
+    /** 弹出来（已经开着就先整个重建一遍，保证是新的） */
     static void show() {
         if (displayCtx == null || wm == null) {
-            Log.w(TAG, "No environment context, notification center cannot pop up");
+            Log.w(TAG, "还没环境，通知中心弹不出来");
             return;
         }
         if (root != null) {
@@ -179,9 +179,9 @@ public final class CoverNotifCenter {
                             | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                     PixelFormat.TRANSLUCENT);
             lp.gravity = Gravity.TOP | Gravity.START;
-            // ⚠ 还要显式「不吃任何 inset」: TYPE_ACCESSIBILITY_OVERLAY 的 fitInsetsTypes
+            // ⚠ 还要显式「不吃任何 inset」：TYPE_ACCESSIBILITY_OVERLAY 的 fitInsetsTypes
             //   默认含 systemBars，外屏顶上那条状态栏的高度就会被让出来 —— 面板看着
-            //   就是「没铺满、顶上露一条Home」 (用户截图报的正是这个) 。
+            //   就是「没铺满、顶上露一条桌面」（用户截图报的正是这个）。
             //   FLAG_LAYOUT_IN_SCREEN 管不到这里，得走这个 setter；它是 API 30 才有的。
             if (Build.VERSION.SDK_INT >= 30) {
                 lp.setFitInsetsTypes(0);
@@ -190,9 +190,9 @@ public final class CoverNotifCenter {
             root = r;
             buildContent(displayCtx);
             card.animate().alpha(1f).translationY(0f).setDuration(ANIM_MS).start();
-            Log.i(TAG, "Notification center shown: Screen " + wpx + "x" + hpx + ", Density " + density);
+            Log.i(TAG, "通知中心弹出：屏 " + wpx + "x" + hpx + "，屏密度 " + density);
         } catch (Throwable t) {
-            Log.e(TAG, "弹Notifications中心Failed", t);
+            Log.e(TAG, "弹通知中心失败", t);
             hide();
         }
     }
@@ -222,10 +222,10 @@ public final class CoverNotifCenter {
                     wm.removeViewImmediate(r);
                 }
             } catch (Throwable t) {
-                Log.w(TAG, "拆Notifications中心Failed", t);
+                Log.w(TAG, "拆通知中心失败", t);
             }
         }, ANIM_MS);
-        Log.i(TAG, "Notifications中心收起");
+        Log.i(TAG, "通知中心收起");
     }
 
     /** 侧边栏整个拆掉时调 */
@@ -245,7 +245,7 @@ public final class CoverNotifCenter {
             try {
                 wm.removeViewImmediate(r);
             } catch (Throwable t) {
-                Log.w(TAG, "拆Notifications中心Failed", t);
+                Log.w(TAG, "拆通知中心失败", t);
             }
         }
         displayCtx = null;
@@ -256,12 +256,12 @@ public final class CoverNotifCenter {
         }
     }
 
-    /** 装了 / 卸了应用之后调一次: 选常用应用那一页的清单得重读 */
+    /** 装了 / 卸了应用之后调一次：选常用应用那一页的清单得重读 */
     static void dropAppCache() {
         appCache = null;
     }
 
-    /** Notifications有变动时刷新 (没On着就什么都不做)  */
+    /** 通知有变动时刷新（没开着就什么都不做） */
     static void onNotificationsChanged() {
         if (root == null) {
             return;
@@ -279,7 +279,7 @@ public final class CoverNotifCenter {
                     buildContent(card.getContext());
                 }
             } catch (Throwable t) {
-                Log.w(TAG, "刷新Notifications中心Failed", t);
+                Log.w(TAG, "刷新通知中心失败", t);
             }
         });
     }
@@ -293,12 +293,12 @@ public final class CoverNotifCenter {
         box.setClickable(true);            // 吃掉落在空白处的触摸
         box.setPadding(dp(8), dp(5), dp(8), dp(6));
 
-        // ① 标题行: Notifications · N 条 ......................... 全部清除
+        // ① 标题行：通知 · N 条 ......................... 全部清除
         LinearLayout head = new LinearLayout(c);
         head.setOrientation(LinearLayout.HORIZONTAL);
         head.setGravity(Gravity.CENTER_VERTICAL);
 
-        TextView t = text(c, "Notifications", 13f, C_TITLE, true);
+        TextView t = text(c, "通知", 13f, C_TITLE, true);
         head.addView(t);
 
         countView = text(c, "", 10f, C_DIM, false);
@@ -307,8 +307,8 @@ public final class CoverNotifCenter {
         cp.leftMargin = dp(5);
         head.addView(countView, cp);
 
-        // 「全部清除」在标题行右端，做成一颗按钮 (有底色、撑到 30dp 高) ——
-        // 外屏手指粗，原来那行 10.5sp 的裸字既难点，也不像个能按的东西 (v4.23 用户提的)
+        // 「全部清除」在标题行右端，做成一颗按钮（有底色、撑到 30dp 高）——
+        // 外屏手指粗，原来那行 10.5sp 的裸字既难点，也不像个能按的东西（v4.23 用户提的）
         TextView clear = text(c, "全部清除", 11.5f, C_TEXT, false);
         clear.setGravity(Gravity.CENTER);
         clear.setPadding(dp(11), dp(6), dp(11), dp(6));
@@ -319,11 +319,11 @@ public final class CoverNotifCenter {
 
         box.addView(head);
 
-        // ② QuickOnOff那一排 + 「＋」+ 「×」
+        // ② 快捷开关那一排 + 「＋」+ 「×」
         //
-        // ⚠ OnOff是摆在 HorizontalScrollView 里的，所以「＋」与「×」**不能塞进滚动区** ——
-        //   塞进去它们会跟着一起滚走，OnOff一多就找不着退出按钮了。
-        //   这里再套一层横向布局: 滚动区吃掉剩下的宽度，「＋」「×」固定在右端。
+        // ⚠ 开关是摆在 HorizontalScrollView 里的，所以「＋」与「×」**不能塞进滚动区** ——
+        //   塞进去它们会跟着一起滚走，开关一多就找不着退出按钮了。
+        //   这里再套一层横向布局：滚动区吃掉剩下的宽度，「＋」「×」固定在右端。
         LinearLayout qsBar = new LinearLayout(c);
         qsBar.setOrientation(LinearLayout.HORIZONTAL);
         qsBar.setGravity(Gravity.CENTER_VERTICAL);
@@ -340,11 +340,11 @@ public final class CoverNotifCenter {
         qsBar.addView(qs, new LinearLayout.LayoutParams(
                 0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
 
-        // 「＋」＝挑快捷OnOff (增 / 删 / 调序)
+        // 「＋」＝挑快捷开关（增 / 删 / 调序）
         TextView qsAdd = text(c, "＋", 17f, C_DIM, false);
         qsAdd.setGravity(Gravity.CENTER);
         qsAdd.setBackground(chipBg(C_CHIP));
-        qsAdd.setContentDescription("挑选快捷OnOff");
+        qsAdd.setContentDescription("挑选快捷开关");
         qsAdd.setOnClickListener(v -> {
             editingQs = true;
             picking = false;
@@ -354,12 +354,12 @@ public final class CoverNotifCenter {
         ap.leftMargin = dp(6);
         qsBar.addView(qsAdd, ap);
 
-        // 「×」: v4.23 从标题行挪到这一排的最右端，并撑到 42dp 见方 —— 手指粗，
-        // 点的是控件不是字；与快捷OnOff之间留 10dp，免得一滑就误碰
+        // 「×」：v4.23 从标题行挪到这一排的最右端，并撑到 42dp 见方 —— 手指粗，
+        // 点的是控件不是字；与快捷开关之间留 10dp，免得一滑就误碰
         TextView close = text(c, "×", 26f, C_TITLE, false);
         close.setGravity(Gravity.CENTER);
         close.setBackground(chipBg(C_CHIP));
-        close.setContentDescription("Disabled");
+        close.setContentDescription("关闭");
         close.setOnClickListener(v -> hide());
         LinearLayout.LayoutParams clp = new LinearLayout.LayoutParams(dp(CLOSE), dp(CLOSE));
         clp.leftMargin = dp(10);
@@ -369,7 +369,7 @@ public final class CoverNotifCenter {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        // ③ 主体 (左栏 + Notifications，或整块换成"选应用")
+        // ③ 主体（左栏 + 通知，或整块换成"选应用"）
         body = new LinearLayout(c);
         body.setOrientation(LinearLayout.HORIZONTAL);
         box.addView(body, new LinearLayout.LayoutParams(
@@ -383,7 +383,7 @@ public final class CoverNotifCenter {
             CoverNotifListener.refreshAll();
             all = CoverNotifListener.snapshot();
         } catch (Throwable t) {
-            Log.w(TAG, "读NotificationsFailed", t);
+            Log.w(TAG, "读通知失败", t);
         }
         if (countView != null) {
             countView.setText(all.isEmpty() ? "" : ("· " + all.size() + " 条"));
@@ -398,7 +398,7 @@ public final class CoverNotifCenter {
         }
     }
 
-    // ------------------------------------------------------------------ QuickOnOff
+    // ------------------------------------------------------------------ 快捷开关
 
     private static void fillQs(Context c) {
         if (qsRow == null) {
@@ -417,8 +417,8 @@ public final class CoverNotifCenter {
     }
 
     /**
-     * 一格OnOff: 一个 34dp 的圆角方块 + 16dp Icon。
-     * On着＝蓝底白图标 (加一道细蓝边) ，Off着＝灰底灰图标。
+     * 一格开关：一个 34dp 的圆角方块 + 16dp 图标。
+     * 开着＝蓝底白图标（加一道细蓝边），关着＝灰底灰图标。
      */
     private static View qsTile(Context c, final int id) {
         boolean on = QuickSettings.isOn(c, id);
@@ -443,8 +443,8 @@ public final class CoverNotifCenter {
         box.setLayoutParams(lp);
         box.setContentDescription(QuickSettings.name(id));
         box.setOnClickListener(v -> tapQs(c, id, box));
-        // 长按直接把这一格从这一排上拿掉 (要加回来点右边的「＋」) ——
-        // 比"先进编辑页再删"少两步，常用的那几个OnOff平时并不需要动
+        // 长按直接把这一格从这一排上拿掉（要加回来点右边的「＋」）——
+        // 比"先进编辑页再删"少两步，常用的那几个开关平时并不需要动
         box.setOnLongClickListener(v -> {
             QuickSettings.remove(c, id);
             hint("已拿掉「" + QuickSettings.name(id) + "」，点「＋」可以加回来");
@@ -454,7 +454,7 @@ public final class CoverNotifCenter {
         return box;
     }
 
-    /** 顶上那行临时写一句话 (下一次重画就没了)  */
+    /** 顶上那行临时写一句话（下一次重画就没了） */
     private static void hint(String s) {
         if (countView != null) {
             countView.setText(s);
@@ -483,9 +483,9 @@ public final class CoverNotifCenter {
         }, "qs-toggle").start();
     }
 
-    /** 没切Success: 那一格闪红，顶上把那句话写出来，然后整块重画回真实状态 */
+    /** 没切成功：那一格闪红，顶上把那句话写出来，然后整块重画回真实状态 */
     private static void flashErr(Context c, View tile, String msg) {
-        Log.w(TAG, "QuickOnOff没成: " + msg);
+        Log.w(TAG, "快捷开关没成：" + msg);
         hint(msg);
         Drawable d = tile.getBackground();
         if (d instanceof GradientDrawable) {
@@ -506,13 +506,13 @@ public final class CoverNotifCenter {
     private static void buildBody(Context c, List<CoverNotifListener.Entry> all) {
         body.removeAllViews();
 
-        // 左: 常用应用竖栏
+        // 左：常用应用竖栏
         ScrollView pinScroll = new ScrollView(c);
         pinScroll.setVerticalScrollBarEnabled(false);
         LinearLayout pinCol = new LinearLayout(c);
         pinCol.setOrientation(LinearLayout.VERTICAL);
-        // ⚠ 左对齐 (不是居中) : 格子左边缘要跟上面「Notifications」那行、以及快Off那一排
-        //   齐在同一条竖线上 (都是 card 的 8dp padding) 。居中会多让出 6dp。
+        // ⚠ 左对齐（不是居中）：格子左边缘要跟上面「通知」那行、以及快关那一排
+        //   齐在同一条竖线上（都是 card 的 8dp padding）。居中会多让出 6dp。
         pinCol.setGravity(Gravity.START);
         pinScroll.addView(pinCol, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -523,7 +523,7 @@ public final class CoverNotifCenter {
         body.addView(pinScroll, plp);
         fillPins(c, pinCol);
 
-        // 右: 筛选栏 + Notifications列表
+        // 右：筛选栏 + 通知列表
         LinearLayout right = new LinearLayout(c);
         right.setOrientation(LinearLayout.VERTICAL);
 
@@ -557,7 +557,7 @@ public final class CoverNotifCenter {
         fillList(c, listBox, all);
     }
 
-    // ------------------------------------------------------------------ 左栏: 常用应用
+    // ------------------------------------------------------------------ 左栏：常用应用
 
     private static void fillPins(Context c, LinearLayout pinCol) {
         pinCol.removeAllViews();
@@ -595,7 +595,7 @@ public final class CoverNotifCenter {
             pinCol.addView(cell);
         }
 
-        // 末尾那个「＋」: 点一下把右半边切成应用列表
+        // 末尾那个「＋」：点一下把右半边切成应用列表
         FrameLayout add = cellBox(c);
         TextView plus = text(c, "＋", 17f, C_DIM, false);
         plus.setGravity(Gravity.CENTER);
@@ -637,7 +637,7 @@ public final class CoverNotifCenter {
         LinearLayout col = new LinearLayout(c);
         col.setOrientation(LinearLayout.VERTICAL);
 
-        col.addView(pickTop(c, "点一下放进左栏，再点一下拿出来 (长按左栏图标也能拿掉) "));
+        col.addView(pickTop(c, "点一下放进左栏，再点一下拿出来（长按左栏图标也能拿掉）"));
 
         ScrollView sv = new ScrollView(c);
         sv.setVerticalScrollBarEnabled(false);
@@ -666,7 +666,7 @@ public final class CoverNotifCenter {
             return;
         }
         pickBox.removeAllViews();
-        TextView t = text(c, "正在读应用列表...", 11f, C_DIM, false);
+        TextView t = text(c, "正在读应用列表…", 11f, C_DIM, false);
         t.setGravity(Gravity.CENTER);
         t.setPadding(0, dp(20), 0, 0);
         pickBox.addView(t);
@@ -707,7 +707,7 @@ public final class CoverNotifCenter {
 
     /**
      * 选择列表里的一行。选中状态直接靠<b>底色</b>表达，不用打钩字符 ——
-     * 「✓」这种符号在某些机型的字体里没有字形，会整块看不见 (ⓘ 那边踩过同类坑) 。
+     * 「✓」这种符号在某些机型的字体里没有字形，会整块看不见（ⓘ 那边踩过同类坑）。
      */
     private static View pickRow(final Context c, final AppRepo.Item it) {
         boolean on = NotifPins.has(c, it.pkg);
@@ -753,7 +753,7 @@ public final class CoverNotifCenter {
     }
 
     /**
-     * 编辑页顶上那一条: 一句提示 + 「完成」。选常用应用与挑快捷OnOff共用。
+     * 编辑页顶上那一条：一句提示 + 「完成」。选常用应用与挑快捷开关共用。
      */
     private static View pickTop(Context c, String tipText) {
         LinearLayout top = new LinearLayout(c);
@@ -773,13 +773,13 @@ public final class CoverNotifCenter {
         return top;
     }
 
-    // ------------------------------------------------------------------ 挑快捷OnOff
+    // ------------------------------------------------------------------ 挑快捷开关
 
     /**
-     * 「挑快捷OnOff」那一页 (v4.23) 。跟「选常用应用」同一套做法: 把下半块就地换掉，
-     * 不弹对话框 —— 对话框会落到那块坏掉的内屏上去 (见类注释里那条) 。
+     * 「挑快捷开关」那一页（v4.23）。跟「选常用应用」同一套做法：把下半块就地换掉，
+     * 不弹对话框 —— 对话框会落到那块坏掉的内屏上去（见类注释里那条）。
      *
-     * <p>分两段: 「已排上的」按现在的次序列出，点一下拿掉、↑↓ 调次序；「还能加的」列剩下的，
+     * <p>分两段：「已排上的」按现在的次序列出，点一下拿掉、↑↓ 调次序；「还能加的」列剩下的，
      * 点一下加到末尾。改一下立刻重画，顶上那一排跟着变 —— 改完不用退出去才知道效果。
      */
     private static void buildQsEditor(Context c) {
@@ -811,7 +811,7 @@ public final class CoverNotifCenter {
         }
         qsEditBox.removeAllViews();
         List<Integer> on = QuickSettings.list(c);
-        qsEditBox.addView(qsSection(c, "已排上的 (" + on.size() + "）"));
+        qsEditBox.addView(qsSection(c, "已排上的（" + on.size() + "）"));
         for (int i = 0; i < on.size(); i++) {
             qsEditBox.addView(qsPickRow(c, on.get(i), true, i == 0, i == on.size() - 1));
         }
@@ -971,7 +971,7 @@ public final class CoverNotifCenter {
         return box;
     }
 
-    // ------------------------------------------------------------------ Notifications列表
+    // ------------------------------------------------------------------ 通知列表
 
     private static void fillList(Context c, LinearLayout listBox,
                                  List<CoverNotifListener.Entry> all) {
@@ -989,11 +989,11 @@ public final class CoverNotifCenter {
             box.setPadding(0, dp(24), 0, dp(24));
             TextView t = text(c, "", 11.5f, C_DIM, false);
             if (!CoverNotifListener.granted(c)) {
-                t.setText("还没给Notifications使用权\n到「Beta Lab → Cover Display」里点一下授权");
+                t.setText("还没给通知使用权\n到「Beta 实验室 → 外屏管理」里点一下授权");
             } else if (all.isEmpty()) {
-                t.setText("现在没有Notifications");
+                t.setText("现在没有通知");
             } else {
-                t.setText("这个应用没有别的Notifications了");
+                t.setText("这个应用没有别的通知了");
             }
             t.setGravity(Gravity.CENTER);
             box.addView(t);
@@ -1013,7 +1013,7 @@ public final class CoverNotifCenter {
     }
 
     /**
-     * 一条Notifications。旧版是三行 (应用名+时间 / 标题 / 正文最多两行) ，现在压成<b>两行</b> ——
+     * 一条通知。旧版是三行（应用名+时间 / 标题 / 正文最多两行），现在压成<b>两行</b> ——
      * 应用名交给左边的图标和上面的筛选项去认，这里只留标题与正文，字号也各降了一档。
      */
     private static View notifRow(Context c, final CoverNotifListener.Entry e) {
@@ -1082,7 +1082,7 @@ public final class CoverNotifCenter {
 
     // ------------------------------------------------------------------ 动作
 
-    /** 点一条Notifications: 优先用它自己的 contentIntent，没有就把那个应用拉起来 */
+    /** 点一条通知：优先用它自己的 contentIntent，没有就把那个应用拉起来 */
     private static void open(final CoverNotifListener.Entry e) {
         boolean went = false;
         try {
@@ -1091,7 +1091,7 @@ public final class CoverNotifCenter {
                 went = true;
             }
         } catch (Throwable t) {
-            Log.w(TAG, "打OnNotificationsFailed", t);
+            Log.w(TAG, "打开通知失败", t);
         }
         hide();
         if (!went) {
@@ -1120,9 +1120,9 @@ public final class CoverNotifCenter {
     /**
      * 把某个应用启到外屏那一块。
      *
-     * <p>走 {@link SecondaryLauncher} (shell → 三星封面屏通道 → 直投，三条路它自己挑) ，
+     * <p>走 {@link SecondaryLauncher}（shell → 三星封面屏通道 → 直投，三条路它自己挑），
      * 而不是像旧版那样发一句 {@code am start -a MAIN -c LAUNCHER -p <包名>} ——
-     * 旧写法对"有多个入口、或入口不是 MAIN/LAUNCHER"的应用会静默Failed。
+     * 旧写法对"有多个入口、或入口不是 MAIN/LAUNCHER"的应用会静默失败。
      */
     private static void launchPkg(final Context c, final String pkg) {
         if (c == null || pkg == null) {
@@ -1140,7 +1140,7 @@ public final class CoverNotifCenter {
                 boolean ok = SecondaryLauncher.launch(app, d, li);
                 Log.i(TAG, "快捷启动 " + pkg + " => " + ok);
             } catch (Throwable t) {
-                Log.w(TAG, "快捷启动Failed " + pkg, t);
+                Log.w(TAG, "快捷启动失败 " + pkg, t);
             }
         }, "notif-launch").start();
     }
@@ -1156,13 +1156,13 @@ public final class CoverNotifCenter {
         return null;
     }
 
-    /** 应用名: 优先用监听器读到的真名，读不到就拿包名末段顶上 */
+    /** 应用名：优先用监听器读到的真名，读不到就拿包名末段顶上 */
     private static String labelOf(CoverNotifListener.Entry e, String pkg) {
         if (e != null && !TextUtils.isEmpty(e.label)) {
             return e.label;
         }
         if (pkg == null) {
-            return "Notifications";
+            return "通知";
         }
         int i = pkg.lastIndexOf('.');
         return i >= 0 && i + 1 < pkg.length() ? pkg.substring(i + 1) : pkg;
@@ -1188,7 +1188,7 @@ public final class CoverNotifCenter {
         return tv;
     }
 
-    /** 一颗小按钮的底: 圆角 + 给定颜色 */
+    /** 一颗小按钮的底：圆角 + 给定颜色 */
     private static GradientDrawable chipBg(int color) {
         GradientDrawable d = new GradientDrawable();
         d.setCornerRadius(dp(10));
@@ -1196,7 +1196,7 @@ public final class CoverNotifCenter {
         return d;
     }
 
-    /** 左栏那一格: 圆角底 + 居中内容，点击/长按都挂在它身上 */
+    /** 左栏那一格：圆角底 + 居中内容，点击/长按都挂在它身上 */
     private static FrameLayout cellBox(Context c) {
         FrameLayout box = new FrameLayout(c);
         GradientDrawable bg = new GradientDrawable();
@@ -1209,7 +1209,7 @@ public final class CoverNotifCenter {
         return box;
     }
 
-    /** 一行字的简写 (字号 sp、颜色、要不要加粗)  */
+    /** 一行字的简写（字号 sp、颜色、要不要加粗） */
     private static TextView text(Context c, String s, float sp, int color, boolean bold) {
         TextView t = new TextView(c);
         t.setText(s);

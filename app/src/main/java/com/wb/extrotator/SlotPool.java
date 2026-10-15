@@ -16,27 +16,27 @@ import java.util.Random;
 /**
  * 老虎机摇奖盘上的「图案池」。
  *
- * <p>一格图案 = 一张位图。池子固定 {@link #SIZE} 格: 从 {@link AppIconLib} 里随机挑
- * {@link #APPS} apps，再加一个「七」 ({@link #SEVEN}，对应
- * {@code drawable/widget_slot_seven.xml}) 当彩蛋 —— 三格同摇到它才算头奖。
+ * <p>一格图案 = 一张位图。池子固定 {@link #SIZE} 格：从 {@link AppIconLib} 里随机挑
+ * {@link #APPS} 个应用，再加一个「七」（{@link #SEVEN}，对应
+ * {@code drawable/widget_slot_seven.xml}）当彩蛋 —— 三格同摇到它才算头奖。
  *
- * <p><b>为什么位图要在这里再合成一层</b>: 应用图标的 PNG 是带透明通道的，而
- * {@link Bitmap.Config#RGB_565} (体积只有 ARGB 的一半) No alpha，透明处会变成黑块；
+ * <p><b>为什么位图要在这里再合成一层</b>：应用图标的 PNG 是带透明通道的，而
+ * {@link Bitmap.Config#RGB_565}（体积只有 ARGB 的一半）没有 alpha，透明处会变成黑块；
  * 所以先把格子底色铺满再画图标，出来的是不带透明通道的方图。
- * 方图比格子小一圈 (布局里 42dp、居中) ，四个角落在同色底板上，看不出来。
+ * 方图比格子小一圈（布局里 42dp、居中），四个角落在同色底板上，看不出来。
  *
- * <p>⚠ 池子要**存盘**: 组件进程随时会被回收，而静止态、切模式、宿主重画都要照着
- * 上一次的结果把三个格子画出来。存的是一串包名 (空串 = 那个「七」) 。
+ * <p>⚠ 池子要**存盘**：组件进程随时会被回收，而静止态、切模式、宿主重画都要照着
+ * 上一次的结果把三个格子画出来。存的是一串包名（空串 = 那个「七」）。
  */
 final class SlotPool {
 
-    /** 每次On摇抽几个应用 */
+    /** 每次开摇抽几个应用 */
     static final int APPS = 7;
-    /** 池子总格数: 7 apps + 一个「七」 */
+    /** 池子总格数：7 个应用 + 一个「七」 */
     static final int SIZE = APPS + 1;
-    /** 位图边长 (px) ，跟 AppIconLib.PX / 布局里 42dp 的显示尺寸同量级 */
+    /** 位图边长（px），跟 AppIconLib.PX / 布局里 42dp 的显示尺寸同量级 */
     static final int TILE_PX = 72;
-    /** 格子底色 (= drawable/widget_slot_cell 的 solid) 。改那支 drawable 时这里要跟着改。 */
+    /** 格子底色（= drawable/widget_slot_cell 的 solid）。改那支 drawable 时这里要跟着改。 */
     private static final int CELL_BG = 0xFF2C2E33;
 
     private static final String SP = "slot_pool";
@@ -53,7 +53,7 @@ final class SlotPool {
                 }
             };
 
-    /** 「七」在池子里的代号 (存盘时写成空串)  */
+    /** 「七」在池子里的代号（存盘时写成空串） */
     static final String SEVEN = "@seven";
 
     private static final String[] EMPTY = new String[0];
@@ -73,8 +73,8 @@ final class SlotPool {
     }
 
     /**
-     * 抽一份新池子。**会读图标库清单** (不读盘上的图，很快) ，可以在主线程调用。
-     * 库里一个图标都没有时Back空数组 —— 调用方要判长度，别拿它去索引。
+     * 抽一份新池子。**会读图标库清单**（不读盘上的图，很快），可以在主线程调用。
+     * 库里一个图标都没有时返回空数组 —— 调用方要判长度，别拿它去索引。
      */
     static String[] pick(Context ctx) {
         String[] all = AppIconLib.list(ctx);
@@ -104,7 +104,7 @@ final class SlotPool {
         }
     }
 
-    /** 池子里每一项的图案位图；拿不到就是 null (那一格留空，不影响其它格)  */
+    /** 池子里每一项的图案位图；拿不到就是 null（那一格留空，不影响其它格） */
     static Bitmap[] tiles(Context ctx, String[] pool) {
         Bitmap[] out = new Bitmap[pool.length];
         for (int i = 0; i < pool.length; i++) {
@@ -113,7 +113,7 @@ final class SlotPool {
         return out;
     }
 
-    /** 一张图案。命中缓存就直接Back —— 已经合成过的不会重画。 */
+    /** 一张图案。命中缓存就直接返回 —— 已经合成过的不会重画。 */
     static Bitmap tile(Context ctx, String item) {
         String key = item == null ? SEVEN : item;
         Bitmap hit = TILES.get(key);
