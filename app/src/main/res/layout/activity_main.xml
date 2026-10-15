@@ -113,7 +113,7 @@
         <RadioButton
             android:id="@+id/tabState"
             style="@style/TabItem"
-            android:text="Authorization &amp; Status" />
+            android:text="Authorization & Status" />
 
         <RadioButton
             android:id="@+id/tabAuto"
@@ -560,7 +560,7 @@
 
                     <TextView
                         style="@style/SectionTitle"
-                        android:text="Resolution &amp; DPI" />
+                        android:text="Resolution & DPI" />
 
                     <TextView
                         android:id="@+id/iResFields"

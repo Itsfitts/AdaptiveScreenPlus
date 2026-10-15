@@ -12,14 +12,14 @@ import android.os.SystemClock;
 import android.widget.RemoteViews;
 
 /**
- * 「手机状态」小组件（外屏 2×2）—— 电量 / CPU 温度 / 内存占用 / 存储占用，全是只读。
+ * 「手机状态」Widget (外Screen 2×2) —— Battery / CPU Temperature / RAMUsage / StorageUsage，全是只读。
  *
- * <p><b>为什么整个组件就一个 ImageView</b>：四个指标的"图形化"（进度条 + 固定配色）
+ * <p><b>为什么整个组件就一个 ImageView</b>: 四个指标的"图形化" (进度条 + 固定配色)
  * 在 RemoteViews 那十来种控件里拼不出来，所以由 {@link WidgetStatus#draw} 画成一张位图塞进去。
  * 布局里那个 ImageView 用 {@code fitXY}，位图按组件实际 dp 尺寸算，不会变形。
  *
- * <p><b>为什么要自己定时刷</b>：{@code updatePeriodMillis} 系统最小只认 30 分钟
- * （填更小也是 30 分钟），这一页要看电量、温度的实时值，所以改用 {@link AlarmManager}
+ * <p><b>为什么要自己定时刷</b>: {@code updatePeriodMillis} 系统最小只认 30 分钟
+ *  (填更小也是 30 分钟) ，这一页要看Battery、Temperature的实时值，所以改用 {@link AlarmManager}
  * 一分钟一次。⚠ 重复闹钟在 Doze 下会被推迟，不在意的——这不是秒表。
  *
  * <p>⚠ 用户点名这个组件<b>只提供信息观看、不提供点击</b>，所以这里刻意<b>不</b>给任何
@@ -35,16 +35,16 @@ public class StatusCoverWidgetProvider extends AppWidgetProvider {
 
     private static final int REQ_TICK = 0x3300;
 
-    /** 设计基准尺寸（dp）：三星外屏 2×2 那一格 */
+    /** 设计基准尺寸 (dp) : 三星外Screen 2×2 那一格 */
     private static final int BASE_W_DP = 150;
     private static final int BASE_H_DP = 133;
 
     /**
      * 位图缩放的上限。
      *
-     * <p>⚠ 它的作用是别让位图顶到 binder 的 1MB 上限：2×2（150×133dp）全密度（340dpi ≈ 2.125）
+     * <p>⚠ 它的作用是别让位图顶到 binder 的 1MB 上限: 2×2 (150×133dp) 全密度 (340dpi ≈ 2.125)
      * 是 319×283 的 ARGB ≈ 361KB，放得下；就算设备密度再高，2.5 倍也只有 375×333 ≈ 499KB。
-     * （上一版是 4×2，312×133dp 全密度 663×283 ≈ 750KB，太顶，那时才把上限定成 1.5 倍。）
+     *  (上一版是 4×2，312×133dp 全密度 663×283 ≈ 750KB，太顶，那时才把上限定成 1.5 倍。)
      */
     private static final float MAX_SCALE = 2.5f;
 
@@ -76,7 +76,7 @@ public class StatusCoverWidgetProvider extends AppWidgetProvider {
         }
     }
 
-    /** 现采一次样、画一张图。采样只读几个文件，很快，不必开线程。 */
+    /** 现采一次样、画一张图。采样只读几个文件，很快，不必On线程。 */
     static RemoteViews build(Context ctx, AppWidgetManager mgr, int id) {
         RemoteViews v = new RemoteViews(ctx.getPackageName(), R.layout.widget_status_2x2);
         int wDp = BASE_W_DP;
@@ -102,7 +102,7 @@ public class StatusCoverWidgetProvider extends AppWidgetProvider {
         return v;
     }
 
-    /** 刷一遍本组件（定时器到点、或刚装好） */
+    /** 刷一遍本组件 (定时器到点、或刚装好)  */
     public static void refreshAll(Context ctx) {
         try {
             AppWidgetManager mgr = AppWidgetManager.getInstance(ctx);

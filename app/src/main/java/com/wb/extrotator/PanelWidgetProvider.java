@@ -9,17 +9,17 @@ import android.content.Intent;
 import android.widget.RemoteViews;
 
 /**
- * 「双屏快捷面板」小组件，内外屏各一份布局：
+ * 「双屏快捷面板」Widget，内外屏各一份布局:
  * <ul>
- *   <li>内屏 2×1 横条（{@code widget_panel.xml}）：折叠/展开切换 · 双屏模式；</li>
- *   <li>外屏 2×2 四格铺满（{@code widget_panel_2x2.xml}）：折叠/展开切换 · 自适应旋转
- *       · 双屏模式 · 一键投屏。</li>
+ *   <li>内Screen 2×1 横条 ({@code widget_panel.xml}) : 折叠/展On切换 · 双屏模式；</li>
+ *   <li>外Screen 2×2 四格铺满 ({@code widget_panel_2x2.xml}) : 折叠/展On切换 · Adaptive Rotation
+ *       · 双屏模式 · One-Tap Cast。</li>
  * </ul>
  *
- * <p>「自适应旋转」的状态是现读 {@link Prefs} 画上去的（本地 SharedPreferences，
- * 不碰 Shizuku、不卡桌面），所以设置一改必须调 {@link #updateAll} 重画。
+ * <p>「Adaptive Rotation」的状态是现读 {@link Prefs} 画上去的 (本地 SharedPreferences，
+ * 不碰 Shizuku、不卡Home) ，所以设置一改必须调 {@link #updateAll} 重画。
  *
- * <p>点下去的动作交给 {@link WidgetActionActivity}（透明 Activity，能弹 Toast、能走 Shizuku）。
+ * <p>点下去的动作交给 {@link WidgetActionActivity} (透明 Activity，能弹 Toast、能走 Shizuku) 。
  */
 public class PanelWidgetProvider extends AppWidgetProvider {
 
@@ -52,8 +52,8 @@ public class PanelWidgetProvider extends AppWidgetProvider {
                 click(ctx, WidgetActionActivity.ACT_DUAL, REQ_DUAL));
 
         if (layoutId == R.layout.widget_panel_2x2) {
-            // 外屏那份多一格：自适应旋转是个开关式按钮（底色跟状态走），
-            // 一键投屏是动作按钮，文字写死在布局里
+            // 外屏那份多一格: Adaptive Rotation是个OnOff式按钮 (底色跟状态走) ，
+            // One-Tap Cast是动作按钮，文字写死在布局里
             Prefs p = new Prefs(ctx);
             v.setOnClickPendingIntent(R.id.btnWidgetSync,
                     click(ctx, WidgetActionActivity.ACT_SYNC, REQ_SYNC));
@@ -66,11 +66,11 @@ public class PanelWidgetProvider extends AppWidgetProvider {
     }
 
     /**
-     * 把开关式按钮画成「名字 + 开/关」两行，底色区分状态。
-     * @param onBg 开启时的底色；关闭时统一用灰底（widget_btn_off）
+     * 把OnOff式按钮画成「名字 + On/Off」两行，底色区分状态。
+     * @param onBg Enabled时的底色；Disabled时统一用灰底 (widget_btn_off)
      */
     private static void bindToggle(RemoteViews v, int id, int onBg, String name, boolean on) {
-        v.setTextViewText(id, name + "\n" + (on ? "开" : "关"));
+        v.setTextViewText(id, name + "\n" + (on ? "On" : "Off"));
         v.setInt(id, "setBackgroundResource", on ? onBg : R.drawable.widget_btn_off);
     }
 
@@ -83,7 +83,7 @@ public class PanelWidgetProvider extends AppWidgetProvider {
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }
 
-    /** 需要重画时调一下（换主题 / 刚装好 / 改过按钮文案）—— 内外屏两份都要刷 */
+    /** 需要重画时调一下 (换主题 / 刚装好 / 改过按钮文案) —— 内外屏两份都要刷 */
     public static void updateAll(Context ctx) {
         refresh(ctx, PanelWidgetProvider.class);
         refresh(ctx, PanelCoverWidgetProvider.class);
