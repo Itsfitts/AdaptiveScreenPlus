@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  副屏键盘的输入框底。深底 + 细描边，跟副屏桌面同一套深色（#0E1116 的底、#1D2531 的面）。
--->
+  。 + ，Secondary Home（#0E1116 、#1D2531 ）。-->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <solid android:color="#1D2531" />

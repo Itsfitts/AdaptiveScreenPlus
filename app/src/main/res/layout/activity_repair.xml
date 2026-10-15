@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  「修复界面」的名单页（v4.17）。
+  「UI Repair」（v4.17）。
 
-  为什么单开一页：几百个应用逐行带开关，塞进 Beta 那个 ScrollView 里 List 既滚不动、
-  又要一次量完所有行。这里用正经的 ListView 回收，滑起来才不卡。
-  顶部那条说明与 ⓘ 见 RepairActivity 的类注释和 strings.xml 的 info_repair_list。
+  ：， Beta  ScrollView  List 、
+  。 ListView ，。
+   ⓘ  RepairActivity  strings.xml  info_repair_list。
 
-  配色沿用 Beta 页那套黑底（同一个 Theme.DeviceDefault.NoActionBar）。
--->
+   Beta （ Theme.DeviceDefault.NoActionBar）。-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FF000000"
     android:orientation="vertical">
 
-    <!-- ==================== 顶部：返回 + 标题 + ⓘ ==================== -->
+    <!-- ==================== ： + Title + ⓘ ==================== -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -36,7 +35,7 @@
             android:paddingTop="6dp"
             android:paddingEnd="10dp"
             android:paddingBottom="6dp"
-            android:text="← 返回"
+            android:text="← Back"
             android:textColor="#B3FFFFFF"
             android:textSize="14sp" />
 
@@ -48,7 +47,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="修复界面"
+            android:text="UI Repair"
             android:textColor="#FFF0F0F0"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -63,14 +62,14 @@
         android:layout_height="1dp"
         android:background="#1FFFFFFF" />
 
-    <!-- 状态：名单几个 / 本机几个 / 快照在不在 —— 写盘之后要回读，这里显示的就是回读结果 -->
+    <!-- ： /  /  —— ， -->
     <TextView
         android:id="@+id/tvRepairState"
         style="@style/BetaText"
         android:layout_marginStart="14dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="14dp"
-        android:text="读取中…" />
+        android:text="Loading…" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -86,7 +85,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="一键修复" />
+            android:text="Repair All" />
 
         <TextView
             android:id="@+id/btnRepairReset"
@@ -95,12 +94,12 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_weight="1"
-            android:text="一键重置" />
+            android:text="Reset All" />
     </LinearLayout>
 
     <!--
-      逐行开关。行是代码里拼的（RepairActivity.RowAdapter），省一个只给一处用的布局文件。
-      divider 用淡白细线，跟 Beta 页那些分割线同一个色号。
+      。（RepairActivity.RowAdapter），。
+      divider ， Beta 。
     -->
     <ListView
         android:id="@+id/lvRepair"

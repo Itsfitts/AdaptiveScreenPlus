@@ -33,18 +33,18 @@ import java.util.concurrent.Executors;
 /**
  * Beta 功能页。
  *
- * <p>从主界面右上角的「Beta 实验室」进入，是一个跟主界面完全分开的界面：整块黑底，
- * 内部分「外屏管理 / 指令操作 / 手势增强」三页。
+ * <p>从主界面右上角的「Beta Lab」进入，是一个跟主界面完全分On的界面: 整块黑底，
+ * 内部分「Cover Display / 指令操作 / 手势增强」三页。
  *
- * <p>为什么不做成主界面的第五个选项卡：这一页是黑底，颜色体系和主界面那套浅色完全不同，
+ * <p>为什么不做成主界面的第五个选项卡: 这一页是黑底，颜色体系和主界面那套浅色完全不同，
  * 塞进同一个布局里每个控件都得写两套颜色；而且主界面那排选项卡已经排了四个，
  * 再塞第五个会把这四个压窄一圈。
  *
- * <p>各页的实现分别在 {@link CoverDisplay}（外屏设置）、{@link QuickActions} 与
- * {@link QuickPrefs}（侧键操作）、{@link CustomCmds}（自定义指令）。
+ * <p>各页的实现分别在 {@link CoverDisplay} (外屏设置) 、{@link QuickActions} 与
+ * {@link QuickPrefs} (侧键操作) 、{@link CustomCmds} (自定义指令) 。
  *
- * <p><b>线程约定</b>：这一页里所有会走 binder / sleep 的操作统一丢进 {@link #pool}（单线程）执行，
- * 结果再回主线程刷界面。用单线程而不是线程池，是因为这些命令本身有先后依赖（先设 size 再读状态），
+ * <p><b>线程约定</b>: 这一页里所有会走 binder / sleep 的操作统一丢进 {@link #pool} (单线程) 执行，
+ * 结果再回主线程刷界面。用单线程而不是线程池，是因为这些命令本身有先后依赖 (先设 size 再读状态) ，
  * 并发跑会互相盖掉。
  */
 public class BetaActivity extends Activity {
@@ -56,25 +56,25 @@ public class BetaActivity extends Activity {
     private EditText etW, etH, etDpi;
     private TextView tvCoverState;
     private LinearLayout listPresets;
-    /** 「外屏启动器」区块的状态行（显示已勾选几个应用） */
+    /** 「外屏启动器」区块的状态行 (显示已勾选几个应用)  */
     private TextView tvLauncherState;
     // ---- 指令操作页的控件
     private TextView tvAssistState, tvVolumeState;
     private LinearLayout listCustomCmds;
-    /** 「侧键操作」里当前显示哪一个按键的设置（{@link QuickPrefs#SIDE_ASSIST} 等三选一） */
+    /** 「侧键操作」里当前显示哪一个按键的设置 ({@link QuickPrefs#SIDE_ASSIST} 等三选一)  */
     private String keyTarget = QuickPrefs.SIDE_ASSIST;
-    /** 「去掉应用黑边」的状态行（v4.2 搬去「指令操作」页，v4.17 又搬到「应用管理」页） */
+    /** 「去掉应用黑边」的状态行 (v4.2 搬去「指令操作」页，v4.17 又搬到「应用管理」页)  */
     private TextView tvEdgeState;
-    /** 「应用管理」页的状态行：当前名单几个应用 */
+    /** 「应用管理」页的状态行: 当前名单几个应用 */
     private TextView tvRepairBrief;
-    /** 回读时我们自己拨开关的挡板，见 {@link #setNavImmSwitch} */
+    /** 回读时我们自己拨OnOff的挡板，见 {@link #setNavImmSwitch} */
     private boolean navImmSyncing;
-    /** 「外屏自动旋转」那个开关的挡板：下发没成要把开关拨回去，那一下不是用户操作 */
+    /** 「Cover DisplayAuto-Rotate」那个OnOff的挡板: 下发没成要把OnOff拨回去，那一下不是用户操作 */
     private boolean coverRotSyncing;
 
-    /** 当前显示的预设列表（与文件里的那份同步） */
+    /** 当前显示的预设列表 (与文件里的那份同步)  */
     private List<CoverPresets.Preset> presets;
-    /** 封面屏面板原生值，用来生成默认预设、也是「恢复默认」的依据 */
+    /** 封面屏面板Native值，用来生成默认预设、也是「恢复默认」的依据 */
     private int physW, physH, physDpi;
 
     @Override
@@ -118,15 +118,15 @@ public class BetaActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        // 从系统设置页回来时，无障碍的开启状态可能变了
+        // 从系统设置页回来时，无障碍的Enabled状态可能变了
         refreshQuickState();
         // 可能刚在外屏配置页里勾完应用回来
         refreshLauncherState();
-        // 名单可能被「修复界面」那页（或阿田自用、MultiStar 本体）改过了
+        // 名单可能被「修复界面」那页 (或阿田自用、MultiStar 本体) 改过了
         refreshRepairBrief();
         // 系统里那一项可能被 NavStar 改过，回来重新对一次
         refreshNavImmState();
-        // 这个开关在别处（主界面快捷操作 / 老虎机）也能拨，回来对一次
+        // 这个OnOff在别处 (主界面Quick Actions / 老虎机) 也能拨，回来对一次
         refreshCoverAutoRotSwitch();
     }
 
@@ -156,16 +156,16 @@ public class BetaActivity extends Activity {
     }
 
     /**
-     * 与主界面同一套「ⓘ」写法（见 MainActivity.bindInfo）。
-     * 详情正文都放在 strings.xml 的 info_* 里，写法规矩也照旧：只写功能 / 用法 / 注意事项。
+     * 与主界面同一套「ⓘ」写法 (见 MainActivity.bindInfo) 。
+     * 详情正文都放在 strings.xml 的 info_* 里，写法规矩也照旧: 只写功能 / 用法 / 注意事项。
      */
     private void bindInfo() {
-        bindInfo(R.id.iBetaTop, "Beta 实验室", R.string.info_beta_intro);
-        bindInfo(R.id.iBetaExt, "外屏管理", R.string.info_beta_ext);
-        bindInfo(R.id.iBetaCoverRes, "分辨率与 DPI", R.string.info_beta_cover_res);
+        bindInfo(R.id.iBetaTop, "Beta Lab", R.string.info_beta_intro);
+        bindInfo(R.id.iBetaExt, "Cover Display", R.string.info_beta_ext);
+        bindInfo(R.id.iBetaCoverRes, "Resolution & DPI", R.string.info_beta_cover_res);
         bindInfo(R.id.iBetaPreset, "分辨率预设", R.string.info_beta_preset);
         bindInfo(R.id.iBetaRotate, "外屏旋转", R.string.info_beta_rotate);
-        bindInfo(R.id.iBetaCoverAutoRot, "外屏自动旋转", R.string.info_cover_autorot);
+        bindInfo(R.id.iBetaCoverAutoRot, "Cover DisplayAuto-Rotate", R.string.info_cover_autorot);
         bindInfo(R.id.iBetaLauncher, "外屏启动器", R.string.info_launcher);
         bindInfo(R.id.iBetaCmd, "指令操作", R.string.info_beta_cmd);
         bindInfo(R.id.iBetaKey, "侧键操作", R.string.info_beta_key);
@@ -196,14 +196,14 @@ public class BetaActivity extends Activity {
         });
     }
 
-    /** 统一处理「Shizuku 没就绪」：返回 true 表示已经提示过了，调用方直接 return */
+    /** 统一处理「Shizuku 没就绪」: Back true 表示已经提示过了，调用方直接 return */
     private boolean needShizuku() {
         if (CoverDisplay.id(this) <= 0) {
             toast("这台机器上没有封面屏");
             return true;
         }
         if (!ShellRunner.isReady()) {
-            toast("Shizuku 未就绪，请先在主界面授权");
+            toast("Shizuku not ready, please authorize on main UI first");
             return true;
         }
         return false;
@@ -212,21 +212,21 @@ public class BetaActivity extends Activity {
     // ================================================================== 手势增强
 
     /**
-     * 「手势增强」页的两个开关。
+     * 「手势增强」页的两个OnOff。
      *
      * <p>⚠ 先 setChecked 再挂监听，理由见 {@link #bindPseudoSwitch}。
      *
      * <p><b>手势条</b> —— 只是在封面屏上补一层，但要用<b>无障碍服务的上下文</b>才加得上
-     * （{@code TYPE_ACCESSIBILITY_OVERLAY} 是无障碍服务专属的窗口类型），所以这里交给
-     * {@link VolumeKeyService} 去转一道；<b>侧边栏</b> —— 只有开关。
+     *  ({@code TYPE_ACCESSIBILITY_OVERLAY} 是无障碍服务专属的窗口类型) ，所以这里交给
+     * {@link VolumeKeyService} 去转一道；<b>Sidebar</b> —— 只有OnOff。
      */
     // ================================================================== 应用管理
 
     /**
-     * 「应用管理」这一页现在只有一件事：进「修复界面」那张名单。
+     * 「应用管理」这一页现在只有一件事: 进「修复界面」那张名单。
      *
      * <p>状态行上的数字是<b>回读</b>出来的，不是我们记着的那份 —— 读要过 Shizuku，
-     * 所以丢后台线程，回来再贴上去。
+     * 所以丢Recents线程，回来再贴上去。
      */
     private void bindRepairPanel() {
         tvRepairBrief = findViewById(R.id.tvRepairBrief);
@@ -243,14 +243,14 @@ public class BetaActivity extends Activity {
         if (tv == null) {
             return;
         }
-        tv.setText("读取中…");
+        tv.setText("Loading…");
         pool.execute(() -> {
             CoverRepair.Snapshot s = CoverRepair.read();
             final String text;
             if (s == null || !s.valid()) {
                 text = "读不回名单 —— Shizuku 没就绪？";
             } else {
-                text = "当前名单 " + CoverRepair.packages(s).size() + " 个应用"
+                text = "当前名单 " + CoverRepair.packages(s).size() + " apps"
                         + (CoverRepair.hasSnapshot(this) ? " · 已存改动前的快照" : "");
             }
             ui.post(() -> tv.setText(text));
@@ -270,10 +270,10 @@ public class BetaActivity extends Activity {
             recents.setOnCheckedChangeListener((b, on) -> {
                 ExtPrefs.setCoverRecentsGesture(this, on);
                 if (on && !QuickPrefs.isAccessibilityEnabled(this)) {
-                    toast("手势条要无障碍服务在跑，先去「指令操作」页把它打开");
+                    toast("手势条要无障碍服务在跑，先去「指令操作」页把它打On");
                 }
                 VolumeKeyService.syncCoverRecents();
-                toast(on ? "外屏底部上滑停顿 → 打开后台" : "已关掉手势条");
+                toast(on ? "外屏底部上滑停顿 → 打OnRecents" : "已Off掉手势条");
                 refreshEdgeState();
             });
         }
@@ -313,7 +313,7 @@ public class BetaActivity extends Activity {
             });
         }
 
-        // 「外屏 0° 时固定在左下角」。0° 下外屏最底下那一条被系统遮罩压着，
+        // 「外Screen 0° 时固定在左下角」。0° 下外屏最底下那一条被系统遮罩压着，
         // 手势条留在正中会跟它叠在一起；左下角那一块没有应用内容，放那儿两不耽误。
         // ⚠ 先 setChecked 再挂 listener —— 反了就等于"初始化那一发把用户的选择覆盖掉"。
         CheckBox corner = findViewById(R.id.cbRecentsCorner);
@@ -322,7 +322,7 @@ public class BetaActivity extends Activity {
             corner.setOnCheckedChangeListener((b, on) -> {
                 ExtPrefs.setCoverRecentsCornerLeft(this, on);
                 VolumeKeyService.refreshCoverRecents();
-                toast(on ? "外屏 0° 时手势条挪到左下角" : "手势条回到正中");
+                toast(on ? "外Screen 0° 时手势条挪到左下角" : "手势条回到正中");
             });
         }
 
@@ -340,10 +340,10 @@ public class BetaActivity extends Activity {
             sidebar.setOnCheckedChangeListener((b, on) -> {
                 ExtPrefs.setCoverSidebar(this, on);
                 if (on && !QuickPrefs.isAccessibilityEnabled(this)) {
-                    toast("侧边栏要无障碍服务在跑，先去「指令操作」页把它打开");
+                    toast("侧边栏要无障碍服务在跑，先去「指令操作」页把它打On");
                 }
                 VolumeKeyService.syncSidebar();
-                toast(on ? "外屏侧边栏：已开（从选定的那一段往里拉）" : "外屏侧边栏：已关");
+                toast(on ? "外屏侧边栏: 已On (从选定的那一段往里拉) " : "外屏侧边栏: 已Off");
                 refreshEdgeState();
             });
         }
@@ -358,11 +358,11 @@ public class BetaActivity extends Activity {
     // ---------------------------------------------------------------- 隐藏三键导航
 
     /**
-     * 「隐藏三键导航」的开关。
+     * 「隐藏三键导航」的OnOff。
      *
-     * <p>⚠ 先 setChecked 再挂监听 —— 反了就等于"初始化那一发把用户的开关拨回去"（本页通例）。
+     * <p>⚠ 先 setChecked 再挂监听 —— 反了就等于"初始化那一发把用户的OnOff拨回去" (本页通例) 。
      *
-     * <p>开关的位置以<b>系统里回读到的策略</b>为准；这里先按本地记的那份显示一下，
+     * <p>OnOff的位置以<b>系统里回读到的策略</b>为准；这里先按本地记的那份显示一下，
      * 进页面后 {@link #refreshNavImmState()} 会拿真值纠正。
      */
     private void bindNavImmPanel() {
@@ -370,7 +370,7 @@ public class BetaActivity extends Activity {
         if (sw != null) {
             sw.setChecked(ExtPrefs.navImmOn(this));
             sw.setOnCheckedChangeListener((b, on) -> {
-                // 回读时是我们自己把开关拨回原位的，那一下不是用户操作
+                // 回读时是我们自己把OnOff拨回原位的，那一下不是用户操作
                 if (navImmSyncing) {
                     return;
                 }
@@ -380,12 +380,12 @@ public class BetaActivity extends Activity {
     }
 
     /**
-     * 「内屏手势」的开关。
+     * 「内屏手势」的OnOff。
      *
-     * <p>跟「隐藏三键导航」不同，这一条<b>不写系统设置</b>：那三条热区由无障碍服务来贴，
-     * 所以这里只要把开关记下来、再让服务对齐一次就行。
+     * <p>跟「隐藏三键导航」不同，这一条<b>不写系统设置</b>: 那三条热区由无障碍服务来贴，
+     * 所以这里只要把OnOff记下来、再让服务对齐一次就行。
      *
-     * <p>装不上（无障碍没在跑）时当场说清 —— 不然用户拨了开关、划半天没反应。
+     * <p>装不上 (无障碍没在跑) 时当场说清 —— 不然用户拨了OnOff、划半天没反应。
      */
     private void bindInnerGesture() {
         Switch sw = findViewById(R.id.swInnerGesture);
@@ -399,7 +399,7 @@ public class BetaActivity extends Activity {
             if (on && !InnerGesture.installed()) {
                 toast("没装上，先确认无障碍服务在跑");
             } else {
-                toast(on ? "内屏手势已开" : "内屏手势已关");
+                toast(on ? "内屏手势已On" : "内屏手势已Off");
             }
         });
 
@@ -418,7 +418,7 @@ public class BetaActivity extends Activity {
         applyGestureAnim();
     }
 
-    /** 两档画成一对分段按钮：选中的那格换成实心绿（跟子选项卡同色） */
+    /** 两档画成一对分段按钮: 选中的那格换成实心绿 (跟子选项卡同色)  */
     private void applyGestureAnim() {
         int now = ExtPrefs.gestureAnimStyle(this);
         paintSegment(R.id.btnAnimNative, now == GestureAnim.STYLE_NATIVE);
@@ -437,14 +437,14 @@ public class BetaActivity extends Activity {
     /**
      * 拨「隐藏三键导航」。
      *
-     * <p>这是一件<b>动系统设置</b>的事：改的是 {@code Settings.Global.policy_control}，
+     * <p>这是一件<b>动系统设置</b>的事: 改的是 {@code Settings.Global.policy_control}，
      * 走 {@link NavBarImmersive#apply}。成没成都得回读校验一次 —— 装了 NavStar 的机器上它会
-     * 按自己的偏好把同一项重写回去，不校验就会变成"界面显示开了、条还在"。
+     * 按自己的偏好把同一项重写回去，不校验就会变成"界面显示On了、条还在"。
      */
     private void doNavImm(final boolean on) {
         if (!ShellRunner.isReady()) {
-            toast("Shizuku 未就绪，请先在主界面授权");
-            setNavImmSwitch(!on);           // 拨回去，别让开关停在没生效的位置上
+            toast("Shizuku not ready, please authorize on main UI first");
+            setNavImmSwitch(!on);           // 拨回去，别让OnOff停在没生效的位置上
             return;
         }
         final Context app = getApplicationContext();
@@ -459,13 +459,13 @@ public class BetaActivity extends Activity {
     }
 
     /**
-     * 静默回读系统里那一项，让开关跟着它走（页面上没有状态行了）。
+     * 静默回读系统里那一项，让OnOff跟着它走 (页面上没有状态行了) 。
      *
      * <p>⚠ 回读结果要盖掉本地记的那份 —— 用户可能自己改过设置，或者 NavStar 把值换成了
-     * 带排除项的版本；开关得跟着系统现状，不能跟着我们记的。
+     * 带排除项的版本；OnOff得跟着系统现状，不能跟着我们记的。
      *
-     * <p>读不到（Shizuku 没就绪）就什么都不动：这时候拨开关本来也拨不动，
-     * 硬把开关摆成某个位置反而是撒谎。
+     * <p>读不到 (Shizuku 没就绪) 就什么都不动: 这时候拨OnOff本来也拨不动，
+     * 硬把OnOff摆成某个位置反而是撒谎。
      */
     private void refreshNavImmState() {
         if (!ShellRunner.isReady()) {
@@ -487,7 +487,7 @@ public class BetaActivity extends Activity {
         });
     }
 
-    /** 把开关拨到指定位置，<b>不算用户操作</b>（不会再去写系统） */
+    /** 把OnOff拨到指定位置，<b>不算用户操作</b> (不会再去写系统)  */
     private void setNavImmSwitch(boolean on) {
         Switch sw = findViewById(R.id.swNavImm);
         if (sw == null || sw.isChecked() == on) {
@@ -499,10 +499,10 @@ public class BetaActivity extends Activity {
     }
 
     /**
-     * 触发区宽度四档的名字（跟布局里那四个单选项一一对应）。
+     * 触发区宽度四档的名字 (跟布局里那四个单选项一一对应) 。
      *
      * <p>⚠ 不能叫 {@code zoneName} —— 侧边栏那边已经有一个同签名的 {@code zoneName(int)}
-     * （那是"上/中/下"的段名），重名直接编译不过。
+     *  (那是"上/中/下"的段名) ，重名直接编译不过。
      */
     private static String zoneWidthName(int pick) {
         switch (pick) {
@@ -520,11 +520,11 @@ public class BetaActivity extends Activity {
     /**
      * 点「一键去掉所有应用黑边」。
      *
-     * <p><b>一次性动作，不是开关</b>：给机器上每个已装应用下发 {@link CutoutPolicy#POL_OFF}
-     * （让窗口铺进挖孔），跳开系统设置与本应用。
+     * <p><b>一次性动作，不是OnOff</b>: 给机器上每个已装应用下发 {@link CutoutPolicy#POL_OFF}
+     *  (让窗口铺进挖孔) ，跳On系统设置与本应用。
      *
      * <p>几百个包挨个发一条 binder，实测十几到二十秒，所以整段丢到 {@link #pool} 里跑，
-     * 期间界面只更新状态行。预检（版本不认 / Shizuku 没就绪）放在最前面，直接退回，不假装成功。
+     * 期间界面只更新状态行。预检 (版本不认 / Shizuku 没就绪) 放在最前面，直接退回，不假装Success。
      */
     private void doApplyCutout() {
         if (!CutoutPolicy.supported()) {
@@ -533,15 +533,15 @@ public class BetaActivity extends Activity {
             return;
         }
         if (!ShellRunner.isReady()) {
-            toast("Shizuku 未就绪，请先在主界面授权");
+            toast("Shizuku not ready, please authorize on main UI first");
             refreshEdgeState();
             return;
         }
-        // 这个 prefs 现在只当"点过没有"的记录，不再当状态（真状态去系统里回读）
+        // 这个 prefs 现在只当"点过没有"的记录，不再当状态 (真状态去系统里回读)
         ExtPrefs.setCutoutGlobal(this, true);
         final Context app = getApplicationContext();
         if (tvEdgeState != null) {
-            tvEdgeState.setText("正在给所有应用下发挖孔策略…（几百个包，要十几秒）");
+            tvEdgeState.setText("正在给所有应用下发挖孔策略... (几百个包，要十几秒) ");
         }
         pool.execute(() -> {
             final String out = CutoutPolicy.applyAll(app, CutoutPolicy.POL_OFF);
@@ -553,19 +553,19 @@ public class BetaActivity extends Activity {
     }
 
     /**
-     * 打开系统的「导航条」设置页。
+     * 打On系统的「导航条」设置页。
      *
-     * <p>用户提的：底部那条手势条想安心接管"上滑"，前提是系统别在同一串触摸上再判一次。
-     * 系统自己的「底部上滑回桌面」在「全面屏手势」模式下会跟它抢（现象是后台刚出来又回桌面），
+     * <p>用户提的: 底部那条手势条想安心接管"上滑"，前提是系统别在同一串触摸上再判一次。
+     * 系统自己的「底部上滑回Home」在「全面屏手势」模式下会跟它抢 (现象是Recents刚出来又回Home) ，
      * 换成「导航条」之后封面屏底部那条系统手势区就没了。
      * 所以在这儿给个直达入口，别让人自己去设置里一层层翻。
      */
     private void doOpenNavMode() {
         if (!ShellRunner.isReady()) {
-            toast("Shizuku 未就绪，请先在主界面授权");
+            toast("Shizuku not ready, please authorize on main UI first");
             return;
         }
-        toast("正在打开系统的「导航条」设置…");
+        toast("正在打On系统的「导航条」Settings...");
         pool.execute(() -> {
             // ⚠ $ 必须待在单引号里，否则会被 shell 当变量吃掉，解析成不存在的组件
             final String out = ShellRunner.run(
@@ -573,20 +573,20 @@ public class BetaActivity extends Activity {
                             + " || am start -a android.settings.DISPLAY_SETTINGS"
                             + " || am start -a android.settings.SETTINGS", 15);
             ui.post(() -> toast(out == null || out.contains("Error")
-                    ? "没打开，手动去：设置 → 显示 → 导航条"
-                    : "已打开，改成「导航条」即可"));
+                    ? "没打On，手动去: Settings → Display → 导航条"
+                    : "已打On，改成「导航条」即可"));
         });
     }
 
-    /** 「去掉应用黑边」的状态行：当场回读一个样本包的策略值 + 点过按钮没有 */
+    /** 「去掉应用黑边」的状态行: 当场回读一个样本包的策略值 + 点过按钮No */
     /**
      * 「外屏侧边栏」的其余设置。
      *
-     * <p>动画效果、位置（左/右 × 上/中/下）、面板内容、通知使用权状态与授权按钮。
+     * <p>动画效果、位置 (左/右 × 上/中/下) 、面板内容、Notifications使用权状态与授权按钮。
      *
      * <p>⚠ 位置与内容都必须"拆了重装"才生效 ⇒ 一律走
      * {@link VolumeKeyService#refreshSidebar()}；只改 prefs 是不会动的
-     * （感应带的窗口几何是在安装那一刻定死的，跟手势条的捕获带同一条道理）。
+     *  (感应带的窗口几何是在安装那一刻定死的，跟手势条的捕获带同一条道理) 。
      */
     private void bindSidebarPanel() {
         RadioGroup anim = findViewById(R.id.rgSidebarAnim);
@@ -601,7 +601,7 @@ public class BetaActivity extends Activity {
                 }
                 ExtPrefs.setSidebarStyle(this, pick);
                 VolumeKeyService.refreshSidebar();
-                toast("侧边栏动画：" + animName(pick));
+                toast("侧边栏动画: " + animName(pick));
             });
         }
 
@@ -650,21 +650,21 @@ public class BetaActivity extends Activity {
     }
 
     /**
-     * 「面板内容」那四个勾：0=通知 1=最近任务 2=返回 3=回到桌面。
+     * 「面板内容」那四个勾: 0=Notifications 1=Recents 2=Back 3=回到Home。
      *
-     * <p>这四个下标就是 {@link ExtPrefs#SIDEBAR_ITEM_IDS} 的顺序（跟布局里从上到下一致）——
+     * <p>这四个下标就是 {@link ExtPrefs#SIDEBAR_ITEM_IDS} 的顺序 (跟布局里从上到下一致) ——
      * 勾几项、面板上就留几档，档位顺序也照这个次序。
      */
-    /** 「动画效果」那三个的名字（日志与提示共用） */
+    /** 「动画效果」那三个的名字 (日志与提示共用)  */
     private static String animName(int kind) {
         return kind == 1 ? "调速齿轮" : (kind == 3 ? "抽奖轮盘" : "动力圆环");
     }
 
     /**
-     * 按存下来的次序把「面板内容」那四行填上：第 i 行放
+     * 按存下来的次序把「面板内容」那四行填上: 第 i 行放
      * {@link ExtPrefs#sidebarOrder(Context)} 里的第 i 个指令。
      *
-     * <p>⚠ 四行是<b>按位置</b>读出来的（cbSbItem0 ~ 3 就是从上面数第 1 ~ 4 行），
+     * <p>⚠ 四行是<b>按位置</b>读出来的 (cbSbItem0 ~ 3 就是从上面数第 1 ~ 4 行) ，
      * 换次序只是"把内容重写一遍" —— 不搬 View。ViewGroup 里挪孩子有过 parent 没摘干净、
      * 再 addView 直接抛的坑，不值当。
      *
@@ -701,10 +701,10 @@ public class BetaActivity extends Activity {
     }
 
     /**
-     * 勾上 / 取消某一项。
+     * 勾上 / Cancel某一项。
      *
      * <p>⚠ 参数是<b>指令号</b>，不是第几行 —— 勾选状态那四位是按
-     * {@link ExtPrefs#SIDEBAR_ITEM_IDS} 的下标存的，跟界面上的行号无关。
+     * {@link ExtPrefs#SIDEBAR_ITEM_IDS} 的下标存的，跟界面上的行号无Off。
      */
     private void setSbItem(int act, boolean isOn) {
         int at = ExtPrefs.itemIndex(act);
@@ -720,7 +720,7 @@ public class BetaActivity extends Activity {
         }
     }
 
-    /** 把第 at 行跟它上面（dir = -1）/ 下面（dir = +1）那行对调 */
+    /** 把第 at 行跟它上面 (dir = -1) / 下面 (dir = +1) 那行对调 */
     private void moveSbItemAt(int at, int dir) {
         int[] order = ExtPrefs.sidebarOrder(this);
         int to = at + dir;
@@ -735,36 +735,36 @@ public class BetaActivity extends Activity {
         VolumeKeyService.refreshSidebar();
     }
 
-    /** 到头那一侧的箭头压暗、也点不动（顶行没有"上"、底行没有"下"） */
+    /** 到头那一侧的箭头压暗、也点不动 (顶行没有"上"、底行没有"下")  */
     private static void dimSortArrow(View v, boolean usable) {
         v.setEnabled(usable);
         v.setAlpha(usable ? 1f : 0.22f);
     }
 
-    /** 通知使用权那一行的状态（每次进页面、每次授权完都刷） */
+    /** Notifications使用权那一行的状态 (每次进页面、每次授权完都刷)  */
     private void refreshNotifState() {
         TextView tv = findViewById(R.id.tvNotifState);
         if (tv != null) {
-            tv.setText("通知使用权：" + CoverNotifListener.statusText(this));
+            tv.setText("Notifications使用权: " + CoverNotifListener.statusText(this));
         }
     }
 
     /**
-     * 一键授「通知使用权」。
+     * 一键授「Notifications使用权」。
      *
-     * <p>这是跟无障碍**分开**的一把权限，系统设置里在「通知 → 通知使用权」。
+     * <p>这是跟无障碍**分On**的一把权限，系统设置里在「Notifications → Notifications使用权」。
      * 走 Shizuku 发 {@code cmd notification allow_listener} 就不用让用户自己去翻菜单。
      */
     private void doGrantNotif() {
         if (!ShellRunner.isReady()) {
-            toast("需要 Shizuku 才能一键授权（也可以去系统设置 → 通知 → 通知使用权里手动开）");
+            toast("需Requires Shizuku 才能一键授权 (也可以去系统设置 → Notifications → Notifications使用权里手动On) ");
             return;
         }
-        toast("正在授予通知使用权…");
+        toast("正在授予Notifications使用权...");
         final Context ctx = this;
         pool.execute(() -> {
             String out = ShellRunner.run(CoverNotifListener.grantCmd(ctx), 12);
-            android.util.Log.i("BetaActivity", "授予通知使用权 => " + out);
+            android.util.Log.i("BetaActivity", "授予Notifications使用权 => " + out);
             try {
                 Thread.sleep(700);
             } catch (InterruptedException ignored) {
@@ -773,7 +773,7 @@ public class BetaActivity extends Activity {
             final boolean ok = CoverNotifListener.granted(ctx);
             runOnUiThread(() -> {
                 refreshNotifState();
-                toast(ok ? "通知使用权已授予" : "授权好像没成，去系统设置里手动开一下");
+                toast(ok ? "Notifications使用权已授予" : "授权好像没成，去系统设置里手动On一下");
             });
         });
     }
@@ -784,11 +784,11 @@ public class BetaActivity extends Activity {
             return;
         }
         if (!CutoutPolicy.supported()) {
-            tv.setText("这台机器没有对应的功能号（sdk=" + Build.VERSION.SDK_INT
-                    + "，release=" + Build.VERSION.RELEASE + "），这个按钮用不了。");
+            tv.setText("这台机器没有对应的功能号 (sdk=" + Build.VERSION.SDK_INT
+                    + "，release=" + Build.VERSION.RELEASE + ") ，这个按钮用不了。");
             return;
         }
-        tv.setText("读取中…");
+        tv.setText("Loading…");
         final String probe = pickProbePackage();
         pool.execute(() -> {
             final int v = CutoutPolicy.read(this, probe);
@@ -799,18 +799,18 @@ public class BetaActivity extends Activity {
                 StringBuilder sb = new StringBuilder();
                 sb.append("样本　").append(probe).append(" 策略=");
                 if (v < 0) {
-                    sb.append("读不到（Shizuku 没就绪？）");
+                    sb.append("读不到 (Shizuku 没就绪？) ");
                 } else {
                     sb.append(v);
                     if (v == CutoutPolicy.POL_OFF) {
-                        sb.append("（铺进挖孔 ⇒ 没有黑边）");
+                        sb.append(" (铺进挖孔 ⇒ 没有黑边) ");
                     } else if (v == CutoutPolicy.POL_DEFAULT) {
-                        sb.append("（默认档）");
+                        sb.append(" (默认档) ");
                     }
                 }
                 sb.append(ExtPrefs.cutoutGlobal(this)
                         ? "\n上次　点过按钮" : "\n上次　没点过按钮");
-                sb.append("\n改动要对已经打开的应用生效，得把它重新拉起来一次。");
+                sb.append("\n改动要对已经打On的应用生效，得把它重新拉起来一次。");
                 tvEdgeState.setText(sb.toString());
             });
         });
@@ -819,7 +819,7 @@ public class BetaActivity extends Activity {
     /**
      * 回读用哪个包当样本。
      *
-     * <p>挑一个<b>一定装在机器上的第三方应用</b>：系统设置与我们自己都在下发时被跳过，
+     * <p>挑一个<b>一定装在机器上的第三方应用</b>: 系统设置与我们自己都在下发时被跳过，
      * 拿它们当样本说明不了问题。挑不到就退回设置 —— 它至少保证读得到。
      */
     private String pickProbePackage() {
@@ -836,7 +836,7 @@ public class BetaActivity extends Activity {
 
     // ================================================================== 首次进入的说明
 
-    /** 「Beta 实验室」的说明弹窗要不要再弹，存这儿 */
+    /** 「Beta Lab」的说明弹窗要不要再弹，存这儿 */
     private static final String FILE_INTRO = "extrot_beta";
     private static final String KEY_INTRO_OFF = "intro_off";
     /** 上次把这个"不再弹出"勾下去时是哪个 versionCode */
@@ -845,12 +845,12 @@ public class BetaActivity extends Activity {
     /**
      * 第一次进这一页时把说明弹出来。
      *
-     * <p>弹窗里带一个「默认不再弹出」勾选框：勾上之后再进就不弹了，想再看随时点标题右边那个 ⓘ
-     * （两处用的是同一段正文）。
+     * <p>弹窗里带一个「默认不再弹出」勾选框: 勾上之后再进就不弹了，想再看随时点标题右边那个 ⓘ
+     *  (两处用的是同一段正文) 。
      *
-     * <p>⚠ 这个「不再弹出」只在同一版里算数。用户要的是「别人装了我的新包，一进 Beta 实验室就能
+     * <p>⚠ 这个「不再弹出」只在同一版里算数。用户要的是「别人装了我的新包，一进 Beta Lab就能
      * 看到我的说明和注意事项」—— 换了一版就是新东西，之前那次「不再提醒」作废，重新弹一次。
-     * 所以勾的时候连版本号一起记，进来时对一下：对不上就照弹。
+     * 所以勾的时候连版本号一起记，进来时对一下: 对不上就照弹。
      */
     private void maybeShowIntro() {
         SharedPreferences sp = getSharedPreferences(FILE_INTRO, MODE_PRIVATE);
@@ -859,12 +859,12 @@ public class BetaActivity extends Activity {
         if (off || isFinishing()) {
             return;
         }
-        // 用自定义布局而不是 setMessage + setMultiChoiceItems：后者把勾选框挂在
-        // 正文下面，正文一长就先被裁掉（实测在封面屏上连正文都截断了）。
+        // 用自定义布局而不是 setMessage + setMultiChoiceItems: 后者把勾选框挂在
+        // 正文下面，正文一长就先被裁掉 (实测在封面屏上连正文都截断了) 。
         View body = getLayoutInflater().inflate(R.layout.dialog_beta_intro, null);
         final android.widget.CheckBox cb = body.findViewById(R.id.cbBetaIntroOff);
         new AlertDialog.Builder(this)
-                .setTitle("Beta 实验室")
+                .setTitle("Beta Lab")
                 .setView(body)
                 .setPositiveButton("知道了", (d, w) -> {
                     if (cb != null && cb.isChecked()) {
@@ -926,10 +926,10 @@ public class BetaActivity extends Activity {
             rotateReset.setOnClickListener(v -> doCoverRotateReset());
         }
 
-        // ---- 外屏自动旋转（v4.23）。跟上面那颗「旋转 90°」是同一件事的两半：那颗手动一下
-        //      一下点，这个让外屏自己跟着手机的横竖转（外屏原生不跟手机转）。下发要发 shell，
-        //      丢后台；回来再刷一次状态行，好让上面那行度数马上变成新值。
-        //      ⚠ 先 setChecked 再挂监听 —— 反了就等于"初始化那一发把用户的开关拨回去"（本页通例）。
+        // ---- Cover DisplayAuto-Rotate (v4.23) 。跟上面那颗「Rotation 90°」是同一件事的两半: 那颗手动一下
+        //      一下点，这个让外屏自己跟着手机的横竖转 (Cover DisplayNative不跟手机转) 。下发要发 shell，
+        //      丢Recents；回来再刷一次状态行，好让上面那行度数马上变成新值。
+        //      ⚠ 先 setChecked 再挂监听 —— 反了就等于"初始化那一发把用户的OnOff拨回去" (本页通例) 。
         Switch coverAutoRot = findViewById(R.id.swCoverAutoRot);
         if (coverAutoRot != null) {
             coverAutoRot.setChecked(CoverAutoRot.on(this));
@@ -942,12 +942,12 @@ public class BetaActivity extends Activity {
                     ui.post(() -> {
                         if (err != null) {
                             toast(err);
-                            // 没成 → 拨回去，别让开关停在没生效的位置上
+                            // 没成 → 拨回去，别让OnOff停在没生效的位置上
                             coverRotSyncing = true;
                             coverAutoRot.setChecked(!on);
                             coverRotSyncing = false;
                         } else {
-                            toast(on ? "外屏自动旋转：开" : "外屏自动旋转：关");
+                            toast(on ? "Cover DisplayAuto-Rotate: On" : "Cover DisplayAuto-Rotate: Off");
                         }
                         refreshCoverState();
                     });
@@ -970,14 +970,14 @@ public class BetaActivity extends Activity {
     }
 
     /**
-     * 「打开配置页」。
+     * 「打On配置页」。
      *
-     * <p>刻意做成跟「点外屏上那个齿轮」走同一条路（{@link SecondaryLauncher#launchOwn}），
-     * 而不是本机直接 {@code startActivity}：配置页是个 GridView + 搜索框的重界面，
-     * 放在外屏上打开才能顺手看见「改完外屏长什么样」。
+     * <p>刻意做成跟「点外屏上那个齿轮」走同一条路 ({@link SecondaryLauncher#launchOwn}) ，
+     * 而不是本机直接 {@code startActivity}: 配置页是个 GridView + 搜索框的重界面，
+     * 放在外屏上打On才能顺手看见「改完外屏长什么样」。
      *
      * <p>投屏不再要求 Shizuku —— 没有授权时 {@code launchOwn} 会走三星的封面屏通道；
-     * 两条都走不通才退化成普通启动（落在手机内屏），功能不残废，只是位置不对。
+     * 两条都走不通才退化成普通启动 (落在Internal Screen) ，功能不残废，只是位置不对。
      */
     private void openLauncherConfig() {
         int display = CoverDisplay.id(this);
@@ -996,7 +996,7 @@ public class BetaActivity extends Activity {
     /**
      * 「怎么钉到外屏」。
      *
-     * <p>这块只能在系统设置里手动完成，adb 代劳不了 —— 外屏托盘是三星桌面自己管的，
+     * <p>这块只能在系统设置里手动完成，adb 代劳不了 —— 外屏托盘是三星Home自己管的，
      * 没有对外接口能往里塞组件。所以这里只把路径说清楚，不让用户自己找。
      */
     private void showPinHelp() {
@@ -1010,7 +1010,7 @@ public class BetaActivity extends Activity {
                 .show();
     }
 
-    /** 「外屏自动旋转」那个开关跟着实况走（在主界面快捷操作、老虎机里拨过也跟得上） */
+    /** 「Cover DisplayAuto-Rotate」那个OnOff跟着实况走 (在主界面Quick Actions、老虎机里拨过也跟得上)  */
     private void refreshCoverAutoRotSwitch() {
         Switch sw = findViewById(R.id.swCoverAutoRot);
         if (sw == null) {
@@ -1031,13 +1031,13 @@ public class BetaActivity extends Activity {
         }
         int n = LauncherPrefs.apps(this).size();
         if (n == 0) {
-            tvLauncherState.setText("还没勾选应用。点「打开配置页」，在外屏上勾选要显示的应用。");
+            tvLauncherState.setText("还没勾选应用。点「打On配置页」，在外屏上勾选要显示的应用。");
         } else {
-            tvLauncherState.setText("已勾选 " + n + " 个应用。外屏上的启动器会自动跟着变，不用重新添加组件。");
+            tvLauncherState.setText("已勾选 " + n + " apps。外屏上的启动器会自动跟着变，不用重新添加组件。");
         }
     }
 
-    /** 读一次封面屏状态并刷新界面（后台读、主线程刷） */
+    /** 读一次封面屏状态并刷新界面 (Recents读、主线程刷)  */
     private void refreshCoverState() {
         pool.execute(() -> {
             CoverDisplay.State st = CoverDisplay.read(this);
@@ -1050,28 +1050,28 @@ public class BetaActivity extends Activity {
             return;
         }
         if (st.displayId <= 0) {
-            tvCoverState.setText("找不到封面屏。");
+            tvCoverState.setText("Cover screen not found。");
             return;
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append("面板原生   ").append(nz(st.physSize, "?")).append("   ").append(st.physDpi).append("dpi\n");
+        sb.append("PanelNative   ").append(nz(st.physSize, "?")).append("   ").append(st.physDpi).append("dpi\n");
         sb.append("当前覆盖   ");
         if (st.overridden()) {
-            sb.append(st.hasSizeOverride() ? st.overrideSize : "（未改分辨率）");
+            sb.append(st.hasSizeOverride() ? st.overrideSize : " (未改分辨率) ");
             sb.append("   ");
-            sb.append(st.hasDpiOverride() ? st.overrideDpi + "dpi" : "（未改 DPI）");
+            sb.append(st.hasDpiOverride() ? st.overrideDpi + "dpi" : " (未改 DPI) ");
         } else {
             sb.append("无");
         }
         sb.append('\n');
-        sb.append("旋转       ").append(CoverDisplay.degreeText(st.rotation));
+        sb.append("Rotation       ").append(CoverDisplay.degreeText(st.rotation));
         if (st.rotation != CoverDisplay.ROT_FREE) {
-            sb.append("（已锁定）");
+            sb.append(" (已锁定) ");
         }
         tvCoverState.setText(sb.toString());
 
-        // 面板原生值留一份，给默认预设和输入框用
+        // PanelNative值留一份，给默认预设和输入框用
         if (st.physSize != null && st.physSize.contains("x")) {
             String[] p = st.physSize.split("x");
             try {
@@ -1134,7 +1134,7 @@ public class BetaActivity extends Activity {
         }
         new AlertDialog.Builder(this)
                 .setTitle("恢复默认")
-                .setMessage("把封面屏的分辨率和 DPI 恢复成面板原生值？")
+                .setMessage("把封面屏的分辨率和 DPI 恢复成面板Native值？")
                 .setNegativeButton(android.R.string.cancel, null)
                 .setPositiveButton("恢复", (d, w) -> pool.execute(() -> {
                     String err = CoverDisplay.resetSize(this, true);
@@ -1264,7 +1264,7 @@ public class BetaActivity extends Activity {
                 .setTitle("删除预设")
                 .setMessage("删掉「" + p.name + "」（" + p.summary() + "）？")
                 .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton("删除", (d, w) -> {
+                .setPositiveButton("Delete", (d, w) -> {
                     CoverPresets.removeAt(this, presets, index);
                     renderPresets();
                 })
@@ -1274,13 +1274,13 @@ public class BetaActivity extends Activity {
     /**
      * 新增 / 编辑预设。
      *
-     * <p>没有引入额外的布局文件：这个弹窗只有三个输入框，用代码拼比再多一个 xml 更好维护
-     * （那些只有一处用到的布局文件散在 res/layout 里，回头很难判断能不能删）。
+     * <p>没有引入额外的布局文件: 这个弹窗只有三个输入框，用代码拼比再多一个 xml 更好维护
+     *  (那些只有一处用到的布局文件散在 res/layout 里，回头很难判断能不能删) 。
      *
      * @param editIndex 传 -1 表示新增
      */
     private void showPresetEditor(final int editIndex) {
-        // 状态还没读回来时 presets 是 null（首次读状态是异步的），这里补一次，
+        // 状态还没读回来时 presets 是 null (首次读状态是异步的) ，这里补一次，
         // 免得用户手快先点了「＋ 新增」就崩
         if (presets == null) {
             presets = CoverPresets.load(this, physW, physH, physDpi);
@@ -1337,7 +1337,7 @@ public class BetaActivity extends Activity {
             h.setText(String.valueOf(editing.h));
             dpi.setText(editing.dpi > 0 ? String.valueOf(editing.dpi) : "");
         } else {
-            // 新增时给个起点：当前面板原生尺寸
+            // 新增时给个起点: 当前面板Native尺寸
             w.setText(String.valueOf(physW > 0 ? physW : 748));
             h.setText(String.valueOf(physH > 0 ? physH : 720));
             dpi.setText(String.valueOf(physDpi > 0 ? physDpi : 340));
@@ -1383,7 +1383,7 @@ public class BetaActivity extends Activity {
         }
     }
 
-    // ---------------------------------------------------------------- 旋转
+    // ---------------------------------------------------------------- Rotation
 
     private void doCoverRotate() {
         if (needShizuku()) {
@@ -1392,7 +1392,7 @@ public class BetaActivity extends Activity {
         pool.execute(() -> {
             int deg = CoverDisplay.rotate(this);
             ui.post(() -> {
-                toast(deg < 0 ? "旋转失败" : ("外屏已转到 " + CoverDisplay.degreeText(deg)));
+                toast(deg < 0 ? "RotationFailed" : ("外屏已转到 " + CoverDisplay.degreeText(deg)));
                 refreshCoverState();
             });
         });
@@ -1405,7 +1405,7 @@ public class BetaActivity extends Activity {
         pool.execute(() -> {
             boolean ok = CoverDisplay.resetRotation(this);
             ui.post(() -> {
-                toast(ok ? "外屏已恢复自动旋转" : "恢复失败");
+                toast(ok ? "外屏已恢复Auto-Rotate" : "恢复Failed");
                 refreshCoverState();
             });
         });
@@ -1417,7 +1417,7 @@ public class BetaActivity extends Activity {
         tvAssistState = findViewById(R.id.tvAssistState);
         tvVolumeState = findViewById(R.id.tvVolumeState);
 
-        // 「侧键操作」：先选按键，下面只显示那一个按键的设置块
+        // 「侧键操作」: 先选按键，下面只显示那一个按键的设置块
         keyTarget = QuickPrefs.sideKey(this);
         View keyAssist = findViewById(R.id.btnKeyAssist);
         if (keyAssist != null) {
@@ -1495,7 +1495,7 @@ public class BetaActivity extends Activity {
         refreshQuickState();
     }
 
-    /** 当前选中的音量键对应的动作（「测试」按钮用）；选的是电源键时按上键算 */
+    /** 当前选中的音量键对应的动作 (「测试」按钮用) ；选的是电源键时按上键算 */
     private String currentVolumeAction() {
         return QuickPrefs.SIDE_VOL_DOWN.equals(keyTarget)
                 ? QuickPrefs.volumeDownAction(this)
@@ -1505,10 +1505,10 @@ public class BetaActivity extends Activity {
     /**
      * 按当前选中的按键决定露出哪一块设置，并给三个 chip 上选中态。
      *
-     * <p>两块设置一直都在布局里（id 沿用旧版），只是轮着显示 ——
+     * <p>两块设置一直都在布局里 (id 沿用旧版) ，只是轮着显示 ——
      * 这样 refreshQuickState 那套逻辑一个字都不用改。
      *
-     * <p>上键与下键<b>共用</b>同一个音量块：一次只配一个键（跟芯片的语义一致），
+     * <p>上键与下键<b>共用</b>同一个音量块: 一次只配一个键 (跟芯片的语义一致) ，
      * 块里那两个按钮的文案跟着当前 chip 走。
      */
     private void applyKeySelection() {
@@ -1546,15 +1546,15 @@ public class BetaActivity extends Activity {
         boolean a11y = QuickPrefs.isAccessibilityEnabled(this);
         if (tvVolumeState != null) {
             tvVolumeState.setText(
-                    "无障碍服务：" + (a11y ? "已开启" : "未开启（必须开启才能拦到音量键）")
-                            + "\n长按音量上键：" + QuickActions.label(this, QuickPrefs.volumeUpAction(this))
-                            + "\n长按音量下键：" + QuickActions.label(this, QuickPrefs.volumeDownAction(this))
+                    "无障碍服务: " + (a11y ? "已Enabled" : "未Enabled (必须Enabled才能拦到音量键) ")
+                            + "\nLong Press Volume Up：" + QuickActions.label(this, QuickPrefs.volumeUpAction(this))
+                            + "\nLong Press Volume Down：" + QuickActions.label(this, QuickPrefs.volumeDownAction(this))
                             + (QuickPrefs.isVolumeKeyEnabled(this)
-                                    ? "" : "\n（总开关已关，两个键都不拦）"));
+                                    ? "" : "\n (总OnOff已Off，两个键都不拦) "));
         }
         if (tvAssistState != null) {
-            tvAssistState.setText("动作：" + QuickActions.label(this, QuickPrefs.assistAction(this))
-                    + "\n当前数字助手：读取中…");
+            tvAssistState.setText("动作: " + QuickActions.label(this, QuickPrefs.assistAction(this))
+                    + "\n当前数字助手: Loading...");
         }
         if (tvExternalAction != null) {
             tvExternalAction.setText(QuickActions.ACTION_RUN
@@ -1568,8 +1568,8 @@ public class BetaActivity extends Activity {
                 final String cur = ShellRunner.run("settings get secure assistant").trim();
                 ui.post(() -> {
                     if (tvAssistState != null && !isFinishing()) {
-                        tvAssistState.setText("动作：" + QuickActions.label(this, QuickPrefs.assistAction(this))
-                                + "\n当前数字助手：" + (TextUtils.isEmpty(cur) || "null".equals(cur) ? "（未设置）" : cur));
+                        tvAssistState.setText("动作: " + QuickActions.label(this, QuickPrefs.assistAction(this))
+                                + "\n当前数字助手: " + (TextUtils.isEmpty(cur) || "null".equals(cur) ? " (未设置) " : cur));
                     }
                 });
             });
@@ -1591,7 +1591,7 @@ public class BetaActivity extends Activity {
         // 白名单 = 内置四条 + 自定义指令，所以要从 options 取、不能再用 ALL
         final String[] base = QuickActions.options(this);
         // 音量键多挂一项「无」= 这个键不绑动作，长按交回系统调音量。
-        // 电源键不给这一项：它靠系统"数字助手"位接入，选「无」并不能把助手位还回去，
+        // 电源键不给这一项: 它靠系统"数字助手"位接入，选「无」并不能把助手位还回去，
         // 那得去系统侧键设置里改 —— 给了反而误导。
         final String[] keys;
         if (forAssist) {
@@ -1618,7 +1618,7 @@ public class BetaActivity extends Activity {
 
         new AlertDialog.Builder(this)
                 .setTitle(forAssist ? "长按电源键时执行"
-                        : (forDown ? "长按音量下键时执行" : "长按音量上键时执行"))
+                        : (forDown ? "Long Press Volume Down时执行" : "Long Press Volume Up时执行"))
                 .setSingleChoiceItems(labels, checked, (d, which) -> {
                     String key = keys[which];
                     if (forAssist) {
@@ -1637,15 +1637,15 @@ public class BetaActivity extends Activity {
     /**
      * 把本应用的快捷入口设成系统「数字助手」。
      *
-     * <p>这是「长按电源键」唯一走得通的接法：三星侧键设置里长按的选项只有
-     * 「唤醒数字助手 / 电源菜单 / 无」，应用没有别的办法占用它。
+     * <p>这是「长按电源键」唯一走得通的接法: 三星侧键设置里长按的选项只有
+     * 「唤醒数字助手 / 电源菜单 / 无」，应用没有别的办法Usage它。
      *
-     * <p>⚠️ 系统的助手位只有一个，设成本应用就会把原来的顶掉（这台机器上原本是
-     * 「阿田自用」），所以必须先弹窗把现状摆出来再确认。
+     * <p>⚠️ 系统的助手位只有一个，设成本应用就会把原来的顶掉 (这台机器上原本是
+     * 「阿田自用」) ，所以必须先弹窗把现状摆出来再确认。
      */
     private void confirmSetAssistant() {
         if (!ShellRunner.isReady()) {
-            toast("Shizuku 未就绪，请先在主界面授权");
+            toast("Shizuku not ready, please authorize on main UI first");
             return;
         }
         final String target = getPackageName() + "/" + QuickActionActivity.class.getName();
@@ -1653,17 +1653,17 @@ public class BetaActivity extends Activity {
             final String cur = ShellRunner.run("settings get secure assistant").trim();
             ui.post(() -> new AlertDialog.Builder(this)
                     .setTitle("设为数字助手")
-                    .setMessage("当前数字助手：\n" + (TextUtils.isEmpty(cur) ? "（未设置）" : cur)
-                            + "\n\n将改为：\n" + target
+                    .setMessage("当前数字助手: \n" + (TextUtils.isEmpty(cur) ? " (未设置) " : cur)
+                            + "\n\n将改为: \n" + target
                             + "\n\n系统的助手位只有一个，原来的会被顶掉。"
-                            + "设置完成后再去「设置 → 高级功能 → 侧键」把长按设为「唤醒数字助手」，"
+                            + "设置完成后再去「Settings → 高级功能 → 侧键」把长按设为「唤醒数字助手」，"
                             + "长按电源键就会执行上面选的动作。")
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton("设为助手", (d, w) -> pool.execute(() -> {
                         ShellRunner.run("settings put secure assistant " + target);
                         final String after = ShellRunner.run("settings get secure assistant").trim();
                         ui.post(() -> {
-                            toast(target.equals(after) ? "已设为数字助手" : "设置未生效，结果：" + after);
+                            toast(target.equals(after) ? "已设为数字助手" : "设置未生效，结果: " + after);
                             refreshQuickState();
                         });
                     }))
@@ -1672,19 +1672,19 @@ public class BetaActivity extends Activity {
     }
 
     /**
-     * 「开启无障碍服务」的入口。
+     * 「Enabled无障碍服务」的入口。
      *
      * <p>⚠️ Android 13 起，targetSdk ≥ 33 且非商店安装的应用，系统会以「受限设置」拦下无障碍授权
-     * （提示「系统已拒绝向此应用授予权限」）。One UI 8 又把设置里的「允许限制性设置」入口砍了
-     * （应用信息页没有溢出菜单），UI 上无从解禁 —— 所以跳无障碍设置前先读一次
-     * {@code appops get … ACCESS_RESTRICTED_SETTINGS}，没允许就先弹窗执行允许指令，再跳。
+     *  (Tip「系统已拒绝向此应用授予权限」) 。One UI 8 又把设置里的「Allow限制性设置」入口砍了
+     *  (应用信息页没有溢出菜单) ，UI 上无从解禁 —— 所以跳无障碍设置前先读一次
+     * {@code appops get ... ACCESS_RESTRICTED_SETTINGS}，没Allow就先弹窗执行Allow指令，再跳。
      */
     private void openAccessibilitySettings() {
         if (!ShellRunner.isReady()) {
-            toast("Shizuku 未就绪，请先在主界面授权");
+            toast("Shizuku not ready, please authorize on main UI first");
             return;
         }
-        toast("正在检查限制性设置…");
+        toast("正在检查限制性设置...");
         pool.execute(() -> {
             final String st = ShellRunner.run(
                     "appops get " + getPackageName() + " ACCESS_RESTRICTED_SETTINGS").trim();
@@ -1704,31 +1704,31 @@ public class BetaActivity extends Activity {
         try {
             startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
             // 名字直接取服务 label，保证跟系统列表里显示的一模一样，改名不用两头改
-            toast("在列表里找到「" + getString(R.string.a11y_service_label) + "」并开启");
+            toast("在列表里找到「" + getString(R.string.a11y_service_label) + "」并Enabled");
         } catch (Throwable t) {
-            toast("打不开无障碍设置，请手动进入");
+            toast("打不On无障碍设置，请手动进入");
         }
     }
 
     /**
-     * 弹窗确认并执行「允许限制性设置」。
+     * 弹窗确认并执行「Allow限制性设置」。
      *
-     * @param jumpAfter 执行成功后是否接着跳无障碍设置
-     *                  （从「开启无障碍服务」进来是 true，从指令卡按钮进来是 false）
+     * @param jumpAfter 执行Success后是否接着跳无障碍设置
+     *                   (从「Enabled无障碍服务」进来是 true，从指令卡按钮进来是 false)
      */
     private void confirmAllowRestricted(final boolean jumpAfter) {
         if (!ShellRunner.isReady()) {
-            toast("Shizuku 未就绪，请先在主界面授权");
+            toast("Shizuku not ready, please authorize on main UI first");
             return;
         }
         final String cmd = "appops set " + getPackageName() + " ACCESS_RESTRICTED_SETTINGS allow";
         new AlertDialog.Builder(this)
-                .setTitle("允许限制性设置")
-                .setMessage("本应用尚未被允许「限制性设置」，系统会因此拒绝授予无障碍权限。"
-                        + "\n\n将执行指令（以 shell 身份）：\n" + cmd
+                .setTitle("Allow限制性设置")
+                .setMessage("本应用尚未被Allow「限制性设置」，系统会因此拒绝授予无障碍权限。"
+                        + "\n\n将执行指令 (以 shell 身份) : \n" + cmd
                         + "\n\n" + (jumpAfter
-                        ? "执行成功后会自动跳到无障碍设置。"
-                        : "执行成功后即可到无障碍设置里开启服务。"))
+                        ? "执行Success后会自动跳到无障碍设置。"
+                        : "执行Success后即可到无障碍设置里EnabledService。"))
                 .setNegativeButton(android.R.string.cancel, null)
                 .setPositiveButton("执行", (d, w) -> pool.execute(() -> {
                     ShellRunner.run(cmd);
@@ -1737,12 +1737,12 @@ public class BetaActivity extends Activity {
                     final boolean ok = after.contains(": allow");
                     ui.post(() -> {
                         if (ok) {
-                            toast("已允许限制性设置");
+                            toast("已Allow限制性设置");
                             if (jumpAfter) {
                                 jumpA11y();
                             }
                         } else {
-                            toast("执行未生效，当前状态：" + after);
+                            toast("执行未生效，当前状态: " + after);
                         }
                     });
                 }))
@@ -1750,12 +1750,12 @@ public class BetaActivity extends Activity {
     }
 
     /**
-     * 一键拿「写入安全设置」权限（{@code WRITE_SECURE_SETTINGS}）。
+     * 一键拿「写入安全设置」Permission ({@code WRITE_SECURE_SETTINGS}) 。
      *
      * <p>它是一条 development 级权限，普通安装拿不到，只能借 shell 身份 {@code pm grant} 授一次。
      * 授过就一直有效，重启、覆盖安装都不用再授。
      *
-     * <p>这只是让应用能写系统设置项（无线调试开关等），不会改手机现在的状态。
+     * <p>这只是让应用能写系统设置项 (无线调试OnOff等) ，不会改手机现在的状态。
      */
     private void doGrantSecure() {
         final String perm = android.Manifest.permission.WRITE_SECURE_SETTINGS;
@@ -1764,11 +1764,11 @@ public class BetaActivity extends Activity {
             return;
         }
         if (!ShellRunner.isReady()) {
-            toast("需要 Shizuku 才能一键授权");
+            toast("需Requires Shizuku 才能一键授权");
             return;
         }
         final String cmd = "pm grant " + getPackageName() + " " + perm;
-        toast("正在授权…");
+        toast("正在授权...");
         pool.execute(() -> {
             String out = ShellRunner.run(cmd, 12);
             android.util.Log.i("BetaActivity", "授予安全设置权限 => " + out);
@@ -1784,18 +1784,18 @@ public class BetaActivity extends Activity {
     }
 
     private void runAction(final String key) {
-        // ★ 无线调试这条动作免 Shizuku —— 它存在的理由就是"Shizuku 起不来时打开它"，
-        //   卡在这里等于把死循环续上（见 QuickActions.run 里同一处判据）。
+        // ★ 无线调试这条动作免 Shizuku —— 它存在的理由就是"Shizuku 起不来时打On它"，
+        //   卡在这里等于把死循环续上 (见 QuickActions.run 里同一处判据) 。
         if (!ShellRunner.isReady() && !QuickActions.KEY_ADB_WIFI.equals(key)) {
-            toast("Shizuku 未就绪，请先在主界面授权");
+            toast("Shizuku not ready, please authorize on main UI first");
             return;
         }
-        toast("执行中…");
+        toast("执行中...");
         pool.execute(() -> {
             String err = QuickActions.run(this, key);
             ui.post(() -> {
                 toast(err == null
-                        ? (QuickActions.label(this, key) + " 已完成")
+                        ? (QuickActions.label(this, key) + " Completed")
                         : (QuickActions.label(this, key) + "：" + err));
                 refreshCoverState();
             });
@@ -1835,7 +1835,7 @@ public class BetaActivity extends Activity {
         lp.topMargin = dp(6);
         row.setLayoutParams(lp);
 
-        // 第一行：名字 + 右边那串 key（外部调用要用到它）
+        // 第一行: 名字 + 右边那串 key (外部调用要用到它)
         LinearLayout head = new LinearLayout(this);
         head.setOrientation(LinearLayout.HORIZONTAL);
         head.setGravity(Gravity.CENTER_VERTICAL);
@@ -1872,7 +1872,7 @@ public class BetaActivity extends Activity {
 
         TextView run = cmdBtn("执行", v -> runAction(CustomCmds.KEY_PREFIX + c.id));
         TextView edit = cmdBtn("编辑", v -> showCmdEditor(c));
-        TextView del = cmdBtn("删除", v -> confirmDeleteCmd(c));
+        TextView del = cmdBtn("Delete", v -> confirmDeleteCmd(c));
         ((LinearLayout.LayoutParams) run.getLayoutParams()).rightMargin = dp(8);
         ((LinearLayout.LayoutParams) edit.getLayoutParams()).rightMargin = dp(8);
         btns.addView(run);
@@ -1882,7 +1882,7 @@ public class BetaActivity extends Activity {
         return row;
     }
 
-    /** 列表行里的一颗小按钮（三颗等宽并排） */
+    /** 列表行里的一颗小按钮 (三颗等宽并排)  */
     private TextView cmdBtn(String text, View.OnClickListener l) {
         TextView b = new TextView(this);
         b.setText(text);
@@ -1897,7 +1897,7 @@ public class BetaActivity extends Activity {
         return b;
     }
 
-    /** 新增（editing = null）或编辑一条自定义指令 */
+    /** 新增 (editing = null) 或编辑一条自定义指令 */
     private void showCmdEditor(final CustomCmds.Cmd editing) {
         LinearLayout box = new LinearLayout(this);
         box.setOrientation(LinearLayout.VERTICAL);
@@ -1905,7 +1905,7 @@ public class BetaActivity extends Activity {
         box.setPadding(pad, dp(8), pad, 0);
 
         final EditText name = new EditText(this);
-        name.setHint("名称，例如 关掉蓝牙");
+        name.setHint("名称，例如 Off掉Bluetooth");
         if (editing != null) {
             name.setText(editing.name);
         }
@@ -1944,9 +1944,9 @@ public class BetaActivity extends Activity {
     private void confirmDeleteCmd(final CustomCmds.Cmd c) {
         new AlertDialog.Builder(this)
                 .setTitle("删除指令")
-                .setMessage("删除「" + c.name + "」？\n\n侧键上如果正挂着它，会变成「自定义指令（已删除）」。")
+                .setMessage("Delete「" + c.name + "」？\n\n侧键上如果正挂着它，会变成「Custom Command (Deleted)」。")
                 .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton("删除", (d, w) -> {
+                .setPositiveButton("Delete", (d, w) -> {
                     CustomCmds.remove(this, c.id);
                     renderCustomCmds();
                     refreshQuickState();
@@ -1959,10 +1959,10 @@ public class BetaActivity extends Activity {
             ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
             if (cm != null) {
                 cm.setPrimaryClip(ClipData.newPlainText("action", QuickActions.ACTION_RUN));
-                toast("已复制：" + QuickActions.ACTION_RUN);
+                toast("已复制: " + QuickActions.ACTION_RUN);
             }
         } catch (Throwable t) {
-            toast("复制失败");
+            toast("复制Failed");
         }
     }
 }

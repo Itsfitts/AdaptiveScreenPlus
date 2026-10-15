@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ⓘ 的按压反馈：只在水纹出现时画东西，平时是透明的。
--->
+  ⓘ ：，。-->
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
     android:color="#40808080">
 

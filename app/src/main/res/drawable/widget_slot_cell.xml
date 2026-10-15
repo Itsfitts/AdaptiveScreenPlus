@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  老虎机格子的底（常态）：比卡片再深一档的凹槽，让里面的字跳出来。
-  中奖时换成 widget_slot_cell_win（同一套圆角、换金色描边）。
--->
+  Slot Machine（）：，。
+   widget_slot_cell_win（、）。-->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <solid android:color="#FF2C2E33" />

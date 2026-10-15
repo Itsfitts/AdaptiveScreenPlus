@@ -6,10 +6,10 @@ import android.graphics.Path;
 import android.graphics.RectF;
 
 /**
- * 侧边栏几套动画共用的一小撮画笔工具：一档指令（返回 / 后台 / 通知 / 桌面）的<b>名字</b>，
+ * 侧边栏几套动画共用的一小撮画笔工具: 一档指令 (Back / Recents / Notifications / Home) 的<b>名字</b>，
  * 以及那个手画的小图标。
  *
- * <p><b>为什么单独拎出来</b>：几套动画挂的是同一组指令，图标与叫法必须一模一样 ——
+ * <p><b>为什么单独拎出来</b>: 几套动画挂的是同一组指令，图标与叫法必须一模一样 ——
  * 各画各的，改一处忘一处，几套动画就会走形。以后新增第三套动画直接调这里。
  *
  * <p>⚠ {@link CoverWheel} 里还留着自己的一份同源代码 —— 那一套的观感用户已经验收过，
@@ -24,13 +24,13 @@ final class CoverGlyphs {
     static String label(int act) {
         switch (act) {
             case ExtPrefs.RING_BACK:
-                return "返回";
+                return "Back";
             case ExtPrefs.RING_RECENTS:
-                return "后台";
+                return "Recents";
             case ExtPrefs.RING_NOTIFY:
-                return "通知";
+                return "Notifications";
             case ExtPrefs.RING_HOME:
-                return "桌面";
+                return "Home";
             default:
                 return "空";
         }
@@ -39,12 +39,12 @@ final class CoverGlyphs {
     /**
      * 画一档指令的小图标。
      *
-     * @param glyph 描边笔（STROKE + 圆头圆角）
-     * @param dot   实心笔：画通知下面那个小圆点用，函数里会把它改成 FILL
+     * @param glyph 描边笔 (STROKE + 圆头圆角)
+     * @param dot   实心笔: 画Notifications下面那个小圆点用，函数里会把它改成 FILL
      * @param path  借用的路径，进来会 reset
      * @param rect  借用的矩形，进来会被改写
-     * @param dir   朝屏内的方向：+1 = 朝右，-1 = 朝左（决定返回箭头指哪边）
-     * @param s     图标边长（px）
+     * @param dir   朝屏内的方向: +1 = 朝右，-1 = 朝左 (决定Back箭头指哪边)
+     * @param s     图标边长 (px)
      */
     static void draw(Canvas cv, Paint glyph, Paint dot, Path path, RectF rect,
                      int act, float x, float y, float s, float dir) {
@@ -92,7 +92,7 @@ final class CoverGlyphs {
                 cv.drawRoundRect(rect, s * 0.14f, s * 0.14f, glyph);
                 break;
             default:
-                // 这一档没配指令：画个空心圈占位
+                // 这一档没配指令: 画个空心圈占位
                 cv.drawCircle(x, y, s * 0.5f, glyph);
                 break;
         }

@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  配置页顶栏的「背景图片」图标（Material 的 image 形状）。
-  实心方块 + 挖空的山 —— 跟同一排的齿轮、排序图标同一个路子（实心/线条混着用，
-  全换成描边反而谁也认不出来）。
--->
+  Top Bar「」（Material  image ）。
+   +  —— 、（/，
+  ）。-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"

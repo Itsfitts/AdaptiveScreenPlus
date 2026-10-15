@@ -16,11 +16,11 @@ import rikka.shizuku.Shizuku;
 import rikka.shizuku.ShizukuBinderWrapper;
 
 /**
- * 通过 Shizuku 以 shell（ADB）身份执行命令。
+ * 通过 Shizuku 以 shell (ADB) 身份执行命令。
  *
- * 说明：Shizuku API 13 把 {@code Shizuku.newProcess} 改成了 private，
- * 但底层 {@code IShizukuService.newProcess} 依然是公开接口，
- * 所以这里直接用 Shizuku 服务 binder 调它。
+ * 说明: Shizuku API 13 把 {@code Shizuku.newProcess} 改成了 private，
+ * 但底层 {@code IShizukuService.newProcess} 依然是公On接口，
+ * 所以这里直接用 Shizuku Service binder 调它。
  */
 public final class ShellRunner {
 
@@ -61,7 +61,7 @@ public final class ShellRunner {
     private static IShizukuService service() throws Exception {
         IBinder binder = Shizuku.getBinder();
         if (binder == null) {
-            throw new IllegalStateException("Shizuku binder 为空");
+            throw new IllegalStateException("Shizuku binder is null");
         }
         IShizukuService direct = IShizukuService.Stub.asInterface(binder);
         try {
@@ -75,10 +75,10 @@ public final class ShellRunner {
         }
     }
 
-    /** 执行一条 shell 命令，返回合并后的 stdout/stderr */
+    /** 执行一条 shell 命令，Back合并后的 stdout/stderr */
     public static String run(String cmd) {
         if (!isReady()) {
-            return "ERR: Shizuku 未就绪";
+            return "ERR: Shizuku not ready";
         }
         IRemoteProcess rp = null;
         try {
@@ -109,24 +109,24 @@ public final class ShellRunner {
     /**
      * 带读取上限的 {@link #run}。
      *
-     * <p>为什么必须：{@code input} 是「等结果」模式，目标屏<b>没有焦点窗口</b>时 InputDispatcher
-     * 会一直等（实测一条命令卡 <b>8~26 秒</b>）。shell 端 {@code timeout 2} 兜不住 ——
+     * <p>为什么必须: {@code input} 是「等结果」Mode，目标屏<b>没有焦点窗口</b>时 InputDispatcher
+     * 会一直等 (实测一条命令卡 <b>8~26 秒</b>) 。shell 端 {@code timeout 2} 兜不住 ——
      * {@code timeout} 只杀得掉直接子进程，被孤立的 {@code input} 继续持有那条管道，
-     * 这端要读到 EOF 才回来 ⇒ 仍 20 秒一条，队列全堵死，后续点击还会被丢掉。
+     * 这端要Read EOF 才回来 ⇒ 仍 20 秒一条，队列全堵死，后续点击还会被丢掉。
      *
-     * <p>所以上限必须加在<b>我们自己这一端</b>：读取丢给旁路线程，主线程最多等
-     * {@code timeoutSec} 秒，到点 {@code destroy()} 掉进程（管道随之关闭，旁路线程自然退出）。
-     * 命令该送还是送出去了（注入发生在 wait 之前），超时丢掉的只是结果回显 ——
+     * <p>所以上限必须加在<b>我们自己这一端</b>: 读取丢给旁路线程，主线程最多等
+     * {@code timeoutSec} 秒，到点 {@code destroy()} 掉进程 (管道随之Disabled，旁路线程自然退出) 。
+     * 命令该送还是送出去了 (注入发生在 wait 之前) ，超时丢掉的只是结果回显 ——
      * 事件进管线的顺序仍按提交顺序，连发不会乱序。
      *
-     * @param timeoutSec ≤0 表示不限时（{@code dumpsys} / {@code screencap} 那种大输出走原路）
+     * @param timeoutSec ≤0 表示不限时 ({@code dumpsys} / {@code screencap} 那种大输出走原路)
      */
     public static String run(String cmd, int timeoutSec) {
         if (timeoutSec <= 0) {
             return run(cmd);
         }
         if (!isReady()) {
-            return "ERR: Shizuku 未就绪";
+            return "ERR: Shizuku not ready";
         }
         IRemoteProcess rp = null;
         final String[] box = new String[]{""};
@@ -173,14 +173,14 @@ public final class ShellRunner {
     }
 
     /**
-     * 只跑命令、把 stdout <b>原样读成字节</b>（不去碰 stderr，也不按行拆）。
+     * 只跑命令、把 stdout <b>原样读成字节</b> (不去碰 stderr，也不按行拆) 。
      *
-     * <p>为什么不能复用 {@link #run}：那个走 {@code BufferedReader.readLine()}，是给文本输出
+     * <p>为什么不能复用 {@link #run}: 那个走 {@code BufferedReader.readLine()}，是给文本输出
      * 准备的 —— 拿它读 {@code screencap} 的 PNG，会在第一个换行字节处断掉、还会拼上 stderr 的
      * 提示行，出来的是坏图。抓画面的路只有这一条。
      *
-     * @param maxBytes 上限，防命令异常时无限读把内存吃光
-     * @return 读到的字节；没授权 / 起不了进程返回 null。<b>阻塞</b>
+     * @param maxBytes 上限，防命令异常时无限读把RAM吃光
+     * @return 读到的字节；没授权 / 起不了进程Back null。<b>阻塞</b>
      */
     public static byte[] capture(String cmd, int maxBytes) {
         if (!isReady()) {
@@ -215,7 +215,7 @@ public final class ShellRunner {
         }
     }
 
-    /** 起一个 shell 进程（拿得到进程就能边跑边读，见 {@link #capture}） */
+    /** 起一个 shell 进程 (拿得到进程就能边跑边读，见 {@link #capture})  */
     private static IRemoteProcess startProcess(String cmd) {
         try {
             IShizukuService svc = service();

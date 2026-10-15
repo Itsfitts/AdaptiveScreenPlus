@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  副屏键盘（伪应用）—— 在封面屏上打字，字送进目标屏那些应用的光标处。
+  （）—— ，。
 
-  为什么不做"自己画一套键盘"：中文根本没法在应用侧直接注入（`input text` 只认
-  ASCII），所以这里走"用系统输入法打、按发送键推过去"这条路（见 KeyActivity 的说明）。
-  于是这页的主体是一个输入框 —— 点一下它，用户平时用的输入法就起来了。
--->
+  ""：（`input text`
+  ASCII），"、"（ KeyActivity ）。
+   —— ，。-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -34,7 +33,7 @@
             android:textSize="14sp"
             android:textStyle="bold" />
 
-        <!-- ⓘ：功能 / 用法 / 注意事项 全在这里，界面里不铺说明文字 -->
+        <!-- ⓘ： /  /  ， -->
         <TextView
             android:id="@+id/iKeyTop"
             style="@style/BetaInfoIcon"

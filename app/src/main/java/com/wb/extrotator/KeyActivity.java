@@ -13,14 +13,14 @@ import android.widget.TextView;
 /**
  * 副屏键盘 —— 在封面屏上打字，字推进外接屏那个应用的光标处。
  *
- * <p>做成「输入框 + 发送」而不是自制键盘，是因为中文送不进去：{@code input text} 只敲得出
- * 虚拟键盘上的 ASCII 字符，应用侧无法把中文直接注入别的应用的输入框。两条路都做了：
+ * <p>做成「输入框 + 发送」而不是自制键盘，是因为中文送不进去: {@code input text} 只敲得出
+ * 虚拟键盘上的 ASCII 字符，应用侧无法把中文直接注入别的应用的输入框。两条路都做了:
  * <ul>
- *   <li>直接键入（{@code input text}）—— 纯英文 / 数字最快；</li>
- *   <li>剪贴板 + 粘贴键（发一次 {@code KEYCODE_PASTE}）—— 中文、emoji、长文本走这条。</li>
+ *   <li>直接键入 ({@code input text}) —— 纯英文 / 数字最快；</li>
+ *   <li>剪贴板 + 粘贴键 (发一次 {@code KEYCODE_PASTE}) —— 中文、emoji、长文本走这条。</li>
  * </ul>
  *
- * <p>⚠ 前提：外接屏那边光标已经落在输入框里。注入的按键只走「当前有焦点的窗口」，
+ * <p>⚠ 前提: 外接屏那边光标已经落在输入框里。注入的按键只走「当前有焦点的窗口」，
  * 没焦点的输入框收不到 —— 先在那边点一下输入框。
  */
 public class KeyActivity extends Activity {
@@ -49,9 +49,9 @@ public class KeyActivity extends Activity {
         findViewById(R.id.btnKeyClose).setOnClickListener(v -> finish());
 
         findViewById(R.id.btnKeySend).setOnClickListener(v -> doSend());
-        findViewById(R.id.btnKeyEnter).setOnClickListener(v -> sendKey("KEYCODE_ENTER", "回车"));
-        findViewById(R.id.btnKeyDel).setOnClickListener(v -> sendKey("KEYCODE_DEL", "退格"));
-        findViewById(R.id.btnKeySpace).setOnClickListener(v -> sendKey("KEYCODE_SPACE", "空格"));
+        findViewById(R.id.btnKeyEnter).setOnClickListener(v -> sendKey("KEYCODE_ENTER", "Enter"));
+        findViewById(R.id.btnKeyDel).setOnClickListener(v -> sendKey("KEYCODE_DEL", "Backspace"));
+        findViewById(R.id.btnKeySpace).setOnClickListener(v -> sendKey("KEYCODE_SPACE", "Space"));
         findViewById(R.id.btnKeyTab).setOnClickListener(v -> sendKey("KEYCODE_TAB", "Tab"));
         findViewById(R.id.btnKeyEsc).setOnClickListener(v -> sendKey("KEYCODE_ESCAPE", "Esc"));
         findViewById(R.id.btnKeyClear).setOnClickListener(v -> {
@@ -84,9 +84,9 @@ public class KeyActivity extends Activity {
     /**
      * 发送输入框里的内容。
      *
-     * <p>方式三档（按钮上能看见当前是哪档）：自动 / 直接键入 / 剪贴板。
+     * <p>方式三档 (按钮上能看见当前是哪档) : 自动 / 直接键入 / 剪贴板。
      * 自动的判据就是"有没有非 ASCII 字符" —— 有中文就走剪贴板，
-     * 纯英文数字就直接敲（少动一次剪贴板，也少一次系统"已复制"的提示）。
+     * 纯英文数字就直接敲 (少动一次剪贴板，也少一次系统"已复制"的提示) 。
      */
     private void doSend() {
         String text = etText.getText() == null ? "" : etText.getText().toString();
@@ -160,7 +160,7 @@ public class KeyActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        // 这一页在用的时候，别让本应用的旋转 / 分辨率那套来动显示设置（见 ExtControlMode）
+        // 这一页在用的时候，别让本应用的旋转 / 分辨率那套来动显示设置 (见 ExtControlMode)
         ExtControlMode.on();
     }
 

@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  「外观」图标的开启态：同一个 tune 形状，换成绿色。
-  外观条现在不是弹窗了（弹窗会把网格挡住，改完看不见效果），
-  而是页内一条可折叠的横条 —— 所以它需要跟"编辑模式"一样有个亮着的状态，
-  用户一眼能看出"这块网格现在归这条横条管"。
--->
+  「」： tune ，。
+  （，），
+   —— ""，
+  ""。-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"

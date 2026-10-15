@@ -18,13 +18,13 @@ import java.util.List;
  * 插入便携显示屏时的询问对话框 —— 一个「对话框样式」的 Activity，由 {@link RotationService}
  * 在检测到便携屏接入时拉起。
  *
- * <p>因为要在后台环境下显示，所以需要「显示在其他应用上层」权限；拿不到该权限时服务会退化成
- * 用 shell（{@code am start}）拉起，或者只挂一条横幅通知 —— 三种方式任一生效用户都能看到询问。
+ * <p>因为要在Recents环境下显示，所以需要「显示在其他应用上层」Permission；拿不到该权限时服务会退化成
+ * 用 shell ({@code am start}) 拉起，或者只挂一条横幅Notifications —— 三种方式任一生效用户都能看到询问。
  *
- * <p><b>自适应</b>：手机横过来时窗口只有 300 多 dp 高，固定字号会把按钮顶到屏幕外面去，
- * 而对话框本身不可滚动 —— 用户就卡在「看不到确定按钮」上。做法是：整块内容按当前窗口大小
- * <b>等比缩放</b>（字号 / 内边距 / 间距一起缩，任何 DPI 下文字都是清楚的），正文放进 ScrollView
- * （窗口再小也能滚动），两个按钮固定在底部<b>不参与滚动</b> —— 永远看得见、点得到。
+ * <p><b>自适应</b>: 手机横过来时窗口只有 300 多 dp 高，固定字号会把按钮顶到屏幕外面去，
+ * 而对话框本身不可滚动 —— 用户就卡在「看不到OK按钮」上。做法是: 整块内容按当前窗口大小
+ * <b>等比缩放</b> (字号 / 内边距 / 间距一起缩，任何 DPI 下文字都是清楚的) ，正文放进 ScrollView
+ *  (窗口再小也能滚动) ，两个按钮固定在底部<b>不参与滚动</b> —— 永远看得见、点得到。
  */
 public class PromptActivity extends Activity {
 
@@ -34,18 +34,18 @@ public class PromptActivity extends Activity {
     public static final String EXTRA_W = "w";
     public static final String EXTRA_H = "h";
 
-    /** 缩放上限 / 下限：窗口富裕时可以把字放到 1.2 倍，最紧也不低于 0.62 倍 */
+    /** 缩放上限 / 下限: 窗口富裕时可以把字放到 1.2 倍，最紧也不低于 0.62 倍 */
     private static final float MAX_SCALE = 1.20f;
     private static final float MIN_SCALE = 0.62f;
-    /** 弹窗最多占屏幕的比例（高度留点余量，免得贴着状态栏和导航栏） */
+    /** 弹窗最多占屏幕的比例 (高度留点余量，免得贴着状态栏和导航栏)  */
     private static final float MAX_W_RATIO = 0.94f;
     private static final float MAX_H_RATIO = 0.85f;
-    /** 窗口最大宽度：大屏（横屏 880dp 宽）上别铺成一条横幅 */
+    /** 窗口最大宽度: 大屏 (横Screen 880dp 宽) 上别铺成一条横幅 */
     private static final float MAX_W_DP = 430f;
 
     private CheckBox cbNoAsk;
 
-    /** 参与等比缩放的控件，以及它们的设计尺寸（只记录一次） */
+    /** 参与等比缩放的控件，以及它们的设计尺寸 (只记录一次)  */
     private final List<TextView> scaledText = new ArrayList<>();
     private final List<Float> scaledTextBase = new ArrayList<>();
     private final List<View> scaledPad = new ArrayList<>();
@@ -74,18 +74,18 @@ public class PromptActivity extends Activity {
         String desc = getIntent().getStringExtra(EXTRA_DESC);
 
         TextView tvExt = findViewById(R.id.tvPromptExt);
-        tvExt.setText(desc == null || desc.isEmpty() ? "已连接便携显示屏" : desc);
+        tvExt.setText(desc == null || desc.isEmpty() ? "Portable display connected" : desc);
 
         TextView tvRes = findViewById(R.id.tvPromptRes);
         // 传进来的 w/h 已经过竖屏规范化，这里明确标出来，免得用户以为自己填的横屏数字丢了
-        tvRes.setText(w + " × " + h + "（竖屏）");
+        tvRes.setText(w + " × " + h + "(Portrait)");
 
         cbNoAsk = findViewById(R.id.cbPromptNoAsk);
 
         findViewById(R.id.btnPromptYes).setOnClickListener(v -> answer(true));
         findViewById(R.id.btnPromptNo).setOnClickListener(v -> answer(false));
 
-        // 既然弹窗已经出来了，兜底的横幅通知就撤掉
+        // 既然弹窗已经出来了，兜底的横幅Notifications就撤掉
         RotationService.dismissPromptNotification(this);
 
         final View root = findViewById(R.id.promptRoot);
@@ -95,15 +95,15 @@ public class PromptActivity extends Activity {
     /**
      * 按当前窗口大小等比缩放内容，并把弹窗尺寸设成「内容刚好放得下」。
      *
-     * <p>为什么不是简单套公式：窗口宽高和内容需要的高度之间没有稳定关系 —— 弹窗背景的圆角
+     * <p>为什么不是简单套公式: 窗口宽高和内容需要的高度之间没有稳定Off系 —— 弹窗背景的圆角
      * 内边距、按钮的主题最小高度、文字折几行，只有真正布局过一次才知道。早先用「按比例估算」，
-     * 结果横屏下总差那么几十像素，正好把最后一行（勾选框）挤出可视区。
+     * 结果横屏下总差那么几十像素，正好把最后一行 (勾选框) 挤出可视区。
      *
-     * <p>所以分两步，并且<b>第二步以实测为准</b>：先给个大致高度把窗口摆上去、让布局真正跑一遍；
+     * <p>所以分两步，并且<b>第二步以实测为准</b>: 先给个大致高度把窗口摆上去、让布局真正跑一遍；
      * 再让 {@link #settle} 读出控件的<b>实测高度</b>算出精确需要多少 —— 比可用高度还高就整体缩小
-     * 字号重来，否则把窗口设成「刚好装下」。字号能大就大（{@link #MAX_SCALE}），实在放不下才缩到
-     * {@link #MIN_SCALE}，缩到下限之后仍放不下就交给正文滚动（底部按钮在滚动区之外，
-     * 任何情况下都看得见）。
+     * 字号重来，否则把窗口设成「刚好装下」。字号能大就大 ({@link #MAX_SCALE}) ，实在放不下才缩到
+     * {@link #MIN_SCALE}，缩到下限之后仍放不下就交给正文滚动 (底部按钮在滚动区之外，
+     * 任何情况下都看得见) 。
      */
     private void fitToWindow(View root) {
         if (hasScaled) {
@@ -114,7 +114,7 @@ public class PromptActivity extends Activity {
         DisplayMetrics dm = getResources().getDisplayMetrics();
         float density = dm.density <= 0f ? 1f : dm.density;
 
-        // 窗口宽度：不超过屏幕的 94%，大屏上也不超过 430dp（免得铺成一条横幅）
+        // 窗口宽度: 不超过屏幕的 94%，大屏上也不超过 430dp (免得铺成一条横幅)
         targetW = (int) Math.min(dm.widthPixels * MAX_W_RATIO, MAX_W_DP * density + 0.5f);
         maxH = (int) (dm.heightPixels * MAX_H_RATIO);
 
@@ -123,7 +123,7 @@ public class PromptActivity extends Activity {
         lastK = MAX_SCALE;
         applyScale(lastK);
 
-        // 第一步：先按估的宽度粗量一下，把窗口摆上去让布局跑起来
+        // 第一步: 先按估的宽度粗量一下，把窗口摆上去让布局跑起来
         int estimateInner = Math.max(1, targetW - Math.round(density * 26f));
         int natural = measureNatural(estimateInner);
         windowH = Math.max(1, Math.min(natural, maxH));
@@ -133,10 +133,10 @@ public class PromptActivity extends Activity {
     }
 
     /**
-     * 第二步（可重复）：用<b>实测</b>的「正文高度 vs 可视区高度」做闭环反馈，把窗口调到刚好。
+     * 第二步 (可重复) : 用<b>实测</b>的「正文高度 vs 可视区高度」做闭环反馈，把窗口调到刚好。
      *
-     * <p>为什么不直接算：正文高度在布局发生之前只能估（弹窗背景的内边距、按钮的主题最小高度、
-     * 文字折几行都只有布局完才知道，差几十像素正好把最后一行挤出去），所以这里不猜 ——
+     * <p>为什么不直接算: 正文高度在布局发生之前只能估 (弹窗背景的内边距、按钮的主题最小高度、
+     * 文字折几行都只有布局完才知道，差几十像素正好把最后一行挤出去) ，所以这里不猜 ——
      * 每轮读一次真实值，缺多少补多少，补到上限就整体缩字号重来。
      *
      * @param round 已重试次数，用来兜住「布局还没发生」的情况
@@ -165,7 +165,7 @@ public class PromptActivity extends Activity {
         if (deficit > 0) {
             int want = Math.min(maxH, windowH + deficit);
             if (want > windowH) {
-                // 还有变高的余地：撑到刚好装下
+                // 还有变高的余地: 撑到刚好装下
                 windowH = want;
                 getWindow().setLayout(targetW, want);
                 root.postDelayed(() -> settle(root, round + 1), 40L);
@@ -180,11 +180,11 @@ public class PromptActivity extends Activity {
                 root.postDelayed(() -> settle(root, 0), 40L);
                 return;
             }
-            // 缩到下限仍放不下：正文交给滚动，底部按钮在滚动区外，依然看得见
+            // 缩到下限仍放不下: 正文交给滚动，底部按钮在滚动区外，依然看得见
             return;
         }
 
-        // 有富余（或刚好）就把窗口收成贴合内容，别留一大片空白
+        // 有富余 (或刚好) 就把窗口收成贴合内容，别留一大片空白
         int want = Math.max(1, Math.min(maxH, windowH + deficit));
         if (want < windowH) {
             windowH = want;
@@ -192,7 +192,7 @@ public class PromptActivity extends Activity {
         }
     }
 
-    /** 量一下内容在给定宽度下的"自然高度"（仅用于第一遍粗估窗口尺寸） */
+    /** 量一下内容在给定宽度下的"自然高度" (仅用于第一遍粗估窗口尺寸)  */
     private int measureNatural(int innerW) {
         View root = findViewById(R.id.promptRoot);
         ScrollView scroll = findViewById(R.id.promptScroll);
@@ -282,7 +282,7 @@ public class PromptActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        // 按返回键 = 本次不启用，但也不关闭「以后询问」这个开关
+        // 按Back键 = 本次不启用，但也不Disabled「以后询问」这个OnOff
         RotationService.answerPrompt(this, false, false);
         finish();
     }
