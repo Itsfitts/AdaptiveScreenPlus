@@ -18,35 +18,35 @@ import java.io.File;
 import java.io.FileReader;
 
 /**
- * 「手机状态」小组件（外屏 2×2）要的那几个读数，以及把它们画成一张图。
+ * 「手机状态」Widget (外Screen 2×2) 要的那几个读数，以及把它们画成一张图。
  *
- * <p><b>四个指标</b>：电量、CPU 温度、内存占用、存储占用。
+ * <p><b>四个指标</b>: Battery、CPU Temperature、RAMUsage、StorageUsage。
  *
- * <p><b>为什么不做蓝牙</b>：读蓝牙设备电量要「附近的设备」权限，没给授权时那一格只能写
- * 「未授权」—— 用户看到的就是一句没用的提示（他的原话："蓝牙显示未授权，不行就不要做蓝牙"）。
- * 四个格子宁可都放**不依赖任何权限**的东西，所以第四格换成内部存储占用。
+ * <p><b>为什么不做Bluetooth</b>: 读Bluetooth设备Battery要「附近的设备」Permission，没给授权时那一格只能写
+ * 「未授权」—— 用户看到的就是一句没用的提示 (他的原话: "Bluetooth显示未授权，不行就不要做Bluetooth") 。
+ * 四个格子宁可都放**不依赖任何权限**的东西，所以第四格换成内部StorageUsage。
  *
- * <p><b>为什么不用 {@link StatusMonitor}</b>：那个是给「状态展示柜」页面用的 —— 绑着
- * Activity、每秒采一次、还带 60 格历史。桌面小组件是另一回事：进程随时可能被系统回收，
- * 所以这里刻意做得很轻，**一次采完就交给桌面**，不留任何常驻状态。
+ * <p><b>为什么不用 {@link StatusMonitor}</b>: 那个是给「状态展示柜」页面用的 —— 绑着
+ * Activity、每秒采一次、还带 60 格历史。Home小组件是另一回事: 进程随时可能被系统回收，
+ * 所以这里刻意做得很轻，**一次采完就交给Home**，不留任何常驻状态。
  *
- * <p><b>为什么整个组件就是一张 Bitmap</b>：RemoteViews 里能用的控件就那么十来种，
+ * <p><b>为什么整个组件就是一张 Bitmap</b>: RemoteViews 里能用的控件就那么十来种，
  * 想画进度条、想要固定配色，只有一条路 —— 自己画好位图塞进一个 ImageView。
- * （另一条路 ProgressBar 会套上宿主桌面的主题色，外屏上深浅不可控。）
+ *  (另一条路 ProgressBar 会套上宿主Home的主题色，外屏上深浅不可控。)
  */
 public final class WidgetStatus {
 
     /** 一次采样的全部读数。字段用 -1 / NaN 表示"没读到"，不抛异常。 */
     public static final class Data {
-        /** 电量 0~100；-1 = 没读到 */
+        /** Battery 0~100；-1 = 没Read */
         public int battPct = -1;
         public boolean charging;
-        /** CPU 相关传感器里最高的那个，摄氏度；NaN = 没读到 */
+        /** CPU 相Off传感器里最高的那个，摄氏度；NaN = 没Read */
         public float tempC = Float.NaN;
-        /** 内存占用 0~100；-1 = 没读到 */
+        /** RAMUsage 0~100；-1 = 没Read */
         public int memPct = -1;
         public long memUsedMb = -1, memTotalMb = -1;
-        /** 内部存储占用 0~100；-1 = 没读到 */
+        /** 内部StorageUsage 0~100；-1 = 没Read */
         public int storePct = -1;
         public long storeUsedGb = -1, storeTotalGb = -1;
     }
@@ -85,7 +85,7 @@ public final class WidgetStatus {
                 d.battPct = Math.min(100, p);
             }
         }
-        // 充电状态只有粘性广播里有（getIntProperty 那套没有对应项）
+        // 充电状态只有粘性广播里有 (getIntProperty 那套没有对应项)
         Intent it = c.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
         if (it != null) {
             int st = it.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
@@ -119,9 +119,9 @@ public final class WidgetStatus {
     }
 
     /**
-     * 内部存储占用。
+     * 内部StorageUsage。
      *
-     * <p>跟「分类里显示的那个数字」同一个口径：{@code Environment.getDataDirectory()} 那块分区
+     * <p>跟「分类里显示的那个数字」同一个口径: {@code Environment.getDataDirectory()} 那块分区
      * 的总量与可用量。⚠ 不用 {@code StatFs(path)} 的其余重载 —— 这里不需要 SDK 30 那套 API。
      */
     private static void sampleStore(Data d) {
@@ -137,7 +137,7 @@ public final class WidgetStatus {
     }
 
     /**
-     * CPU 相关传感器里最高的那个读数（摄氏度）。
+     * CPU 相Off传感器里最高的那个读数 (摄氏度) 。
      *
      * <p>跟 {@link StatusMonitor} 一个口径 —— 它读的也是这批 thermal zone 文件；
      * 这里重写一份精简版，是因为那边的方法都是 private、且绑着采样循环。
@@ -199,17 +199,17 @@ public final class WidgetStatus {
     // ============================================================ 画
 
     /**
-     * 把四个指标画成一张位图（透明底，圆角与底色由布局那边给）。
+     * 把四个指标画成一张位图 (透明底，圆角与底色由布局那边给) 。
      *
-     * <p>排法是 2×2：左上电量 · 右上 CPU 温度 · 左下内存 · 右下存储。
+     * <p>排法是 2×2: 左上Battery · 右上 CPU Temperature · 左下RAM · 右下Storage。
      *
-     * <p><b>为什么每格不用环形</b>：2×2 的格子只有 4×2 的一半宽（75dp 对 156dp），
+     * <p><b>为什么每格不用环形</b>: 2×2 的格子只有 4×2 的一半宽 (75dp 对 156dp) ，
      * 环占掉左边一半之后右边就只剩三十来 dp 写字 —— 读数会顶到隔壁格上。
      * 现在每格是「上标签 / 中读数 / 下细条」三行居中排，宽度全给文字用，
      * 「图形化」落在底下那条进度条上。
      *
-     * @param w 位图宽（像素）
-     * @param h 位图高（像素）；设计基准是 150×133dp，所以 1dp ≈ h/133 像素
+     * @param w 位图宽 (像素)
+     * @param h 位图高 (像素) ；设计基准是 150×133dp，所以 1dp ≈ h/133 像素
      */
     public static Bitmap draw(int w, int h, Data d) {
         Bitmap bmp = Bitmap.createBitmap(Math.max(1, w), Math.max(1, h), Bitmap.Config.ARGB_8888);
@@ -222,23 +222,23 @@ public final class WidgetStatus {
 
         float cw = w / 2f, ch = h / 2f;
 
-        // 电量：绿；充电时改用更亮的青（颜色本身就是"在充电"的信号）
-        cell(g, p, k, 0, 0, cw, ch, "电量",
+        // Battery: 绿；充电时改用更亮的青 (颜色本身就是"在充电"的信号)
+        cell(g, p, k, 0, 0, cw, ch, "Battery",
                 d.battPct < 0 ? "—" : d.battPct + "%",
                 d.battPct < 0 ? -1f : d.battPct / 100f,
                 d.charging ? 0xFF26C6DA : 0xFF43A047);
 
-        // CPU 温度：20~70℃ 映射到 0~100%
+        // CPU Temperature: 20~70℃ 映射到 0~100%
         cell(g, p, k, 1, 0, cw, ch, "CPU",
                 Float.isNaN(d.tempC) ? "—" : (Math.round(d.tempC) + "°"),
                 Float.isNaN(d.tempC) ? -1f : (d.tempC - 20f) / 50f,
                 tempColor(d.tempC));
 
-        cell(g, p, k, 0, 1, cw, ch, "内存",
+        cell(g, p, k, 0, 1, cw, ch, "RAM",
                 d.memPct < 0 ? "—" : d.memPct + "%",
                 d.memPct < 0 ? -1f : d.memPct / 100f, 0xFF7E57C2);
 
-        cell(g, p, k, 1, 1, cw, ch, "存储",
+        cell(g, p, k, 1, 1, cw, ch, "Storage",
                 d.storePct < 0 ? "—" : d.storePct + "%",
                 d.storePct < 0 ? -1f : d.storePct / 100f, 0xFF29B6F6);
 
@@ -259,9 +259,9 @@ public final class WidgetStatus {
     }
 
     /**
-     * 画一格：上面标签、中间大读数、底下一条细进度条，三行都居中。
+     * 画一格: 上面标签、中间大读数、底下一条细进度条，三行都居中。
      *
-     * @param frac 进度条的填充比例；小于 0 表示"没有数值"（只剩底槽）
+     * @param frac 进度条的填充比例；小于 0 表示"没有数值" (只剩底槽)
      */
     private static void cell(Canvas g, Paint p, float k, int col, int row,
                              float cw, float ch, String label, String value,

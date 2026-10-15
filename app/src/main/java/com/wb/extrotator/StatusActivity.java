@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.view.WindowManager;
 
 /**
- * 状态展示柜（伪应用）：副屏上的实时监控面板，合盖立着时当常亮仪表盘用。
+ * 状态展示柜 (伪应用) : 副屏上的实时监控面板，合盖立着时当常亮仪表盘用。
  * 不改显示设置，所以不占 {@link ExtControlMode} 的窗口。
  */
 public class StatusActivity extends Activity {
@@ -46,7 +46,7 @@ public class StatusActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        // 离开前台就停采样。这一页是常驻的，不主动停就是一直在读文件
+        // 离On前台就停采样。这一页是常驻的，不主动停就是一直在读文件
         monitor.stop();
     }
 

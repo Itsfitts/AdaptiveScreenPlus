@@ -12,8 +12,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * 「内屏管理 → 刷新率」的落盘层：写系统 peak_refresh_rate / min_refresh_rate 上下界，取代自适应。
- * ⚠ 超过 60Hz 的档位要识别到内屏才有效（合盖时在用的是封面屏，只有 60Hz）。
+ * 「内屏管理 → Refresh Rate」的落盘层: 写系统 peak_refresh_rate / min_refresh_rate 上下界，取代自适应。
+ * ⚠ 超过 60Hz 的档位要识别到内屏才有效 (合盖时在用的是封面屏，只有 60Hz) 。
  */
 public final class RefreshRate {
 
@@ -43,7 +43,7 @@ public final class RefreshRate {
                 }
             }
         } catch (Throwable t) {
-            Log.w(TAG, "读内屏支持的档位失败：" + t);
+            Log.w(TAG, "Failed to read internal display modes: " + t);
         }
         if (out.size() < 2) {
             return FALLBACK.clone();
@@ -56,17 +56,17 @@ public final class RefreshRate {
         return a;
     }
 
-    /** 系统当前的最高刷新率；没设过、读不到时返回 -1。 */
+    /** 系统当前的最高刷新率；没设过、读不到时Back -1。 */
     public static float readPeak(Context c) {
         return read(c, KEY_PEAK);
     }
 
-    /** 系统当前的最低刷新率；没设过、读不到时返回 -1。 */
+    /** 系统当前的最低刷新率；没设过、读不到时Back -1。 */
     public static float readMin(Context c) {
         return read(c, KEY_MIN);
     }
 
-    /** 下发。返回 null = 成功，否则是给人看的原因 */
+    /** 下发。Back null = Success，否则是给人看的原因 */
     public static String apply(Context c, float a, float b) {
         float lo = Math.min(a, b), hi = Math.max(a, b);
         ContentResolver cr = c.getContentResolver();
@@ -75,12 +75,12 @@ public final class RefreshRate {
             Settings.System.putFloat(cr, KEY_MIN, lo);
             return null;
         } catch (Throwable t) {
-            Log.w(TAG, "写刷新率失败：" + t);
-            return "写不进去（" + t.getClass().getSimpleName() + "）";
+            Log.w(TAG, "Failed to write refresh rate: " + t);
+            return "Failed to set (" + t.getClass().getSimpleName() + "）";
         }
     }
 
-    /** 交回系统：删掉这两个值，重新归系统管 */
+    /** 交回系统: 删掉这两个值，重新归系统管 */
     public static String reset(Context c) {
         ContentResolver cr = c.getContentResolver();
         try {
@@ -88,8 +88,8 @@ public final class RefreshRate {
             Settings.System.putString(cr, KEY_MIN, null);
             return null;
         } catch (Throwable t) {
-            Log.w(TAG, "还原刷新率失败：" + t);
-            return "还原失败（" + t.getClass().getSimpleName() + "）";
+            Log.w(TAG, "还原刷新率Failed: " + t);
+            return "还原Failed (" + t.getClass().getSimpleName() + "）";
         }
     }
 

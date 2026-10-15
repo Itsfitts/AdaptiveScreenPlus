@@ -12,11 +12,11 @@ import java.util.List;
 /**
  * 「自定义指令」—— 用户自己写的一条 shell 命令。
  *
- * <p>同一条数据有三处要看它：Beta 页的列表（增删改）、{@link QuickActions} 的动作白名单
- * （能被选成侧键动作）、执行时的查表。存在 {@link QuickPrefs} 那个 SharedPreferences 文件里，
+ * <p>同一条数据有三处要看它: Beta 页的列表 (增删改) 、{@link QuickActions} 的动作白名单
+ *  (能被选成侧键动作) 、执行时的查表。存在 {@link QuickPrefs} 那个 SharedPreferences 文件里，
  * 将来整块 Beta 功能一起摘掉时删一个文件就干净。
  *
- * <p>格式是 JSON 数组（用 Android 自带 org.json），每项三个字段：id / name / cmd。
+ * <p>格式是 JSON 数组 (用 Android 自带 org.json) ，每项三个字段: id / name / cmd。
  * 动作 key 形如 {@code custom:<id>}，与内置动作共用一套命名空间，见 {@link #KEY_PREFIX}。
  */
 public final class CustomCmds {
@@ -66,12 +66,12 @@ public final class CustomCmds {
                 }
             }
         } catch (Throwable t) {
-            // 存坏了就当没有 —— 不让一个坏字符串把整页拖垮
+            // 存坏了就当No —— 不让一个坏字符串把整页拖垮
         }
         return out;
     }
 
-    /** 按 id 找一条；没有返回 null */
+    /** 按 id 找一条；没有Back null */
     public static Cmd find(Context c, String id) {
         if (id == null) {
             return null;
@@ -84,7 +84,7 @@ public final class CustomCmds {
         return null;
     }
 
-    /** 新增或更新（id 为空 = 新增，自动分配一个） */
+    /** 新增或更新 (id 为空 = 新增，自动分配一个)  */
     public static void put(Context c, Cmd item) {
         if (item == null || item.cmd == null || item.cmd.trim().isEmpty()) {
             return;

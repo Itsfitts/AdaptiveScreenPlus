@@ -15,13 +15,13 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * 「状态展示柜」的仪表盘 —— CPU 环 / 温度计 / 内存条 / 占用曲线 / 各簇频率，全部自绘。
- * 布局按封面屏应用区 748×654 写成常量（见 BASE_W / BASE_H），绘制前整体缩放居中，
+ * 「状态展示柜」的仪表盘 —— CPU 环 / Temperature计 / RAM条 / Usage曲线 / 各簇频率，全部自绘。
+ * 布局按封面屏应用区 748×654 写成常量 (见 BASE_W / BASE_H) ，绘制前整体缩放居中，
  * 对照图 scripts/mock_status.py。改布局改这些常量，别改成按屏宽比例算。
  */
 public class StatusBoardView extends View {
 
-    // ---- 基准画布（对照 scripts/mock_status.py） ----
+    // ---- 基准画布 (对照 scripts/mock_status.py)  ----
     private static final float BASE_W = 748f, BASE_H = 654f;
     private static final float PAD = 14f;
 
@@ -30,7 +30,7 @@ public class StatusBoardView extends View {
     private static final int PANEL = 0xFF151A21;
     private static final int TRACK = 0xFF20262F;
     private static final int GRID = 0xFF1C222A;
-    private static final int MAIN = 0xFF35D6A4;      // 主色：青绿
+    private static final int MAIN = 0xFF35D6A4;      // 主色: 青绿
     private static final int BLUE = 0xFF4C9AFF;
     private static final int WARN = 0xFFF2C14E;
     private static final int HOT = 0xFFFF6B6B;
@@ -38,7 +38,7 @@ public class StatusBoardView extends View {
     private static final int DIM = 0xFF7E8899;
     private static final int FILL = 0x2A35D6A4;      // 曲线下的面积
 
-    /** 顶栏两个按钮的命中区（屏幕坐标，绘制时更新） */
+    /** 顶栏两个按钮的命中区 (屏幕坐标，绘制时更新)  */
     public interface Tap {
         void onInfo();
 
@@ -131,7 +131,7 @@ public class StatusBoardView extends View {
         text(c, fmtTime.format(new Date(now)), PAD, y + 37, 40, TXT, Paint.Align.LEFT, true);
         text(c, fmtDate.format(new Date(now)), PAD + 186, y + 39, 24, DIM, Paint.Align.LEFT, false);
 
-        // 右上角：× / ⓘ / 电量。⚠ 用 ×(U+00D7) 别改成 ✕(U+2715)：后者字体可能没字形，按钮会看不见
+        // 右上角: × / ⓘ / Battery。⚠ 用 ×(U+00D7) 别改成 ✕(U+2715): 后者字体可能没字形，按钮会看不见
         // × 与 ⓘ 的位置跟下面两个命中区是一套，挪一个就得一起挪
         float cy = y + 25;
         text(c, "×", BASE_W - PAD - 18, cy, 30, DIM, Paint.Align.CENTER, false);
@@ -142,7 +142,7 @@ public class StatusBoardView extends View {
         p.setColor(DIM);
         c.drawCircle(X(ix), Y(cy), S(14), p);
         text(c, "i", ix, cy + 1, 20, DIM, Paint.Align.CENTER, true);
-        // 命中区给到 30×28dp 见方（外屏上手指粗，按得着才算数），两块正好相邻、谁也不吃谁
+        // 命中区给到 30×28dp 见方 (外屏上手指粗，按得着才算数) ，两块正好相邻、谁也不吃谁
         hitInfo.set(X(BASE_W - PAD - 114), Y(cy - 30), X(BASE_W - PAD - 50), Y(cy + 30));
         hitClose.set(X(BASE_W - PAD - 50), Y(cy - 30), X(BASE_W - PAD), Y(cy + 30));
 
@@ -150,7 +150,7 @@ public class StatusBoardView extends View {
         String batt = on ? snap.battPct + "%" : "—";
         text(c, batt, BASE_W - PAD - 126, y + 38, 30, TXT, Paint.Align.RIGHT, true);
         if (on && snap.charging) {
-            // 闪电紧贴电量数字左边，位置按实测宽度算 —— 电量涨到 100% 也不会被盖住
+            // 闪电紧贴Battery数字左边，位置按实测宽度算 —— Battery涨到 100% 也不会被盖住
             float bx = X(BASE_W - PAD - 126) - p.measureText(batt) - S(10) - S(17);
             line.reset();
             line.moveTo(bx + S(12), Y(y + 6));
@@ -212,10 +212,10 @@ public class StatusBoardView extends View {
             p.setTextSize(S(34));
             c.drawText(unit, left + nw + gap, Y(cy - 14), p);
         }
-        text(c, "CPU 占用", cx, cy + 78, 22, DIM, Paint.Align.CENTER, false);
+        text(c, "CPU Usage", cx, cy + 78, 22, DIM, Paint.Align.CENTER, false);
     }
 
-    // ------------------------------------------------------------ 温度 / 内存
+    // ------------------------------------------------------------ Temperature / RAM
 
     private void tempBlock(Canvas c) {
         float rx = PAD + 270;
@@ -229,9 +229,9 @@ public class StatusBoardView extends View {
             text(c, String.format(Locale.US, "%.1f", t), rx, 138, 68, col, Paint.Align.LEFT, true);
             text(c, "℃", rx + 150, 134, 34, col, Paint.Align.LEFT, false);
         }
-        text(c, "CPU 温度", rx, 175, 22, DIM, Paint.Align.LEFT, false);
+        text(c, "CPU Temp", rx, 175, 22, DIM, Paint.Align.LEFT, false);
 
-        // 温度计按 20~80℃ 映射，两端标刻度
+        // Temperature计按 20~80℃ 映射，两端标刻度
         float pct = Float.isNaN(t) ? 0 : (t - 20f) / 60f * 100f;
         bar(c, rx, 186, rx + rw, 202, pct, col);
         text(c, "20", rx, 224, 18, DIM, Paint.Align.LEFT, false);
@@ -243,7 +243,7 @@ public class StatusBoardView extends View {
         float rw = BASE_W - PAD - rx;
         int pct = snap == null ? -1 : snap.memPct;
 
-        text(c, "内存", rx, 262, 24, DIM, Paint.Align.LEFT, false);
+        text(c, "RAM", rx, 262, 24, DIM, Paint.Align.LEFT, false);
         text(c, pct < 0 ? "—" : pct + "%", rx + rw, 262, 30, TXT, Paint.Align.RIGHT, true);
         bar(c, rx, 274, rx + rw, 290, pct < 0 ? 0 : pct, BLUE);
 
@@ -255,11 +255,11 @@ public class StatusBoardView extends View {
         text(c, detail, rx, 314, 20, DIM, Paint.Align.LEFT, false);
     }
 
-    // ------------------------------------------------------------ 占用曲线
+    // ------------------------------------------------------------ Usage曲线
 
     private void spark(Canvas c) {
         float x0 = PAD, y0 = 348, x1 = BASE_W - PAD, y1 = 451;
-        text(c, "CPU 占用 · 最近 60 秒", PAD, 340, 20, DIM, Paint.Align.LEFT, false);
+        text(c, "CPU Usage · 最近 60 秒", PAD, 340, 20, DIM, Paint.Align.LEFT, false);
 
         p.setStyle(Paint.Style.FILL);
         p.setColor(PANEL);
@@ -383,7 +383,7 @@ public class StatusBoardView extends View {
         c.drawText(s, X(x), Y(baseY), p);
     }
 
-    /** 圆角进度条（水平），pct 超出 0~100 会被夹住 */
+    /** 圆角进度条 (水平) ，pct 超出 0~100 会被夹住 */
     private void bar(Canvas c, float x0, float y0, float x1, float y1, float pct, int color) {
         float rad = S((y1 - y0) / 2f);
         p.setStyle(Paint.Style.FILL);
@@ -400,7 +400,7 @@ public class StatusBoardView extends View {
         }
     }
 
-    /** 负载配色：越高越红，一眼看出是不是在飙 */
+    /** 负载配色: 越高越红，一眼看出是不是在飙 */
     private static int levelColor(float pct) {
         if (pct >= 80) {
             return HOT;
@@ -411,7 +411,7 @@ public class StatusBoardView extends View {
         return MAIN;
     }
 
-    /** 温度配色：45℃ 以下正常，45~60 偏热，60 以上烫 */
+    /** Temperature配色: 45℃ 以下正常，45~60 偏热，60 以上烫 */
     private static int tempColor(float c) {
         if (Float.isNaN(c)) {
             return DIM;

@@ -22,16 +22,16 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * 副屏桌面 —— 投到封面屏（或便携屏）上的一块可用桌面。
+ * 副屏Home —— 投到封面屏 (或便携屏) 上的一块可用Home。
  *
- * <p>为什么需要它：{@code cmd device_state state 4}（CONCURRENT）能把封面屏点亮，但系统只在那块
+ * <p>为什么需要它: {@code cmd device_state state 4} (CONCURRENT) 能把封面屏点亮，但系统只在那块
  * 屏上放一个空跑的 SubHomeActivity，看起来是黑的、谈不上「能操作的第二块屏」；本 Activity 就是
  * 往那块屏上放真正能点的东西。
  *
- * <p>它不关心跑在哪块屏上：用 {@code getDefaultDisplay()} 读出自己所在屏的 id，点图标就用
- * {@link SecondaryLauncher} 往<b>同一块屏</b>投 —— 既能当封面屏桌面，也能当便携屏桌面。
+ * <p>它不Off心跑在哪块屏上: 用 {@code getDefaultDisplay()} 读出自己所在屏的 id，点图标就用
+ * {@link SecondaryLauncher} 往<b>同一块屏</b>投 —— 既能当封面屏Home，也能当便携屏Home。
  *
- * <p>图标数多时读图标是 IO，全部在后台线程做完再上屏。
+ * <p>图标数多时读图标是 IO，全部在Recents线程做完再上屏。
  */
 public class SecondaryHomeActivity extends Activity {
 
@@ -79,7 +79,7 @@ public class SecondaryHomeActivity extends Activity {
         } catch (Throwable ignored) {
         }
 
-        // 按屏宽决定列数：封面屏 748px/340dpi ≈ 352dp → 4 列；便携屏更宽就多几列
+        // 按屏宽决定列数: 封面Screen 748px/340dpi ≈ 352dp → 4 列；便携屏更宽就多几列
         int wDp = 360;
         try {
             wDp = getResources().getConfiguration().screenWidthDp;
@@ -100,9 +100,9 @@ public class SecondaryHomeActivity extends Activity {
         findViewById(R.id.btnSHomeRefresh).setOnClickListener(v -> load());
         findViewById(R.id.btnSHomeHome).setOnClickListener(v -> {
             if (SecondaryLauncher.goHome(this, displayId)) {
-                toast("已让本屏回到系统桌面");
+                toast("已让本屏回到系统Home");
             } else {
-                toast("需要 Shizuku 授权才能切回系统桌面");
+                toast("需Requires Shizuku 授权才能切回系统Home");
             }
         });
         findViewById(R.id.btnSHomeExit).setOnClickListener(v -> finish());
@@ -131,7 +131,7 @@ public class SecondaryHomeActivity extends Activity {
         if (it.isPseudo()) {
             // 三个控制页是拿来操作内屏的，用的时候本应用的旋转/分辨率那套一律别动 ——
             // 这里先预置一个定时窗口，因为服务被系统拉回来的时刻可能早于页面 onStart
-            // （实测写锁 19:24:29.917、页面挂光标 19:24:29.984，早 70ms）。见 ExtControlMode。
+            //  (实测写锁 19:24:29.917、页面挂光标 19:24:29.984，早 70ms) 。见 ExtControlMode。
             ExtControlMode.arm(20000L);
         }
         Intent li = null;
@@ -143,9 +143,9 @@ public class SecondaryHomeActivity extends Activity {
             li = it.toIntent();
         }
         if (SecondaryLauncher.launch(this, displayId, li)) {
-            toast("已在第 " + displayId + " 屏打开「" + it.label + "」");
+            toast("已在第 " + displayId + " "" + it.label + "」");
         } else {
-            toast("启动失败：可能没有 Shizuku 授权");
+            toast("LaunchFailed: 可能No Shizuku 授权");
         }
     }
 
@@ -157,15 +157,15 @@ public class SecondaryHomeActivity extends Activity {
         }
         loading = true;
         tvEmpty.setVisibility(View.VISIBLE);
-        tvEmpty.setText("正在加载应用…");
+        tvEmpty.setText("正在加载应用...");
         new Thread(() -> {
             final List<AppRepo.Item> list = AppRepo.load(this);
-            // 副屏桌面自己的顺序：表里的排前面，其余按名称跟在后面。
-            // 没设过顺序时 HomePrefs.sort 直接返回，行为跟以前一样是纯名称序。
+            // 副屏Home自己的顺序: 表里的排前面，其余按名称跟在后面。
+            // 没设过顺序时 HomePrefs.sort 直接Back，行为跟以前一样是纯名称序。
             HomePrefs.sort(this, list);
-            // 伪应用恒置顶：它们不是真应用，AppRepo.load 里没有这几个，
+            // 伪应用恒置顶: 它们不是真应用，AppRepo.load 里没有这几个，
             // 在这里插到最前面 —— 排序对它们没有意义，所以"排完再插"，
-            // 顺序就永远由这一段说了算，不会被手动顺序或副屏桌面顺序搅乱。
+            // 顺序就永远由这一段说了算，不会被手动顺序或副屏Home顺序搅乱。
             list.addAll(0, AppRepo.pseudoItems(this));
             runOnUiThread(() -> {
                 loading = false;
