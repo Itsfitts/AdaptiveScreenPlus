@@ -30,14 +30,14 @@ import java.util.concurrent.Executors;
 /**
  * 「修复界面」的名单页 —— 从 Beta 的「应用管理」进来。
  *
- * <p>逐行列出本机所有能启动的应用，每行一个OnOff: On = 该应用进了三星外屏那份「正常显示」名单
- *  (外屏上以Native尺寸渲染，字体正常、弹窗落在屏内点得到) ，Off = 外屏上缩放显示。
+ * <p>逐行列出本机所有能启动的应用，每行一个开关：开 = 该应用进了三星外屏那份「正常显示」名单
+ * （外屏上以原生尺寸渲染，字体正常、弹窗落在屏内点得到），关 = 外屏上缩放显示。
  * 名单本身与原理见 {@link CoverRepair}。
  *
- * <p>单On一页是为了用 ListView 正经回收: 几百行的列表塞进 Beta 的 ScrollView 里既不能自己滚、
+ * <p>单开一页是为了用 ListView 正经回收：几百行的列表塞进 Beta 的 ScrollView 里既不能自己滚、
  * 又要一次量完所有行，滑起来卡。
  *
- * <p>⚠ 写盘必须串行: 每次OnOff都是「读整份名单 → 改一个 → 整份写回」，
+ * <p>⚠ 写盘必须串行：每次开关都是「读整份名单 → 改一个 → 整份写回」，
  * 两条叠在一起会互相覆盖，所以统一丢进 {@link #pool}，并用 {@link #busy} 挡连点。
  */
 public class RepairActivity extends Activity {
@@ -87,7 +87,7 @@ public class RepairActivity extends Activity {
         }
 
         if (!ShellRunner.isReady()) {
-            toast("Shizuku not ready, please authorize on main UI first");
+            toast("Shizuku 未就绪，先回主界面授权");
         }
         reload();
     }
@@ -95,7 +95,7 @@ public class RepairActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        // 从别处 (MultiStar / 阿田自用) 改过名单再回来，看到的必须是刚读的那一份
+        // 从别处（MultiStar / 阿田自用）改过名单再回来，看到的必须是刚读的那一份
         reload();
     }
 
@@ -110,7 +110,7 @@ public class RepairActivity extends Activity {
 
     private void reload() {
         setBusy(true);
-        tvState.setText("Loading…");
+        tvState.setText("读取中…");
         pool.execute(() -> {
             final List<AppRepo.Item> loaded = new ArrayList<>();
             for (AppRepo.Item it : AppRepo.load(getApplicationContext())) {
@@ -129,7 +129,7 @@ public class RepairActivity extends Activity {
                 adapter.notifyDataSetChanged();
                 setBusy(false);
                 if (!readable) {
-                    tvState.setText("读不回名单 (Shizuku 掉线了？) —— 这次只能看，别改");
+                    tvState.setText("读不回名单（Shizuku 掉线了？）—— 这次只能看，别改");
                 } else {
                     updateState();
                 }
@@ -145,9 +145,9 @@ public class RepairActivity extends Activity {
             }
         }
         String snap = CoverRepair.hasSnapshot(this)
-                ? "已存改动前的快照，可以一键重置" : "还没改动过 (首次改动会自动存快照) ";
+                ? "已存改动前的快照，可以一键重置" : "还没改动过（首次改动会自动存快照）";
         tvState.setText("名单 " + on.size() + " 个 · 本机可启动应用 " + apps.size()
-                + " 个 (其中 " + hit + " 个已Enabled) \n" + snap);
+                + " 个（其中 " + hit + " 个已开启）\n" + snap);
     }
 
     // ==================================================================== 写
@@ -162,12 +162,12 @@ public class RepairActivity extends Activity {
             String msg = CoverRepair.apply(getApplicationContext(),
                     want ? Collections.singletonList(pkg) : Collections.<String>emptyList(),
                     want ? Collections.<String>emptyList() : Collections.singletonList(pkg));
-            Log.i(TAG, (want ? "Enabled " : "Disabled ") + pkg + " → " + msg);
+            Log.i(TAG, (want ? "开启 " : "关闭 ") + pkg + " → " + msg);
             ui.post(() -> {
                 setBusy(false);
                 if (msg.startsWith("ERR")) {
                     toast(msg);
-                    reload();          // 写Failed就以盘上的为准，别让界面留着假状态
+                    reload();          // 写失败就以盘上的为准，别让界面留着假状态
                 } else {
                     if (want) {
                         on.add(pkg);
@@ -190,7 +190,7 @@ public class RepairActivity extends Activity {
             return;
         }
         setBusy(true);
-        tvState.setText(fix ? "正在把已装应用全部打On..." : "正在还原...");
+        tvState.setText(fix ? "正在把已装应用全部打开…" : "正在还原…");
         pool.execute(() -> {
             String msg = fix ? CoverRepair.applyAll(getApplicationContext())
                     : CoverRepair.restore(getApplicationContext());
@@ -213,7 +213,7 @@ public class RepairActivity extends Activity {
         }
         new AlertDialog.Builder(this)
                 .setTitle("一键重置")
-                .setMessage("把外屏名单还原到本应用第一次改动之前的那一份 (改动前存下的快照) 。\n\n"
+                .setMessage("把外屏名单还原到本应用第一次改动之前的那一份（改动前存下的快照）。\n\n"
                         + "⚠ 这会连同你在 MultiStar 里后来做的改动一起覆盖掉。")
                 .setNegativeButton(android.R.string.cancel, null)
                 .setPositiveButton("还原", (d, w) -> oneKey(false))
@@ -234,7 +234,7 @@ public class RepairActivity extends Activity {
         }
     }
 
-    /** 一行 = 应用名 + OnOff。自己拼，不占一个布局文件 (跟启动器那套长按菜单同一个路子)  */
+    /** 一行 = 应用名 + 开关。自己拼，不占一个布局文件（跟启动器那套长按菜单同一个路子） */
     private final class RowAdapter extends BaseAdapter {
 
         @Override
@@ -293,7 +293,7 @@ public class RepairActivity extends Activity {
         }
     }
 
-    /** OnOff配色跟 Beta 页一致 (系统默认那个On/Off两态在白底上分不清)  */
+    /** 开关配色跟 Beta 页一致（系统默认那个开/关两态在白底上分不清） */
     private void tint(Switch sw) {
         try {
             ColorStateList thumb = getResources().getColorStateList(R.color.beta_switch_thumb);

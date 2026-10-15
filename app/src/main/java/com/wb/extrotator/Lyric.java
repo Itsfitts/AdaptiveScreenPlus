@@ -16,24 +16,24 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 「副屏播放器」要用到的歌词: 把 {@code .lrc} 那种带时间轴的文本解析成一行一行，
+ * 「副屏播放器」要用到的歌词：把 {@code .lrc} 那种带时间轴的文本解析成一行一行，
  * 以及去 LRCLIB 免费取一份。
  *
- * <p><b>为什么走在线</b>: 歌词文件不在我们手里。音乐 App 的歌词摆在它自己的私有目录，
- * Android 从 11 起分区Storage，别的应用连它的目录都进不去 (申请「所有文件」权限也不行) 。
+ * <p><b>为什么走在线</b>：歌词文件不在我们手里。音乐 App 的歌词摆在它自己的私有目录，
+ * Android 从 11 起分区存储，别的应用连它的目录都进不去（申请「所有文件」权限也不行）。
  * 能从播放器那边拿到的只有歌名、歌手、专辑、封面 —— 歌词得另想办法。
- * 挑 LRCLIB 的理由很实际: 公On、免费、不要 key、Back里直接带 {@code syncedLyrics}
- *  (就是带时间轴的那份) ，不像别家还要再拼一次请求。
+ * 挑 LRCLIB 的理由很实际：公开、免费、不要 key、返回里直接带 {@code syncedLyrics}
+ * （就是带时间轴的那份），不像别家还要再拼一次请求。
  *
- * <p>⚠ 取不到就是取不到: 没网、歌太冷门、歌名带后缀 ("某某 (Live)") 都可能落空。
- * 这时 {@link #fetchBlocking} Back {@link #EMPTY}，界面照常显示封面和歌名，
+ * <p>⚠ 取不到就是取不到：没网、歌太冷门、歌名带后缀（"某某 (Live)"）都可能落空。
+ * 这时 {@link #fetchBlocking} 返回 {@link #EMPTY}，界面照常显示封面和歌名，
  * <b>不弹错、不转圈</b> —— 歌词本来就是个加分项。
  */
 public final class Lyric {
 
     /** 一行歌词 */
     public static final class Line {
-        /** 这一行从第几毫秒On始 */
+        /** 这一行从第几毫秒开始 */
         public final long at;
         public final String text;
 
@@ -58,9 +58,9 @@ public final class Lyric {
     }
 
     /**
-     * 播放到第 {@code ms} 毫秒时该显示第几行；还没到第一行就Back -1。
+     * 播放到第 {@code ms} 毫秒时该显示第几行；还没到第一行就返回 -1。
      *
-     * <p>线性扫一遍就够了: 一份 LRC 撑死几百行，而调用方是 0.5 秒一次的轮询。
+     * <p>线性扫一遍就够了：一份 LRC 撑死几百行，而调用方是 0.5 秒一次的轮询。
      */
     public int indexAt(long ms) {
         int hit = -1;
@@ -76,11 +76,11 @@ public final class Lyric {
 
     // ============================================================ 解析
 
-    /** {@code [mm:ss.xx]} 或 {@code [mm:ss.xxx]}，一行里可以有多个 (副歌重复)  */
+    /** {@code [mm:ss.xx]} 或 {@code [mm:ss.xxx]}，一行里可以有多个（副歌重复） */
     private static final Pattern TAG = Pattern.compile("\\[(\\d{1,3}):(\\d{1,2})(?:[.:](\\d{1,3}))?]");
 
     /**
-     * 解析 LRC 文本。认不出的行直接跳过 (LRC 里常混着 {@code [ar:]} {@code [ti:]} 这类元信息) 。
+     * 解析 LRC 文本。认不出的行直接跳过（LRC 里常混着 {@code [ar:]} {@code [ti:]} 这类元信息）。
      */
     public static Lyric parse(String lrc) {
         List<Line> out = new ArrayList<>();
@@ -131,9 +131,9 @@ public final class Lyric {
     // ============================================================ 取词
 
     /**
-     * 去 LRCLIB 按歌名 + 歌手取一份歌词。<b>阻塞</b>，必须在Recents线程调。
+     * 去 LRCLIB 按歌名 + 歌手取一份歌词。<b>阻塞</b>，必须在后台线程调。
      *
-     * @return 取到就是带时间轴的那份；取不到Back {@link #EMPTY} (调用方不必判 null)
+     * @return 取到就是带时间轴的那份；取不到返回 {@link #EMPTY}（调用方不必判 null）
      */
     public static Lyric fetchBlocking(String title, String artist) {
         if (title == null || title.trim().isEmpty()) {
@@ -141,7 +141,7 @@ public final class Lyric {
         }
         String t = title.trim();
         String a = artist == null ? "" : artist.trim();
-        // 先按"精确对"问一次 (LRCLIB 的 get 就是干这个的)
+        // 先按"精确对"问一次（LRCLIB 的 get 就是干这个的）
         String lrc = get("https://lrclib.net/api/get?track_name=" + enc(t)
                 + (a.isEmpty() ? "" : "&artist_name=" + enc(a)));
         Lyric parsed = parse(lrc);
@@ -154,7 +154,7 @@ public final class Lyric {
         return parse(firstSynced(json));
     }
 
-    /** 从 {@code /api/get} 的Back里抠出 syncedLyrics */
+    /** 从 {@code /api/get} 的返回里抠出 syncedLyrics */
     private static String firstSynced(String json) {
         if (json == null || json.isEmpty()) {
             return null;
@@ -180,7 +180,7 @@ public final class Lyric {
         }
     }
 
-    /** 一次 GET，Back正文；非 200 或出错都Back null (歌词取不到不是错误)  */
+    /** 一次 GET，返回正文；非 200 或出错都返回 null（歌词取不到不是错误） */
     private static String get(String url) {
         HttpURLConnection c = null;
         try {

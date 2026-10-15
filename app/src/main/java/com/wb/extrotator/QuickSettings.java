@@ -14,27 +14,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Cover DisplayNotifications面板顶上那排「QuickOnOff」的数据与执行 (v4.22 起) 。
+ * 外屏通知面板顶上那排「快捷开关」的数据与执行（v4.22 起）。
  *
- * <p>就是系统下拉那排里的常用几项: WiFi / Mobile Data / Bluetooth / Auto-Rotate / Flashlight / 勿扰 / Airplane Mode，
- * 外加一条「Cover DisplayAuto-Rotate」 ({@link CoverAutoRot}，只管封面屏那块) 。
+ * <p>就是系统下拉那排里的常用几项：WiFi / 移动数据 / 蓝牙 / 自动旋转 / 手电筒 / 勿扰 / 飞行模式，
+ * 外加一条「外屏自动旋转」（{@link CoverAutoRot}，只管封面屏那块）。
  *
- * <p><b>这一排是用户自己排的</b> (v4.23 起) : 默认给 {@link #ORDER}，面板上点「＋」可以
+ * <p><b>这一排是用户自己排的</b>（v4.23 起）：默认给 {@link #ORDER}，面板上点「＋」可以
  * 增、删、上下调序，落盘在 {@link #list}/{@link #save} 里。
  *
- * <p>每一项只有三件事: 叫什么、图标是哪张、现在是On是Off、按一下切过去。
+ * <p>每一项只有三件事：叫什么、图标是哪张、现在是开是关、按一下切过去。
  *
- * <p><b>为什么执行方式各不相同</b>: 本应用是普通应用，这几个OnOff分别归不同的系统服务管 ——
- * Auto-Rotate只是一个设置项 (我们有 WRITE_SECURE_SETTINGS，自己就能写) ；Flashlight走 CameraManager
- *  (相机权限) ；剩下五个 (WiFi / 数据 / Bluetooth / Airplane Mode / 勿扰) 都得借 Shizuku 发一条 shell，
+ * <p><b>为什么执行方式各不相同</b>：本应用是普通应用，这几个开关分别归不同的系统服务管 ——
+ * 自动旋转只是一个设置项（我们有 WRITE_SECURE_SETTINGS，自己就能写）；手电筒走 CameraManager
+ * （相机权限）；剩下五个（WiFi / 数据 / 蓝牙 / 飞行模式 / 勿扰）都得借 Shizuku 发一条 shell，
  * 系统没给普通应用这种口子。
  *
  * <p>⚠ 参数里带 {@code Context} 的都不是纯读 —— {@link #toggle} 会<b>阻塞</b>
- *  (shell 那条几百毫秒，航空模式那条还要回读一次) ，所以界面必须扔到Recents线程去跑，
+ * （shell 那条几百毫秒，航空模式那条还要回读一次），所以界面必须扔到后台线程去跑，
  * 跑完再回主线程刷状态。
  *
- * <p>⚠ 这条经验来自 v4.21 那次输入法: 老教程里的命令在新系统上会被悄悄收掉。
- * 所以这里对每个OnOff都<b>执行完回读一次</b>，没变就是没成，界面把那一格闪红 ——
+ * <p>⚠ 这条经验来自 v4.21 那次输入法：老教程里的命令在新系统上会被悄悄收掉。
+ * 所以这里对每个开关都<b>执行完回读一次</b>，没变就是没成，界面把那一格闪红 ——
  * 而不是"按了没反应也不知道为什么"。
  */
 public final class QuickSettings {
@@ -49,30 +49,30 @@ public final class QuickSettings {
     public static final int DND = 5;
     public static final int AIRPLANE = 6;
     /**
-     * Cover DisplayAuto-Rotate: 封面屏跟着手机横竖转。
+     * 外屏自动旋转：封面屏跟着手机横竖转。
      *
-     * <p>跟 {@link #AUTOROTATE} 是<b>两件事</b>: 那个是系统的Auto-Rotate，只管默认屏 (Internal Screen) ；
-     * 这个是封面屏的，靠加速度计 + shell 旋转命令 (见 {@link CoverAutoRot}) 。
+     * <p>跟 {@link #AUTOROTATE} 是<b>两件事</b>：那个是系统的自动旋转，只管默认屏（内屏）；
+     * 这个是封面屏的，靠加速度计 + shell 旋转命令（见 {@link CoverAutoRot}）。
      */
     public static final int COVER_ROT = 7;
 
     /**
-     * 下面三个是<b>动作型</b>: 点一下执行一次，没有一个"现在是On是Off"可言，
-     * 所以 {@link #isOn} 对它们恒Back false (界面画成灰底) ，另见 {@link #isAction}。
+     * 下面三个是<b>动作型</b>：点一下执行一次，没有一个"现在是开是关"可言，
+     * 所以 {@link #isOn} 对它们恒返回 false（界面画成灰底），另见 {@link #isAction}。
      */
-    /** 切换展OnMode (折叠 / 展On，见 {@link DualScreen#toggleFold})  */
+    /** 切换展开模式（折叠 / 展开，见 {@link DualScreen#toggleFold}） */
     public static final int ACTION_FOLD = 8;
-    /** One-Tap Cast（{@link CastService}） */
+    /** 一键投屏（{@link CastService}） */
     public static final int ACTION_CAST = 9;
-    /** RecentsApp —— 跟内屏底部上拉悬停那一下同一个去处 */
+    /** 后台应用 —— 跟内屏底部上拉悬停那一下同一个去处 */
     public static final int ACTION_RECENTS = 10;
 
     /**
-     * 默认那一排 (用户没动过时按这个摆) 。
+     * 默认那一排（用户没动过时按这个摆）。
      *
-     * <p>⚠ 这里是<b>Cover Display</b>的NotificationsPanel，所以摆的是 {@link #COVER_ROT} (封面屏跟着手机横竖转) ，
-     * 不是 {@link #AUTOROTATE} (系统那个只管默认Screen = Internal Screen) —— 后者已经从可选清单里摘掉了，
-     * 用户原话: 「Cover DisplayNotifications为什么要控制内屏Auto-Rotate啊」。
+     * <p>⚠ 这里是<b>外屏</b>的通知面板，所以摆的是 {@link #COVER_ROT}（封面屏跟着手机横竖转），
+     * 不是 {@link #AUTOROTATE}（系统那个只管默认屏 = 内屏）—— 后者已经从可选清单里摘掉了，
+     * 用户原话：「外屏通知为什么要控制内屏自动旋转啊」。
      */
     public static final int[] ORDER = {
             WIFI, DATA, BLUETOOTH, COVER_ROT, FLASH, DND, AIRPLANE
@@ -94,10 +94,10 @@ public final class QuickSettings {
     /**
      * 现在那一排上有哪些、什么次序。
      *
-     * <p>⚠ 得区分「从来没存过」和「用户全删了」: 前者给默认那一排，后者就该是空的 ——
+     * <p>⚠ 得区分「从来没存过」和「用户全删了」：前者给默认那一排，后者就该是空的 ——
      * 所以用 {@code contains} 判有没有这个键，而不是看读出来的串空不空。
      *
-     * <p>认不出来的 id (以后删掉的OnOff) 解析时直接跳过，不会在面板上摆一个空白格子。
+     * <p>认不出来的 id（以后删掉的开关）解析时直接跳过，不会在面板上摆一个空白格子。
      */
     public static List<Integer> list(Context c) {
         List<Integer> out = new ArrayList<>();
@@ -143,7 +143,7 @@ public final class QuickSettings {
         }
     }
 
-    /** 加到那一排的末尾；已经在上面就当Success (幂等)  */
+    /** 加到那一排的末尾；已经在上面就当成功（幂等） */
     public static void add(Context c, int id) {
         List<Integer> v = list(c);
         if (!v.contains(id)) {
@@ -199,25 +199,25 @@ public final class QuickSettings {
             case WIFI:
                 return "WiFi";
             case DATA:
-                return "Mobile Data";
+                return "移动数据";
             case BLUETOOTH:
-                return "Bluetooth";
+                return "蓝牙";
             case AUTOROTATE:
-                return "Auto-Rotate";
+                return "自动旋转";
             case FLASH:
-                return "Flashlight";
+                return "手电筒";
             case DND:
                 return "勿扰";
             case AIRPLANE:
-                return "Airplane Mode";
+                return "飞行模式";
             case COVER_ROT:
-                return "Cover DisplayAuto-Rotate";
+                return "外屏自动旋转";
             case ACTION_FOLD:
-                return "展OnMode";
+                return "展开模式";
             case ACTION_CAST:
-                return "One-Tap Cast";
+                return "一键投屏";
             case ACTION_RECENTS:
-                return "RecentsApp";
+                return "后台应用";
             default:
                 return "";
         }
@@ -254,7 +254,7 @@ public final class QuickSettings {
 
     // ------------------------------------------------------------------ 读状态
 
-    /** 现在是On着吗。读不到一律当"Off"，不抛。 */
+    /** 现在是开着吗。读不到一律当"关"，不抛。 */
     public static boolean isOn(Context c, int id) {
         try {
             switch (id) {
@@ -270,8 +270,8 @@ public final class QuickSettings {
                 case AIRPLANE:
                     return Settings.Global.getInt(c.getContentResolver(), S_AIRPLANE, 0) != 0;
                 case FLASH:
-                    // 顺手先把状态回调挂上 —— 挂在回调里的才是"现在到底On着没"，
-                    // 不然用户用系统那排On的Flashlight，我们这边会一直显示成Off。
+                    // 顺手先把状态回调挂上 —— 挂在回调里的才是"现在到底开着没"，
+                    // 不然用户用系统那排开的手电筒，我们这边会一直显示成关。
                     torchReady(c);
                     return torchOn;
                 case DND:
@@ -282,7 +282,7 @@ public final class QuickSettings {
                     return false;
             }
         } catch (Throwable t) {
-            Log.w(TAG, "读状态Failed " + name(id), t);
+            Log.w(TAG, "读状态失败 " + name(id), t);
             return false;
         }
     }
@@ -292,7 +292,7 @@ public final class QuickSettings {
     /**
      * 切一下。
      *
-     * @return null = 成了；否则是给用户看的一句话 (界面把它显示在那一格上)
+     * @return null = 成了；否则是给用户看的一句话（界面把它显示在那一格上）
      */
     public static String toggle(Context c, int id) {
         try {
@@ -304,7 +304,7 @@ public final class QuickSettings {
                 case DATA:
                     return onOff(c, id, "svc data ");
                 case BLUETOOTH:
-                    // 两条都试一遍: 不同系统版本上留着的命令不一样
+                    // 两条都试一遍：不同系统版本上留着的命令不一样
                     return onOff(c, id, "svc bluetooth ", "cmd bluetooth_manager ");
                 case AIRPLANE:
                     return toggleAirplane(c);
@@ -313,7 +313,7 @@ public final class QuickSettings {
                 case DND:
                     return toggleDnd(c);
                 case COVER_ROT:
-                    // 它自己会去Off/On整个Auto-Rotate (含还原角度、起停传感器)
+                    // 它自己会去关/开整个自动旋转（含还原角度、起停传感器）
                     return CoverAutoRot.toggle(c);
                 case ACTION_FOLD:
                     return QuickActions.run(c, QuickActions.KEY_TOGGLE_FOLD);
@@ -322,18 +322,18 @@ public final class QuickSettings {
                 case ACTION_RECENTS:
                     return openRecents(c);
                 default:
-                    return "UnknownOnOff";
+                    return "未知开关";
             }
         } catch (Throwable t) {
-            Log.w(TAG, "切换Failed " + name(id), t);
+            Log.w(TAG, "切换失败 " + name(id), t);
             return "切不动";
         }
     }
 
     /**
-     * 这一项是不是「点一下执行一次」的<b>动作</b> (不是OnOff) 。
+     * 这一项是不是「点一下执行一次」的<b>动作</b>（不是开关）。
      *
-     * <p>界面拿它把这一格画成中性色 —— 动作型没有"OnOffStatus"好显示，
+     * <p>界面拿它把这一格画成中性色 —— 动作型没有"开关状态"好显示，
      * 跟着 {@link #isOn} 走会永远是灰的，用户会以为按了没反应。
      */
     public static boolean isAction(int id) {
@@ -341,16 +341,16 @@ public final class QuickSettings {
     }
 
     /**
-     * 动作型: 打On「RecentsApp」。
+     * 动作型：打开「后台应用」。
      *
      * <p>跟外屏侧边栏里那一档、内屏底部上拉悬停走的是同一条
-     *  ({@link CoverRecentsGesture#openRecentsNow}) —— 封面屏的Recents是系统目标，
-     * 应用身份发不出去，所以这条<b>Requires Shizuku</b> (没有时它自己会退到全局动作) 。
+     * （{@link CoverRecentsGesture#openRecentsNow}）—— 封面屏的最近任务是系统目标，
+     * 应用身份发不出去，所以这条<b>要 Shizuku</b>（没有时它自己会退到全局动作）。
      */
     private static String openRecents(Context c) {
         int did = CoverDisplay.id(c);
         if (did <= 0) {
-            return "Cover screen not found";
+            return "找不到外屏";
         }
         CoverRecentsGesture.openRecentsNow(did);
         return null;
@@ -365,19 +365,19 @@ public final class QuickSettings {
     private static final String S_AIRPLANE = "airplane_mode_on";
 
     /**
-     * Auto-Rotate —— 唯一一条不用 Shizuku 的: 它只是个 Settings.System 项，
-     * 而本应用装着 WRITE_SECURE_SETTINGS (「授予安全设置权限」那个按钮给的) ，能自己写。
-     * 写不动 (权限掉了) 再退到 shell。
+     * 自动旋转 —— 唯一一条不用 Shizuku 的：它只是个 Settings.System 项，
+     * 而本应用装着 WRITE_SECURE_SETTINGS（「授予安全设置权限」那个按钮给的），能自己写。
+     * 写不动（权限掉了）再退到 shell。
      */
     private static String toggleAccel(Context c) {
         final int v = isOn(c, AUTOROTATE) ? 0 : 1;
         try {
             Settings.System.putInt(c.getContentResolver(), S_ACCEL, v);
         } catch (Throwable t) {
-            Log.w(TAG, "写 accelerometer_rotation Failed，改走 shell: " + t);
+            Log.w(TAG, "写 accelerometer_rotation 失败，改走 shell：" + t);
         }
-        // 回读判成没成: 写不下去 (没权限) 时 putInt 也是"不抛异常但不生效"的情况有过，
-        // 所以不靠"没抛异常"当Success。
+        // 回读判成没成：写不下去（没权限）时 putInt 也是"不抛异常但不生效"的情况有过，
+        // 所以不靠"没抛异常"当成功。
         if (isOn(c, AUTOROTATE) == (v == 1)) {
             return null;
         }
@@ -386,10 +386,10 @@ public final class QuickSettings {
     }
 
     /**
-     * WiFi / Mobile Data / Bluetooth 三条长得一样: 发一条 {@code enable|disable} 的命令 + 回读确认。
+     * WiFi / 移动数据 / 蓝牙 三条长得一样：发一条 {@code enable|disable} 的命令 + 回读确认。
      *
      * <p>给多串前缀是为了留退路 —— 同一件事在不同 One UI 版本上留着的 shell 命令不一样
-     *  (Bluetooth就有 {@code svc bluetooth} 与 {@code cmd bluetooth_manager} 两套) ，
+     * （蓝牙就有 {@code svc bluetooth} 与 {@code cmd bluetooth_manager} 两套），
      * 前一条没把状态改过来就接着试下一条。
      */
     private static String onOff(Context c, int id, String... prefixes) {
@@ -406,11 +406,11 @@ public final class QuickSettings {
     }
 
     /**
-     * Airplane Mode。
+     * 飞行模式。
      *
-     * <p>优先用 {@code cmd connectivity airplane-mode} (Android 11 起有) ；它不成再退到
-     * 老办法 —— 直接写 {@code Settings.Global} 再发那条广播 (老教程都这么写，
-     * 新系统上广播这一半可能已经没人听了，所以它只是兜底) 。
+     * <p>优先用 {@code cmd connectivity airplane-mode}（Android 11 起有）；它不成再退到
+     * 老办法 —— 直接写 {@code Settings.Global} 再发那条广播（老教程都这么写，
+     * 新系统上广播这一半可能已经没人听了，所以它只是兜底）。
      */
     private static String toggleAirplane(Context c) {
         final boolean cur = isOn(c, AIRPLANE);
@@ -422,7 +422,7 @@ public final class QuickSettings {
         try {
             Settings.Global.putInt(c.getContentResolver(), S_AIRPLANE, want ? 1 : 0);
         } catch (Throwable t) {
-            Log.w(TAG, "写 airplane_mode_on Failed: " + t);
+            Log.w(TAG, "写 airplane_mode_on 失败：" + t);
         }
         shell("am broadcast -a android.intent.action.AIRPLANE_MODE --ez state " + want);
         if (isOn(c, AIRPLANE) == want) {
@@ -431,7 +431,7 @@ public final class QuickSettings {
         return err != null ? err : "没切成";
     }
 
-    /** 勿扰: 读不需要权限，切需要「Notifications策略」Permission —— 没给就用 shell 现补一次 */
+    /** 勿扰：读不需要权限，切需要「通知策略」权限 —— 没给就用 shell 现补一次 */
     private static boolean dndOn(Context c) {
         NotificationManager nm = (NotificationManager)
                 c.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -446,7 +446,7 @@ public final class QuickSettings {
         NotificationManager nm = (NotificationManager)
                 c.getSystemService(Context.NOTIFICATION_SERVICE);
         if (nm == null) {
-            return "没有NotificationsService";
+            return "没有通知服务";
         }
         final boolean want = !dndOn(c);
         final int f = want ? NotificationManager.INTERRUPTION_FILTER_PRIORITY
@@ -455,7 +455,7 @@ public final class QuickSettings {
             nm.setInterruptionFilter(f);
             return null;
         } catch (Throwable t) {
-            Log.i(TAG, "勿扰没权限，用 shell 补一次: " + t);
+            Log.i(TAG, "勿扰没权限，用 shell 补一次：" + t);
         }
         String err = shell("cmd notification allow_dnd " + c.getPackageName());
         if (err != null) {
@@ -469,14 +469,14 @@ public final class QuickSettings {
         }
     }
 
-    // ----- Flashlight
+    // ----- 手电筒
 
     private static CameraManager cam;
     private static boolean torchHooked;
     private static volatile boolean torchOn;
     private static String torchId;
 
-    /** 挂一次Flashlight状态回调 (挂了之后系统改了状态这边也知道) ，幂等 */
+    /** 挂一次手电筒状态回调（挂了之后系统改了状态这边也知道），幂等 */
     private static boolean torchReady(Context c) {
         if (cam == null) {
             try {
@@ -505,7 +505,7 @@ public final class QuickSettings {
                     }
                 }, new Handler(Looper.getMainLooper()));
             } catch (Throwable t) {
-                Log.w(TAG, "挂Flashlight回调Failed: " + t);
+                Log.w(TAG, "挂手电筒回调失败：" + t);
             }
         }
         return true;
@@ -524,7 +524,7 @@ public final class QuickSettings {
                 }
             }
         } catch (Throwable t) {
-            Log.w(TAG, "找闪光灯Failed: " + t);
+            Log.w(TAG, "找闪光灯失败：" + t);
         }
         return null;
     }
@@ -542,10 +542,10 @@ public final class QuickSettings {
             cam.setTorchMode(id, want);
             return null;
         } catch (Throwable t) {
-            Log.i(TAG, "OnFlashlight被拒 (多半是缺相机权限) ，用 shell 补一次: " + t);
+            Log.i(TAG, "开手电筒被拒（多半是缺相机权限），用 shell 补一次：" + t);
         }
-        // 相机权限是运行期权限，系统对话框会弹在**Internal Screen**上 —— 那块屏用户看不了，
-        // 所以不弹框，直接用 Shizuku 补 (`pm grant` 属于 development 级，shell 干得了) 。
+        // 相机权限是运行期权限，系统对话框会弹在**内屏**上 —— 那块屏用户看不了，
+        // 所以不弹框，直接用 Shizuku 补（`pm grant` 属于 development 级，shell 干得了）。
         String err = shell("pm grant " + c.getPackageName() + " android.permission.CAMERA");
         if (err != null) {
             return err;
@@ -554,8 +554,8 @@ public final class QuickSettings {
             cam.setTorchMode(id, want);
             return null;
         } catch (Throwable t) {
-            Log.w(TAG, "补了权限还是打不OnFlashlight", t);
-            return "Flashlight打不On";
+            Log.w(TAG, "补了权限还是打不开手电筒", t);
+            return "手电筒打不开";
         }
     }
 
@@ -564,13 +564,13 @@ public final class QuickSettings {
     /**
      * 发一条 shell，把"没跑成"翻译成一句人话。
      *
-     * <p>{@link ShellRunner#run} 把 stdout 与 stderr 合在一起Back (stderr 每行前面带 {@code !}) ，
+     * <p>{@link ShellRunner#run} 把 stdout 与 stderr 合在一起返回（stderr 每行前面带 {@code !}），
      * 命令不存在 / 被 SELinux 拒时看到的是 {@code inaccessible or not found} 之类，
-     * 这里统一认成Failed —— 不然界面会显示"切Success"而实际什么都没发生。
+     * 这里统一认成失败 —— 不然界面会显示"切成功"而实际什么都没发生。
      */
     private static String shell(String cmd) {
         if (!ShellRunner.isReady()) {
-            return "Requires Shizuku";
+            return "要 Shizuku";
         }
         String out = ShellRunner.run(cmd, 10);
         if (out == null || out.isEmpty()) {
