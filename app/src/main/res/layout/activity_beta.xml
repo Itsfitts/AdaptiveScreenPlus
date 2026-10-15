@@ -185,7 +185,7 @@
 
                     <TextView
                         style="@style/BetaSectionTitle"
-                        android:text="Resolution & DPI" />
+                        android:text="Resolution &amp;amp;amp; DPI" />
 
                     <TextView
                         android:id="@+id/iBetaCoverRes"
@@ -751,7 +751,7 @@
                     <Switch
                         android:id="@+id/swCoverRecents"
                         style="@style/BetaSwitch"
-                        android:text="Swipe up & pause for Recents" />
+                        android:text="Swipe up &amp; pause for Recents" />
                 </LinearLayout>
 
                 <!-- （v4.3）。：、，
