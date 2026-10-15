@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  「收藏夹」图标（关着的时候）：空心五角星，白色 —— 跟排序 / 外观那几个图标同一套画法。
+  「」（）：， ——  / 。
 
-  为什么用五角星：收藏这件事在大家的直觉里就是星（书签也行，但书签图标在外屏的小尺寸下
-  容易糊成一条）。空心代表"还没在筛选"，点亮成实心绿就是"正在只看收藏"。
--->
+  ：（，
+  ）。""，""。-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"

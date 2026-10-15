@@ -1,139 +1,109 @@
-# 自适应屏幕 · Adaptive Screen++（ExtDisplayRotator）
+# Adaptive Screen++ (ExtDisplayRotator)
 
-**把手机外接的便携屏、以及 Galaxy Z Flip / Z Fold 的外屏，变成真正能用的第二块屏。**
+**Turn your phone's portable external screen, as well as the Galaxy Z Flip / Z Fold cover screen, into a truly usable second display.**
 
-手机竖着拿、便携屏横着放时，镜像过去会留一圈黑边 —— 本应用在后台盯着手机的横竖状态，
-一变竖就把外接屏跟着转 90°，让画面重新铺满；同时能**接管内屏分辨率**（可替代 SecondScreen）。
-在此之上还做了双屏并发、副屏桌面与伪应用、内屏全面屏手势、外屏侧边栏，以及一组外屏小组件。
+When the phone is held vertically and the portable screen is placed horizontally, the mirrored view would normally leave a black border. This app monitors the phone's orientation in the background and rotates the external screen 90° when the phone switches to portrait, filling the screen again. It can also **take over the internal screen resolution** (a replacement for SecondScreen).
 
-- **适用机型**：三星 Galaxy Z Flip / Z Fold 等带「封面屏 + 内屏」的折叠机，以及支持 USB-C / HDMI 外接屏的机型。
-- **依赖**：显示调节、双屏并发、隐藏三键这类要写系统设置的功能需要
-  [Shizuku](https://shizuku.rikka.app/)（免 root，不插电脑也能用无线调试启动）。
-  外屏启动器、返回、回主界面已改成纯无障碍实现，**不需要 Shizuku**。
+On top of that, it provides dual‑screen concurrent mode, secondary‑screen desktop with pseudo‑apps, internal‑screen full‑screen gestures, an external‑screen sidebar, and a set of external‑screen widgets.
 
-## 功能一览
+- **Supported devices**: Samsung Galaxy Z Flip / Z Fold and other foldable phones with a cover screen, as well as any device that can connect an external screen via USB‑C / HDMI.
+- **Dependencies**: Features that require system settings (display adjustments, dual‑screen concurrency, hiding the three‑button navigation) rely on [Shizuku](https://shizuku.rikka.app/) (no root needed, works via wireless debugging). The external‑screen launcher, back, and home actions have been reimplemented using pure accessibility services and **do not require Shizuku**.
 
-| 分组 | 功能 |
-| --- | --- |
-| **显示** | 自适应旋转（外接屏跟手机一起转，消黑边）· 内屏分辨率接管（可替代 SecondScreen）· 外屏分辨率 / DPI 覆盖 · 强制旋转 · 刷新率设定 · 去掉应用黑边 |
-| **双屏** | 折叠 / 展开状态切换 · 内外屏并发点亮 · 一键启动双屏 · 投屏控制（内屏镜像到外接屏，支持全屏） |
-| **外屏** | 副屏桌面 · 侧边栏（通知面板 + 最近任务）· 外屏启动器（搜索 / 收藏 / 拖动排序 / 外观 / 背景图） |
-| **伪应用** | 副屏触控板 · 投屏控制 · 状态展示柜 · 副屏播放器（接管系统正在播放的音乐） |
-| **内屏手势** | 边缘侧滑返回 · 底部上滑回主界面 · 上滑停住开最近任务；动画可选原生模糊或炫彩光带 |
-| **外屏小组件** | 双屏快捷面板 · 外屏启动器 · 老虎机 · 自定义操作 · 手机状态 |
-| **系统与效率** | 隐藏三键导航 · 音量键 / 侧键快捷操作 · 自定义指令 · 打开无线调试 · Beta 实验室 |
+## Feature Overview
 
-## 安装
+| Category | Features |
+|---|---|
+| **Display** | Adaptive rotation (external screen rotates together with the phone, eliminating black borders) · Internal‑screen resolution takeover (can replace SecondScreen) · External‑screen resolution / DPI override · Forced rotation · Refresh‑rate settings · Remove app black borders |
+| **Dual‑Screen** | Fold / unfold state switching · Simultaneous illumination of internal and external screens · One‑tap dual‑screen activation · Screen‑casting control (mirror internal screen to external screen, supports fullscreen) |
+| **External‑Screen** | Secondary‑screen desktop · Sidebar (notification panel + recent tasks) · External‑screen launcher (search / favorites / drag‑reorder / appearance / background image) |
+| **Pseudo‑Apps** | Secondary‑screen touchpad · Screen‑casting control · Status display cabinet · Secondary‑screen music player (controls currently playing music) |
+| **Internal‑Screen Gestures** | Edge swipe back · Bottom swipe to home · Swipe up and hold to open recent apps (animation can be native blur or colorful light trail) |
+| **External‑Screen Widgets** | Dual‑screen quick panel · External‑screen launcher · Slot machine · Custom actions · Phone status |
+| **System & Efficiency** | Hide three‑button navigation · Volume / side‑key shortcuts · Custom commands · Open wireless debugging · Beta laboratory |
 
-1. 装 [Shizuku](https://shizuku.rikka.app/) 并启动它的服务（免 root，两种方式任选）：
-   - **不用电脑**：开发者选项里打开「无线调试」，在 Shizuku 里选「通过无线调试启动」，按提示配对（Android 11+）；
-   - **用电脑**：USB 连上后执行 `adb shell sh /sdcard/Android/data/moe.shizuku.privileged.api/start.sh`。
-2. 下载本应用的 APK（[Releases](https://github.com/PyMakesMeProud/AdaptiveScreenPlus/releases)）装到手机。
-3. 打开应用，先点 **「授权 / 重新检测」**，在弹窗里允许；再按首页提示把权限给全 ——
-   权限给不全，部分功能不会出现。
+## Installation
 
-> 如果你原来用 **SecondScreen** 改内屏分辨率，装好本应用后请把它关掉（或至少停用它的自动配置），
-> 别让两个应用同时改显示参数，否则画面会错位。
+1. Install [Shizuku](https://shizuku.rikka.app/) and start its service (no root, two options):
+   - **Without a computer**: Enable *Wireless debugging* in Developer options, then in Shizuku choose *Start via wireless debugging* and follow the pairing instructions (Android 11+).
+   - **With a computer**: Connect via USB and run `adb shell sh /sdcard/Android/data/moe.shizuku.privileged.api/start.sh`.
+2. Download the APK from the [Releases](https://github.com/PyMakesMeProud/AdaptiveScreenPlus/releases) page and install it on your phone.
+3. Open the app, tap **"Authorize / Re‑detect"**, grant the permissions in the dialog, then follow the on‑screen prompts to grant all required permissions.
 
-## 上手：先做这三步
+> If you previously used **SecondScreen** to adjust the internal resolution, disable or stop it after installing this app. Running both apps simultaneously will cause display conflicts.
 
-### 1. 打开「自适应旋转」—— 注意它的适用场景
+## Getting Started: First Three Steps
 
-- **它做什么**：外接屏画面跟着手机一起转，两边方向始终一致，旋转后不会留下黑边。
-- **适合开**：外接屏和手机是一起换方向的 —— 手机转过去，外接屏画面也跟着转过来。手持便携屏就是这种用法。
-- **别开**：外接屏是固定摆着的（桌上显示器那类），手机却会单独转 —— 开了画面会跟着手机歪掉。
-  不外接屏时它不起作用。
+### 1. Enable **Adaptive Rotation** – understand its use cases
+- **What it does**: The external screen rotates together with the phone, keeping both sides aligned. No black borders after rotation.
+- **When to enable**: When the external screen moves together with the phone (e.g., portable screen). For a fixed desktop monitor, leave it off because the phone’s rotation would misalign the display.
+- **Note**: It has no effect when no external screen is attached.
 
-### 2. 校准方向（第一次必做）
+### 2. Calibrate Orientation (required once)
+Different portable screens have opposite effects for *Rotate 90°* and *Rotate 270°*. Use the **Manual Calibration** button on the *Auto‑rotate* page, tap each option once, see which fills the screen correctly, then set the proper angle in the **"When phone is portrait, lock external screen to"** dropdown.
 
-不同的便携屏，「转 90°」和「转 270°」铺满的效果方向是相反的。用「自动旋转」页下方的
-**手动校准** 按钮各点一次，看哪边铺满，再把正确角度填到 **「手机竖屏时，外接屏锁到」** 下拉框里。
+### 3. (Optional) Take Over Internal‑Screen Resolution
+1. Tap **"Grant overlay permission"** (the app works without it, but the overlay improves the experience during screen insertion).
+2. Tap the large **"Internal‑screen resolution takeover"** button to enable it; the screen switches immediately to the current resolution. Tap again to restore the native resolution.
+3. Keep the default resolution `1080×1920`. With **"Auto‑load resolution"** enabled, the app will automatically calculate the correct value when a portable screen is connected (e.g., a 1920×1080 screen results in `1080×1920`).
+4. After plugging a portable screen, you’ll get a popup to **Enable** the takeover; unplugging restores the native resolution automatically.
 
-### 3. 按需接管内屏分辨率（可选，用来替代 SecondScreen）
+## Common Operations
 
-1. 点 **「授予弹窗权限」**（没给也能用，只是插屏时退化成通知横幅）；
-2. 点一下大按钮 **「内屏分辨率接管」** 开启，它会立刻把内屏切到当前分辨率；再点一下关闭并还原原生；
-3. 分辨率保持默认 `1080×1920` 即可 —— **不用自己去查便携屏是多少像素**，保持
-   **「分辨率自动加载」** 开着，插上屏时它会自动算好（便携屏是 1920×1080 就自动用 1080×1920）。
-   填横屏数值也没关系，写入前会自动转成竖屏；
-4. 以后每次插上便携屏 → 弹窗询问 → 点「启用」；拔掉后自动还原原生分辨率。
+### Dual‑Screen Mode & Secondary‑Screen Desktop
+Tap the green **"Activate Dual‑Screen Mode"** button on the *Dual‑screen* page: it simultaneously lights up both screens and projects the secondary‑screen desktop onto the external screen. The external desktop shows a clock, battery indicator, and app icons; tapping an icon launches the app on that screen.
 
-## 常用操作
+To make the phone + portable screen behave like a true dual‑screen (similar to DeX but without DeX), enable **"DeX‑free mode"** on the *Dual‑screen* page (requires a reboot).
 
-### 双屏模式与副屏桌面
+### Internal‑Screen Gestures
+The internal screen has three invisible edge zones that mimic the system’s full‑screen gestures:
 
-点「双屏」页的绿色大按钮 **「启动双屏模式」**：一步到位切到内外屏并发，并把副屏桌面投到外屏。
-外屏点亮之后就是一张能操作的桌面（时钟 / 电量 / 应用图标网格），
-**在它上面点图标，就在那块屏打开应用**。
+| Position | Action |
+|---|---|
+| Left / right edges (≈20dp each) | Swipe inward ≥34dp then release = Back |
+| Bottom edge (≈20dp) | Swipe up = Home |
+| Bottom edge (≈20dp) | Swipe up, pause ~140ms, then release = Open recent apps |
 
-想让「手机 + 便携屏」也变成真正的双屏（像 DeX，但不用 DeX），打开「双屏」页的
-**「免 DeX 桌面模式」**（需重启生效）—— 外接屏变成独立桌面、鼠标归它，手机内屏照常用触控。
+Animations can be switched between native blur or a colorful light trail in the Beta lab.
 
-### 内屏手势
+### External‑Screen Sidebar & Widgets
+- **Sidebar**: Swipe from the edge on the external screen to pull down the notification panel (quick toggles + notifications) and recent tasks.
+- **Widgets** (Dual‑screen quick panel, external launcher, slot machine, custom actions, phone status): Adding a widget to the *home screen* places it on the internal screen; the external screen has its own set of widgets, added via **Settings → External screen → Widgets**.
 
-内屏边缘有三条隐形热区，动作等同系统全面屏手势：
+## FAQ
 
-| 位置 | 动作 |
-| --- | --- |
-| 左右边缘（各 20dp） | 往里划 ≥34dp 后松手 = 返回 |
-| 屏幕底部（20dp） | 上滑 = 回主界面 |
-| 屏幕底部（20dp） | 上滑后停住约 140ms 再松手 = 打开最近任务 |
+**Q: Shizuku shows "Not ready" even after authorisation?**
+Check that the Shizuku service is running (it may need to be restarted after a phone reboot), then tap **"Authorize / Re‑detect"** again.
 
-动画可选原生模糊或炫彩光带，在 Beta 实验室里切换。不成手势的触摸会当场让开、
-还原给下面的应用，不影响正常操作。
+**Q: Features stop working after a phone reboot?**
+Shizuku must be restarted, then re‑authorize in the app.
 
-### 外屏侧边栏与小组件
+**Q: Rotation 90° looks odd?**
+Your screen’s 90°/270° orientation may be reversed. Use the calibration step to set it to 270°.
 
-- **侧边栏**：在外屏从边缘往内划，拉出发通知面板（快捷开关 + 通知）与最近任务。
-- **外屏小组件**（双屏快捷面板 / 外屏启动器 / 老虎机 / 自定义操作 / 手机状态）：
-  普通「添加到主屏」只进内屏，**外屏的是单独一套**，要到 **设置 → 外屏 → 小组件** 里添加
-  （有的系统写作「封面屏幕 → 小组件」，指的都是同一处）。
+**Q: No popup after connecting a portable screen?**
+1. Ensure the phone is not locked or sleeping (the popup is suppressed on lock screen).\
+2. Verify the **"Display over other apps"** permission is granted (otherwise you’ll only see a notification bar).\
+3. Use the **"Test popup"** button in the app to verify the pipeline.
 
-### 伪应用
+**Q: Does this affect the phone’s internal screen?**
+Rotation only affects the external screen. Resolution changes are explicit toggles with confirmation popups; you can always restore the native settings via the **"Restore native"** button.
 
-外屏的副屏桌面里，除系统应用外还钉了几个自定义页面：**副屏触控板**（把外屏当触控板操作内屏）、
-**投屏控制**、**状态展示柜**、**副屏播放器**（读取并控制系统正在播放的音乐）。
-是否显示，可以在应用首页「副屏管理」里逐个勾选。
+**Q: Can I keep SecondScreen installed?**
+Yes, but **do not enable both apps’ automatic modes simultaneously**, as they both modify the same display parameters and will conflict. Use either this app or SecondScreen, or disable SecondScreen’s auto‑config and manually trigger it.
 
-## 常见问题
+## Building from Source
 
-**Q：Shizuku 里已经授权了，应用还是显示「未就绪」？**
-先看 Shizuku 服务本身有没有在跑（手机重启后要重新启动服务），然后在应用里点一次「授权 / 重新检测」。
-
-**Q：手机重启后功能失效？**
-Shizuku 需要重新启动，然后在应用里重新授权一次。
-
-**Q：转了 90° 反而变得更奇怪？**
-说明这块屏的 90° / 270° 是反的，按上面「校准方向」把角度换成 270°。
-
-**Q：插入便携屏后没看到弹窗？**
-按顺序查：① 手机是不是锁屏 / 息屏了（锁屏时特意不弹，会改走通知横幅）；
-② 有没有给「显示在其他应用上层」权限（没给也会有通知横幅兜底，横幅上直接能点）；
-③ 想立刻验证链路，点应用里的 **「测试弹窗」**。
-
-**Q：会不会影响手机内屏？**
-旋转不会 —— 所有旋转命令都只作用于外接屏。分辨率会（这正是它的功能），
-但它是显式开关 + 弹窗确认的，界面上随时能点「还原原生」。
-
-**Q：还留着 SecondScreen 行不行？**
-行，但**不能两个都开自动模式** —— 它们改的是同一套显示参数，同时写会打架。
-要么只用本应用，要么在本应用里把自动应用关掉、只手动点。
-
-## 自行编译
-
-标准 Gradle Android 工程。环境：**JDK 17**、**Android SDK**（platform 34 + build-tools 34.0.0）。
+Standard Gradle Android project.
+Environment: **JDK 17**, **Android SDK** (platform 34 + build‑tools 34.0.0).
 
 ```bash
 ./gradlew assembleDebug
 ```
 
-产物：`app/build/outputs/apk/debug/app-debug.apk`。用 Android Studio 直接打开本目录也能编
-（`local.properties` 里写一行 `sdk.dir=<你的 SDK 路径>`）。
+Output: `app/build/outputs/apk/debug/app-debug.apk`. Open the directory with Android Studio if you prefer.
 
-> Shizuku 客户端库来自 Maven Central（`dev.rikka.shizuku:api` / `:provider`），
-> 拉不动依赖时可在 `settings.gradle` 里把 `mavenCentral()` 换成
-> `https://maven.aliyun.com/repository/public`。
+> Shizuku client libraries come from Maven Central (`dev.rikka.shizuku:api` / `:provider`). If dependencies fail to resolve, replace `mavenCentral()` with `https://maven.aliyun.com/repository/public` in `settings.gradle`.
 
-## 开源许可
+## License
 
-本项目以 **MIT 协议** 开源，详见 [LICENSE](LICENSE)。更新记录见 [CHANGELOG.md](CHANGELOG.md)。
+This project is released under the **MIT License**; see [LICENSE](LICENSE). Change log is available in [CHANGELOG.md](CHANGELOG.md).

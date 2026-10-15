@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  工具条上的排序图标：三条左对齐、依次变短的横线。
-  比"上箭头+下箭头"那种更安静 —— 工具条上三个图标要是一个比一个花哨就乱了。
--->
+  ：、。
+  "+" —— 。-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"

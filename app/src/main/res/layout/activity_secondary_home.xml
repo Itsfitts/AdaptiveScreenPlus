@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  副屏桌面：投到封面屏（或便携屏）上的一块轻量桌面。
-  故意用深色底 —— 封面屏小、又要长时间亮着，深色更省电也不刺眼。
--->
+  Secondary Home：（）。
+   —— 、，。-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -62,7 +61,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
-        android:text="点图标即在本屏打开 · 底部可刷新 / 退出"
+        android:text="Tap icon to open on this display · Refresh/Exit below"
         android:textColor="#6C7889"
         android:textSize="10sp" />
 
@@ -84,7 +83,7 @@
         android:gravity="center"
         android:paddingTop="18dp"
         android:paddingBottom="18dp"
-        android:text="正在加载应用…"
+        android:text="Loading apps…"
         android:textColor="#8C97A8"
         android:textSize="12sp"
         android:visibility="gone" />
@@ -100,7 +99,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="刷新"
+            android:text="Refresh"
             android:textAllCaps="false"
             android:textSize="13sp" />
 
@@ -110,7 +109,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
             android:layout_weight="1"
-            android:text="系统桌面"
+            android:text="System Home"
             android:textAllCaps="false"
             android:textSize="13sp" />
 
@@ -120,7 +119,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
             android:layout_weight="1"
-            android:text="退出"
+            android:text="Exit"
             android:textAllCaps="false"
             android:textSize="13sp" />
     </LinearLayout>

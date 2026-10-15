@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  「首次打开应用」那个弹窗的内容（v472 建、v475 精简）。
+  「」（v472 、v475 ）。
 
-  ⚠ 为什么自定义布局、不用 setMessage：跟 dialog_beta_intro.xml 一个理由，
-  正文长起来时 AlertDialog 会先把高度吃光、底部被裁。v475 正文缩成两句之后
-  不再需要**固定高度**的 ScrollView，改成 wrap_content，弹窗自己收成刚好装得下的高度。
-  （万一正文又变长，回到 208dp 固定高度那套。）
+  ⚠ 、 setMessage： dialog_beta_intro.xml ，
+   AlertDialog 、。v475
+  **** ScrollView， wrap_content，。
+  （， 208dp 。）
 
-  ⚠ 文字色必须**写死成深色**：这个弹窗跟着 MainActivity 的主题走，而它用的是 application
-  那套 Theme.DeviceDefault.Light —— 底是**白**的。v472 从 Beta 那个深色页抄了 #FFE0E0E0
-  （浅灰），在白底上几乎看不见（用户 2026-09-27 报的：「灰白色的弹窗字体是生怕让我认出来吗」）。
+  ⚠ ****： MainActivity ， application
+   Theme.DeviceDefault.Light —— ****。v472  Beta  #FFE0E0E0
+  （），（ 2026-09-27 ：「」）。
 
-  ⚠ 这里**没有**勾选框：弹过一次就不再弹（标记记在 MainActivity 的 extrot_intro 里）。
-  想知道每个版本改了什么，主界面上有「更新日志」入口。
--->
+  ⚠ ****：（ MainActivity  extrot_intro ）。
+  ，「」。-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"

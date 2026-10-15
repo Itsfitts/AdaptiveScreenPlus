@@ -1,35 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  「外屏启动器」的完整界面 —— 投到封面屏上用的配置页。
-  跟小组件不同，这里是真 Activity 的真布局，没有 RemoteViews 那些限制。
+  「」 —— 。
+  ， Activity ， RemoteViews 。
 
-  ── 排布（v4.14 再排一次）──────────────────────────────────────────
-      顶栏      [★] 外屏启动器 ⓘ 已选 N     [≋] [⇅] [图] [✕]
-      ─────────────  1dp 淡线（跟小组件工具条下面那条线对齐）
-      搜索框    实时过滤
-      网格      占满剩下的高度（外面套一层 FrameLayout 给拖拽浮层用）
-      底栏      [提示]  [导入] [清空] [完成]
+  ── （v4.14 ）──────────────────────────────────────────
+      Top Bar      [★]  ⓘ  N     [≋] [⇅] [] [✕]
+      ─────────────  1dp （）
 
-  ── 顶栏为什么改成现在这样 ──────────────────────────────────────────
-  ① 「编辑模式」开关（那个鼠标指针）v4.14 <b>撤掉了</b>：在完整界面上直接打开应用
-     没什么必要，点图标从此恒定是"加进 / 移出启动器"。那个位置让给「收藏夹」——
-     拨一下只显示收藏过的应用（跟小组件顶栏那个星星是同一个开关）。
-  ② 加了一条 1dp 分割线。之前四个按钮浮在同一片底色上，跟网格糊成一块；
-     有了线，工具区和内容区才分得开 —— 小组件那边也是这么做的，两边看起来才像一套。
-  ③ 四个图标统一 34dp、统一 launcher_tool_btn（平时全透明、按下才有淡圆），
-     排布用等间距。之前只有三个、间距靠 margin 手调，加了第四个之后必须改成统一节奏。
-  ④ 又加了「背景图片」（v4.14），排在排序和关闭中间 —— 前面那几个的位置一律不动，
-     用户已经认熟了原来的排法，新东西插队比整排重来一遍好。
+            （ FrameLayout ）
+            []  [] [] []
 
-  ── 网格为什么套了一层 FrameLayout（gridHost）───────────────────────
-  拖拽时"跟着手指走"的那个浮层没地方放：GridView 自己会被滚动裁剪。
-  最省事又不出错的做法是在它外面套一层 FrameLayout，浮层用 margin 绝对定位加在这层里，
-  坐标 = GridView.getLeft() + child.getLeft()。见 DragGrid 的注释。
+  ── Top Bar ──────────────────────────────────────────
+  ① 「」（）v4.14 <b></b>：
+     ，" / "。「」——
+     （Top Bar）。
+  ②  1dp 。，；
+     ， —— ，。
+  ③  34dp、 launcher_tool_btn（、），
+     。、 margin ，。
+  ④ 「」（v4.14）， —— ，
+     ，。
 
-  底色 #0E1116 跟副屏桌面（activity_secondary_home）对齐 —— 见那份的注释。
-  设过背景图之后，这层底色会被「图片 + 半透明黑」整体顶掉（代码在 applyBackdrop），
-  那层黑的厚度就是外观条里的「不透明度」。
--->
+  ──  FrameLayout（gridHost）───────────────────────
+  ""：GridView 。
+   FrameLayout， margin ，
+   = GridView.getLeft() + child.getLeft()。 DragGrid 。
+
+   #0E1116 Secondary Home（activity_secondary_home） —— 。
+  ，「 + 」（ applyBackdrop），
+  「」。-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/pickRoot"
     android:layout_width="match_parent"
@@ -65,9 +64,9 @@
             android:textStyle="bold" />
 
         <!--
-          标题右边那个「ⓘ」：整页的操作说明（怎么显隐 / 怎么排序 / 排序规则 / 能调什么）。
-          用的是主界面同一套 InfoIcon 样式（深色底上换成浅色字）。
-          ⚠ id 以 i 打头是这个项目的约定：一眼能认出"这是个 ⓘ"。
+          Title「ⓘ」：（ /  /  / ）。
+           InfoIcon （）。
+          ⚠ id  i ：" ⓘ"。
         -->
         <TextView
             android:id="@+id/iPickTitle"
@@ -121,7 +120,7 @@
             android:src="@drawable/ic_launcher_close" />
     </LinearLayout>
 
-    <!-- 分隔线（跟小组件工具条下面那条粗细、颜色一致） -->
+    <!-- （、） -->
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="1dp"
@@ -153,10 +152,10 @@
         android:layout_weight="1">
 
         <!--
-          ⚠ listSelector 必须显式设成透明：GridView 默认那个 selector 会在
-             "当前选中项"上画一块浅色圆角底 —— 而选中项默认就是第 0 项，
-             于是第一格永远顶着一块多余的框（拖拽时它还会跟着跑，
-             看起来像"拖动目标高亮"，其实不是）。v2.19.0 第一轮实测截图上发现的。
+          ⚠ listSelector ：GridView  selector
+             "" ——  0 ，
+             （，
+             ""，）。v2.19.0 。
         -->
         <com.wb.extrotator.DragGrid
             android:id="@+id/gvPick"
@@ -171,18 +170,18 @@
     </FrameLayout>
 
     <!--
-      外观条（v2.19.0 改成页内横条，不再用弹窗）。
+      （v2.19.0 ，）。
 
-      为什么不做弹窗：用户的诉求是"调图标大小 / 行距的时候要能当场看到变化"，
-      而弹窗会把网格整个盖住 —— 改完只能关掉弹窗再看，那不叫实时反馈。
-      做成页内这条，网格就在它上面，改一格当场变一格，眼睛不用离开。
+      ：" / "，
+       —— ，。
+      ，，，。
 
-      默认 gone；点顶栏那个「外观」图标展开，图标同时变绿。
-      三行六个组：一排几个 / 图标大小 ｜ 行距 / 应用名称 ｜ 图标形状 / 背景
-      （第三行是 v2.19.1 加的；再往上加行之前先重算网格还剩多少高度，
-        外屏本来就不高）。
-      ⚠ 别在布局里写死子项，胶囊由 CoverLauncherActivity.ChipRow 每次现画
-        （它有"选中态"要跟着当前值走）。
+       gone；Top Bar「」，。
+      ： /  ｜  /  ｜  /
+      （ v2.19.1 ；，
+        ）。
+      ⚠ ， CoverLauncherActivity.ChipRow
+        （""）。
     -->
     <LinearLayout
         android:id="@+id/lookStrip"
@@ -307,14 +306,14 @@
         </LinearLayout>
 
         <!--
-          第三行（v2.19.1 加）：图标形状 ｜ 背景。
-          排法跟前两行完全一样（标签在左、胶囊在右、左右各占一半），
+          （v2.19.1 ）： ｜ 。
+          （、、），
 
-          ⚠ 外观条从 2 行变 3 行，网格能用的高度少掉约 31dp ——
-            按 RULES §31.1 记的那组几何（外屏 339dp 高）算下来还剩两行半图标，够用；
-            要是以后再加第四行，得重新量一次。
-          ⚠ 「背景」只影响小组件那层底板，配置页是实色底、不会跟着变 ——
-            这是有意的：配置界面自己得看得清，预览交给合上手机看组件。
+          ⚠  2  3 ， 31dp ——
+             RULES §31.1 （ 339dp ），；
+            ，。
+          ⚠ 「」，、 ——
+            ：，。
         -->
         <LinearLayout
             android:layout_width="match_parent"

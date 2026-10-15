@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  「外屏启动器」的搜索页 —— 投到封面屏上，边打字边筛，点一下直接在本屏启动。
+  「」 —— ，，。
 
-  这页是小组件做不到的那半：RemoteViews 里放不了 EditText，
-  所以"搜索"只能是另一个真 Activity（跟配置页一个道理）。
+  ：RemoteViews  EditText，
+  "" Activity（）。
 
-  底色跟副屏桌面（activity_secondary_home）对齐用 #0E1116 —— 封面屏小、
-  又要长时间亮着，深色统一了才不显得是两个来源拼起来的。
--->
+  Secondary Home（activity_secondary_home） #0E1116 —— 、
+  ，。-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"

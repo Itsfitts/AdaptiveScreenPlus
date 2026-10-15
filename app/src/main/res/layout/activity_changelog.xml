@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  「版本与更新」页。
-  上半是当前版本号，下半是更新日志容器（changeContainer）——
-  每条版本由 ChangelogActivity 在代码里生成，不写死在这里：
-  13 个版本 × 每版 2 行，写成静态布局要多出上百行几乎一样的 XML，
-  以后加一条日志还得同时改布局。
--->
+  「」。
+  Current Version，（changeContainer）——
+   ChangelogActivity ，：
+  13  ×  2 ， XML，
+  。-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <!-- ==================== 顶栏 ==================== -->
+    <!-- ==================== Top Bar ==================== -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -62,7 +61,7 @@
             android:paddingEnd="18dp"
             android:paddingBottom="28dp">
 
-            <!-- ==================== 当前版本 ==================== -->
+            <!-- ==================== Current Version ==================== -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -107,7 +106,7 @@
                 android:layout_marginTop="16dp"
                 android:background="#22000000" />
 
-            <!-- ==================== 更新日志（代码填充） ==================== -->
+            <!-- ==================== Changelog (Populated by code) ==================== -->
             <LinearLayout
                 android:id="@+id/changeContainer"
                 android:layout_width="match_parent"

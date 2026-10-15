@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  工具条上那颗齿轮（进配置页）。Material 标准 settings 路径。
+  （）。Material  settings 。
 
-  ⚠ 别再自己拿矩形拼齿轮 —— 上一版是「四个矩形齿 + 一个圆环」，
-    24dp 下齿太粗、圆环发扁，用户说丑（渲染对比见 process/v425/gear_cmp.png，
-    左旧右新，脚本 scripts/render_vector.py）。
--->
+  ⚠  —— 「 + 」，
+    24dp 、，（ process/v425/gear_cmp.png，
+    ， scripts/render_vector.py）。-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"

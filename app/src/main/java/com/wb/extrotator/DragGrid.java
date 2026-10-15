@@ -20,33 +20,33 @@ import android.widget.ImageView;
 /**
  * 一个能<b>长按拖拽排序</b>的 GridView。
  *
- * <p><b>为什么自己写，不用系统的拖放框架</b>：{@code startDragAndDrop()} 那套是跨应用拖数据的
- * （拖文件、拖文本），阴影是系统画的、大小固定、alpha 固定，松手还得回一个 DragEvent ——
- * 做图标排序等于绕一大圈还拿不回手感。这里就三件事，全都自己来：
+ * <p><b>为什么自己写，不用系统的拖放框架</b>: {@code startDragAndDrop()} 那套是跨应用拖数据的
+ *  (拖文件、拖文本) ，阴影是系统画的、大小固定、alpha 固定，松手还得回一个 DragEvent ——
+ * 做图标排序等于绕一大圈还拿不回手感。这里就三件事，全都自己来:
  * <b>跟手</b> —— 长按之后把那一格画成位图，塞进外层 FrameLayout 当浮层，手指一动就改它的 margin
- * （位移 1:1，没有阻尼也没有延迟）；<b>让位</b> —— 拖到哪一格数据就当场挪过去，被挤开的格子用
+ *  (位移 1:1，没有阻尼也没有延迟) ；<b>让位</b> —— 拖到哪一格数据就当场挪过去，被挤On的格子用
  * 170ms 平移动画滑到自己新位置上；<b>落位</b> —— 松手时把最终位置回报给 {@link OrderListener}，
  * 由页面写盘。
  *
- * <p><b>怎么用</b>：
+ * <p><b>怎么用</b>:
  * <pre>
  *   DragGrid g = findViewById(R.id.gvPick);
  *   g.setDragHost(findViewById(R.id.gridHost));   // ⚠ 必须是包住它的 FrameLayout
  *   g.setOrderListener(this);
- *   g.setDropLimit(n);                            // 只允许在「已选」那一段里拖
+ *   g.setDropLimit(n);                            // 只Allow在「已选」那一段里拖
  * </pre>
  *
- * <p>⚠ <b>两个必须配合的约定</b>：被拖走的那一格要「消失」，靠适配器实现 {@link HiddenSlot}
+ * <p>⚠ <b>两个必须配合的约定</b>: 被拖走的那一格要「消失」，靠适配器实现 {@link HiddenSlot}
  * 按位置把 alpha 置 0 —— 不能用 {@code setVisibility(INVISIBLE)}，那会牵动 GridView 的布局；
- * 适配器的 {@code getView} 里要把 {@code translationX/Y} 清回 0（视图是回收复用的，
- * 不清就会带着上一轮的位移冒出来）。
+ * 适配器的 {@code getView} 里要把 {@code translationX/Y} 清回 0 (视图是回收复用的，
+ * 不清就会带着上一轮的位移冒出来) 。
  */
 public class DragGrid extends GridView {
 
     /** 拖拽的回调。位置都是适配器里的 position。 */
     public interface OrderListener {
         /**
-         * 拖动过程中经过了一格：数据该从 from 挪到 to 了。
+         * 拖动过程中经过了一格: 数据该从 from 挪到 to 了。
          * 实现里要做的就一件事 —— 改数据 + {@code notifyDataSetChanged()}。
          */
         void onOrderMove(int from, int to);
@@ -60,21 +60,21 @@ public class DragGrid extends GridView {
         /**
          * 长按起了拖，但<b>手指没挪到别的格子</b>就松手了。
          *
-         * <p>页面拿它弹"长按菜单"（配置页弹的是收藏 / 卸载两个选项）。
+         * <p>页面拿它弹"长按菜单" (配置页弹的是收藏 / 卸载两个选项) 。
          * ⚠ 只有"按下去 → 长按判定成立 → 原地松手"才会来；
-         * 手指挪过格子（那是真在排序）或者被系统 CANCEL 掉，都不会来。
+         * 手指挪过格子 (那是真在排序) 或者被系统 CANCEL 掉，都不会来。
          */
         void onHoldReleased(int position);
     }
 
-    /** 适配器实现它，就能按位置把某一格藏起来（拖起来的那一格） */
+    /** 适配器实现它，就能按位置把某一格藏起来 (拖起来的那一格)  */
     public interface HiddenSlot {
         void setHiddenPosition(int position);
     }
 
-    /** 长按多久算"要拖"（毫秒）。比系统的 500ms 短一点，拖图标不该等那么久。 */
+    /** 长按多久算"要拖" (毫秒) 。比系统的 500ms 短一点，拖图标不该等那么久。 */
     private static final int HOLD_MS = 240;
-    /** 离上下边缘多少像素开始自动滚动 */
+    /** 离上下边缘多少像素On始自动滚动 */
     private static final int EDGE_PX = 72;
     /** 每次自动滚多少像素 / 隔多久滚一次 */
     private static final int SCROLL_STEP = 10;
@@ -84,7 +84,7 @@ public class DragGrid extends GridView {
     private ViewGroup dragHost;
 
     private boolean dragEnabled = true;
-    /** 只允许落在 [0, dropLimit) 这一段里 —— 配置页用它挡住"未勾选"那一段 */
+    /** 只Allow落在 [0, dropLimit) 这一段里 —— 配置页用它挡住"未勾选"那一段 */
     private int dropLimit = Integer.MAX_VALUE;
 
     private final Handler ui = new Handler(Looper.getMainLooper());
@@ -102,7 +102,7 @@ public class DragGrid extends GridView {
     private int touchSlop;
     private int scrollDir;
 
-    /** 这一帧还没摆的让位动画（同一帧里连挪两格时以后一个为准） */
+    /** 这一帧还没摆的让位动画 (同一帧里连挪两格时以后一个为准)  */
     private boolean animPending;
     private int animFrom = -1;
     private int animTo = -1;
@@ -154,7 +154,7 @@ public class DragGrid extends GridView {
     /**
      * 浮层要加在哪儿。
      *
-     * <p>⚠ 必须是<b>包住这个 GridView 的 FrameLayout</b>：浮层用 leftMargin/topMargin 定位，
+     * <p>⚠ 必须是<b>包住这个 GridView 的 FrameLayout</b>: 浮层用 leftMargin/topMargin 定位，
      * 坐标靠 {@code GridView.getLeft() + child.getLeft()} 算，所以两者之间不能再夹别的容器。
      */
     public void setDragHost(ViewGroup host) {
@@ -165,7 +165,7 @@ public class DragGrid extends GridView {
         this.dragEnabled = v;
     }
 
-    /** 允许落下的位置上限（不含）。配置页传"已选个数"，未勾选那一段就拖不进去。 */
+    /** Allow落下的位置上限 (不含) 。配置页传"已选个数"，未勾选那一段就拖不进去。 */
     public void setDropLimit(int limit) {
         this.dropLimit = limit <= 0 ? 0 : limit;
     }
@@ -345,7 +345,7 @@ public class DragGrid extends GridView {
      * <p>数据这时候刚改完但还没重新布局，所以不能马上算坐标 ——
      * 挂一个"画之前"的钩子，等这一帧布局落定再摆。
      *
-     * <p>位移量不用查旧坐标表：格子大小是均匀的，{@code position} 本身就能算出行列，
+     * <p>位移量不用查旧坐标表: 格子大小是均匀的，{@code position} 本身就能算出行列，
      * 旧位置减新位置直接乘格子宽高就是该滑多远。这样连"从屏幕外滑进来"也天然算得对。
      */
     private void animateShift(final int from, final int to) {
@@ -457,7 +457,7 @@ public class DragGrid extends GridView {
         return Math.round(v * d);
     }
 
-    /** 小工具：请求父容器别抢这次触摸。写成静态是为了把 API 差异挡在一处。 */
+    /** 小工具: 请求父容器别抢这次触摸。写成静态是为了把 API 差异挡在一处。 */
     private static final class ViewParentCompat {
         static void requestDisallow(android.view.ViewParent p) {
             try {

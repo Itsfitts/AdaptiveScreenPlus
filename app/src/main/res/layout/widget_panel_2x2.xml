@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  「双屏快捷面板（外屏）」专用的布局 —— 2×2 四格铺满。
+  「Quick Panel（）」 —— 2×2 。
 
-  ── 为什么跟内屏那份分开 ──────────────────────────────────────────
-  内屏那份（widget_panel.xml）占 2×1（110×56dp），只放得下两个按钮；
-  外屏这份占 2×2（150×133dp），四格铺满：
-      左上 折叠/展开   右上 自适应旋转
-      左下 双屏模式     右下 一键投屏
-  ⚠️ v2.13 之前外屏复用的还是内屏那份布局 —— 一条固定 56dp 高的窄条居中摆着，
-  在 133dp 高的格子里上下空出一大截。用户的原话是"你得把你该占用的空间占满，
-  不要给无意义的留白"，所以这里根布局直接 match_parent + 铺底色，一格不剩。
+  ──  ──────────────────────────────────────────
+  （widget_panel.xml） 2×1（110×56dp），；
+   2×2（150×133dp），：
+       /
 
-  ── 规矩（沿用 widget_panel.xml 那套）────────────────────────────
-  · 按钮都用 TextView + 圆角背景（见 widget_btn_*.xml），**不用 <Button>**，
-    免得各家桌面把主题色盖上来变成看不清的样子；
-  · 「自适应旋转」是开关类按钮，状态由 PanelWidgetProvider.build()
-    现读设置后画上去（名字 + 开/关 两行，开=本色 / 关=灰底），
-    这里写的 android:text 只是占位；
-  · 另外三个是动作按钮，点下去交给 WidgetActionActivity。
--->
+  ⚠️ v2.13  ——  56dp ，
+   133dp 。"，
+  "， match_parent + ，。
+
+  ── （ widget_panel.xml ）────────────────────────────
+  ·  TextView + （ widget_btn_*.xml），** <Button>**，
+    ；
+  · 「」， PanelWidgetProvider.build()
+    （ + / ，= / =），
+     android:text ；
+  · ， WidgetActionActivity。-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widgetRoot"
     android:layout_width="match_parent"
