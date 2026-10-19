@@ -192,6 +192,17 @@
     <string name="changelog_title">版本与更新</string>
     <string name="changelog_back">返回</string>
     <string name="changelog_current">当前版本</string>
+
+    <string name="update_check">检查更新</string>
+    <string name="update_checking">检查中…</string>
+    <string name="update_latest">已是最新</string>
+    <string name="update_downloading">下载中</string>
+    <string name="update_installing">安装中…</string>
+    <string name="update_done">更新完成</string>
+    <string name="update_failed">更新失败</string>
+    <string name="update_new_title">发现新版本</string>
+    <string name="update_btn_now">立即更新</string>
+    <string name="update_cancel">取消</string>
     <!-- 标题旁入口的占位文案；真实版本号由 MainActivity 读 PackageInfo 填进去 -->
     <string name="version_entry">更新说明</string>
 
@@ -230,6 +241,7 @@
     <string name="info_fold">由应用接管折叠状态：折叠时内容转到封面屏，展开时回到内屏。「恢复自动」= 交还给折叠传感器。\n\n需要 Shizuku 授权。要让内外屏同时点亮、封面屏变成可操作的副屏桌面，用「双屏」选项卡里的「启动双屏模式」。</string>
 
     <string name="info_shizuku">部分功能要 adb 或 root 权限。adb 走 Shizuku：在 Shizuku 里授权本应用并保持它运行；root 走 Magisk。</string>
+    <string name="info_root">有 root（KernelSU / Magisk）时，点「Root 授权」并在弹窗里允许，即可用 root 身份执行命令。没 root 不影响其他功能。</string>
 
     <string name="info_realtime">各项屏幕参数与本应用权限的当前值。</string>
 
@@ -248,7 +260,7 @@
     <!-- ==================== Beta 功能页（下方几条 info_beta_*） ==================== -->
     <string name="info_beta_intro">实验性质的功能都在这儿，围绕外屏，细节可能随时调整。多数要 Shizuku 权限。\n\n副屏与双屏相关的内容已移到主界面的「双屏」选项卡。</string>
     <string name="info_beta_sub">把副屏桌面（一整页应用网格）投到封面屏上。\n\n它只投内容，不会把手机切进双屏模式，当前在用哪块屏、折叠状态都不动。副屏指的就是封面屏；要 Shizuku 在线。</string>
-    <string name="info_dex">手机接上便携屏之后，在那块屏上开一套三星 DeX 桌面，手机自己照常用。\n\n系统没给第三方留「开 DeX」的接口，这里走的是一条社区通用的路，成不成看系统；命令行的原话会显示在下面那行。\n\n得先插好便携屏；部分系统版本会以「需要 root」为由挡回来，那就只能走系统自己的入口。</string>
+    <string name="info_dex">插上便携屏，点「启动 DeX 模式」，系统会自己在那块屏上拉起 DeX 桌面。\n\n注意：触发要 root（KernelSU / Magisk，授权一次即可）；没 root 只能拉起一个空壳。DeX 起来后手机两块屏会自动熄灭。</string>
     <string name="info_beta_ext">对折叠后那块封面屏做强制覆盖：分辨率、DPI 与显示方向。\n\n「应用覆盖」生效，「恢复默认」还原成面板原生值。\n\n偏离原生值太多会画面拉伸或裁切。</string>
     <string name="info_beta_cover_res">封面屏的逻辑分辨率与 DPI。宽、高都填数字；DPI 留空表示这次不动它。\n\n应用瞬间画面会闪一下，属正常现象。</string>
     <string name="info_beta_preset">把常用的分辨率存成预设。点一行 = 应用该组参数；长按一行 = 删除；右上角可新增或恢复出厂预设。\n\n最多保留 12 组。</string>
@@ -267,7 +279,9 @@
 
     <string name="info_cover_sidebar">松手才执行，没选中就什么也不做。面板内容勾几项就留几档，先后跟那四行一致；动画有三套，功能一样。\n\n注意：通知要单独给「通知使用权」，跟无障碍是两码事；感应带那一条的触摸会被收走，要无障碍服务在跑才装得上。</string>
 
-    <string name="info_inner_gesture">左右边缘往里划 = 返回，底部上滑 = 回主界面，上滑停一下 = 后台。\n\n注意：横屏时左下、右下两个角不响应，免得打游戏时手掌搭上来误触；竖屏整条边都生效。边缘的触摸会先被接住一下，没往里划的立刻还给下面的应用；要无障碍服务在跑才生效，配合「隐藏三键导航」用才顺。</string>
+    <string name="info_game_gesture">勾选的应用里，底部上滑分两段：先在屏幕正中附近上滑唤出亮条，再从亮条上划，防止游戏里误触。\n\n亮条唤出后 3 秒无操作自动收回；侧滑返回不受影响。</string>
+
+    <string name="info_inner_gesture">左右边缘往里划 = 返回，底部上滑 = 回主界面，上滑停一下 = 后台。\n\n注意：横屏时左下、右下两个角不响应，免得打游戏时手掌搭上来误触；竖屏整条边都生效。边缘的触摸会先被接住一下，不是手势的再还给下面的应用；要无障碍服务在跑才生效，配合「隐藏三键导航」用才顺。</string>
 
     <string name="info_nav_immersive">桌面和外屏的三键条一起藏掉，屏幕底部腾出来给自定义全面屏手势让位。\n\n注意：靠 Shizuku 写系统设置；装过 Good Lock 的要先把 NavStar 里的「显示和隐藏按钮」关掉，否则会被它改回去。隐藏后从底部上划，系统仍会短暂把它唤出来。</string>
 

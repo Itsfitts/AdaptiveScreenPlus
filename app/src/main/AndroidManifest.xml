@@ -29,6 +29,14 @@
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <!--
+      「在线更新」用（v4.25）。
+      用途只有一个：没有 root / Shizuku 时，更新走系统安装器（ACTION_VIEW 装 APK），
+      Android 8 起这一跳需要本权限 + 用户在系统设置里放行一次。
+      有 root / Shizuku 的场合走 pm install 静默安装，用不到它。
+    -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
+    <!--
       「写安全设置」（v4.20）。
       用途只有一个：让本应用能在**没有 Shizuku** 的时候自己开无线调试。
 
@@ -654,6 +662,18 @@
         <provider
             android:name=".PhotoProvider"
             android:authorities="${applicationId}.photo"
+            android:exported="true"
+            android:grantUriPermissions="true" />
+
+        <!--
+          「在线更新」的 APK 出口（v4.25）。
+          没有 root / Shizuku 时，更新走系统安装器 —— 下载好的 APK 躺在应用私有目录，
+          系统安装器要经 content:// 来读，和 PhotoProvider 是同一个理由。
+          会来读的只有系统包安装器，所以不做白名单；静默安装的场合用不到这个 provider。
+        -->
+        <provider
+            android:name=".ApkProvider"
+            android:authorities="${applicationId}.apk"
             android:exported="true"
             android:grantUriPermissions="true" />
 

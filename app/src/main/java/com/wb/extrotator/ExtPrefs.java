@@ -2,6 +2,8 @@ package com.wb.extrotator;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 副屏页自己的设置。
@@ -37,6 +39,8 @@ public final class ExtPrefs {
     private static final String KEY_INNER_GESTURE = "inner_gesture";
     /** 内屏手势的画法：0 = 原生，1 = 炫彩（见 {@link GestureAnim}） */
     private static final String KEY_GESTURE_ANIM_STYLE = "gesture_anim_style";
+    /** 「游戏模式」：勾上的应用里，内屏底部上滑改成两段式（先召唤亮条、再从亮条上划） */
+    private static final String KEY_GAME_APPS = "inner_gesture_game_apps";
     private static final String KEY_COVER_RECENTS = "cover_recents_gesture";
     private static final String KEY_COVER_SIDEBAR = "cover_sidebar";
     /** 「外屏手势后台」捕获带高度档位：0=小 11dp / 1=中 16dp / 2=大 24dp */
@@ -277,6 +281,40 @@ public final class ExtPrefs {
 
     public static void setGestureAnimStyle(Context c, int v) {
         sp(c).edit().putInt(KEY_GESTURE_ANIM_STYLE, v).apply();
+    }
+
+    // ------------------------------------------------------------------ 游戏模式（两段式）
+
+    /**
+     * 「游戏模式」勾选的应用包名集合（空集合 = 没勾过任何应用）。
+     *
+     * <p>勾上的应用在前台时，内屏底部上滑换成两段式：先在屏幕正中附近划一下唤出亮条，
+     * 3 秒内从亮条上划才触发回主页 / 后台（见 {@link InnerGesture}）。侧滑返回不受影响。
+     *
+     * <p>返回值是一份拷贝 —— 调用方可以随便改，碰不到 SharedPreferences 里那份。
+     */
+    public static Set<String> gameGestureApps(Context c) {
+        Set<String> s = sp(c).getStringSet(KEY_GAME_APPS, new HashSet<String>());
+        return s == null ? new HashSet<String>() : new HashSet<String>(s);
+    }
+
+    /** 这个包名在不在「游戏模式」名单里 */
+    public static boolean gameGestureOn(Context c, String pkg) {
+        return pkg != null && gameGestureApps(c).contains(pkg);
+    }
+
+    /** 勾上 / 取消一个应用（增量改，不动名单里别的项） */
+    public static void setGameGestureApp(Context c, String pkg, boolean on) {
+        if (pkg == null) {
+            return;
+        }
+        Set<String> s = gameGestureApps(c);
+        if (on) {
+            s.add(pkg);
+        } else {
+            s.remove(pkg);
+        }
+        sp(c).edit().putStringSet(KEY_GAME_APPS, s).apply();
     }
 
     // ------------------------------------------------------------------ 外屏侧边栏

@@ -1224,6 +1224,37 @@
                         android:textSize="13sp" />
                 </LinearLayout>
 
+                <!--
+                  游戏模式（两段式）：勾选的应用里，底部上滑改成先召唤亮条、再从亮条上划。
+                  行内放入口按钮 + 一行回读状态（勾了几个），名单本体在对话框里。
+                -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/BetaSectionTitle"
+                        android:text="游戏模式" />
+
+                    <TextView
+                        android:id="@+id/iBetaGameGesture"
+                        style="@style/BetaInfoIcon" />
+
+                    <TextView
+                        android:id="@+id/btnGameGestureApps"
+                        style="@style/BetaButtonGhost"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="12dp"
+                        android:paddingTop="7dp"
+                        android:paddingBottom="7dp"
+                        android:text="选择应用"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

@@ -16,17 +16,24 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -175,6 +182,7 @@ public class BetaActivity extends Activity {
         bindInfo(R.id.iBetaCoverRecents, "手势条", R.string.info_cover_recents);
         bindInfo(R.id.iBetaSidebar, "外屏侧边栏", R.string.info_cover_sidebar);
         bindInfo(R.id.iBetaInner, "内屏手势", R.string.info_inner_gesture);
+        bindInfo(R.id.iBetaGameGesture, "游戏模式", R.string.info_game_gesture);
         bindInfo(R.id.iBetaNavImm, "隐藏三键导航", R.string.info_nav_immersive);
         bindInfo(R.id.iBetaApp, "应用管理", R.string.info_repair_app);
     }
@@ -410,6 +418,119 @@ public class BetaActivity extends Activity {
             animGlow.setOnClickListener(v -> pickGestureAnim(GestureAnim.STYLE_GLOW));
             applyGestureAnim();
         }
+
+        View gameApps = findViewById(R.id.btnGameGestureApps);
+        if (gameApps != null) {
+            gameApps.setOnClickListener(v -> openGameAppsDialog());
+        }
+        refreshGameAppsBtn();
+    }
+
+    /** 「游戏模式」入口按钮上的字：没勾过显示"选择应用"，勾了显示"已勾 N 个应用" */
+    private void refreshGameAppsBtn() {
+        TextView t = findViewById(R.id.btnGameGestureApps);
+        if (t == null) {
+            return;
+        }
+        int n = ExtPrefs.gameGestureApps(this).size();
+        t.setText(n == 0 ? "选择应用" : "已勾 " + n + " 个应用");
+    }
+
+    /**
+     * 「游戏模式」应用勾选对话框：勾上的应用在前台时，内屏底部上滑换成两段式
+     * （先召唤亮条、再从亮条上划），见 {@link InnerGesture}。
+     *
+     * <p>枚举要读图标（IO），按 {@link AppRepo#load} 的规矩丢后台线程，回来再弹。
+     */
+    private void openGameAppsDialog() {
+        pool.execute(() -> {
+            final List<AppRepo.Item> apps = new ArrayList<>();
+            for (AppRepo.Item it : AppRepo.load(this)) {
+                if (!getPackageName().equals(it.pkg) && !it.isPseudo()) {
+                    apps.add(it);
+                }
+            }
+            ui.post(() -> {
+                if (isFinishing()) {
+                    return;
+                }
+                if (apps.isEmpty()) {
+                    toast("一个应用都没枚举到");
+                    return;
+                }
+                showGameAppsDialog(apps);
+            });
+        });
+    }
+
+    private void showGameAppsDialog(final List<AppRepo.Item> apps) {
+        final Set<String> picked = ExtPrefs.gameGestureApps(this);
+        final Set<String> before = new HashSet<>(picked);
+        final ListView lv = new ListView(this);
+        lv.setDivider(null);
+        final BaseAdapter ad = new BaseAdapter() {
+            @Override
+            public int getCount() {
+                return apps.size();
+            }
+
+            @Override
+            public Object getItem(int position) {
+                return apps.get(position);
+            }
+
+            @Override
+            public long getItemId(int position) {
+                return position;
+            }
+
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View row = convertView;
+                if (row == null) {
+                    row = LayoutInflater.from(BetaActivity.this)
+                            .inflate(R.layout.item_app_check, parent, false);
+                }
+                AppRepo.Item it = apps.get(position);
+                ImageView icon = row.findViewById(R.id.icon);
+                if (it.icon != null) {
+                    icon.setImageDrawable(it.icon);
+                }
+                TextView label = row.findViewById(R.id.label);
+                label.setText(it.label);
+                CheckBox cb = row.findViewById(R.id.cb);
+                cb.setChecked(picked.contains(it.pkg));
+                return row;
+            }
+        };
+        lv.setAdapter(ad);
+        lv.setOnItemClickListener((parent, view, position, id) -> {
+            String pkg = apps.get(position).pkg;
+            if (picked.contains(pkg)) {
+                picked.remove(pkg);
+            } else {
+                picked.add(pkg);
+            }
+            ad.notifyDataSetChanged();
+        });
+        new AlertDialog.Builder(this)
+                .setTitle("游戏模式：勾上常玩的游戏")
+                .setView(lv)
+                .setPositiveButton("完成", (d, w) -> {
+                    if (!before.equals(picked)) {
+                        for (AppRepo.Item it : apps) {
+                            boolean on = picked.contains(it.pkg);
+                            if (on != before.contains(it.pkg)) {
+                                ExtPrefs.setGameGestureApp(this, it.pkg, on);
+                            }
+                        }
+                        // 勾选变了 ⇒ 按当前前台应用重新对一次两段式模式
+                        InnerGesture.reevalMode(this);
+                    }
+                    refreshGameAppsBtn();
+                })
+                .setNegativeButton("取消", null)
+                .show();
     }
 
     /** 换内屏手势的画法。只是怎么画的事，不用重装捕获带 */

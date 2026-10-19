@@ -1,13 +1,21 @@
 package com.wb.extrotator;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.File;
 
 /**
  * 「版本与更新」页，从标题旁边那个「vX.Y · 更新说明」胶囊点进来。
@@ -23,6 +31,12 @@ public class ChangelogActivity extends Activity {
     // ⚠ 版本号规矩：某版里出现被否掉的改动时，下一版不推进版本号，并整条删掉那次日志，
     //   等改动确认有效后再写回、那时才推进。
     private static final String[][] LOG = {
+            {"v4.25", "2026-10-19",
+                    "更新说明页新增「检查更新」，可一键下载并安装新版本",
+                    "首页新增 root 授权（支持 KernelSU / APatch）；DeX 启动改由 root 重启 SurfaceFlinger 触发"},
+            {"v4.24", "2026-10-18",
+                    "内屏手势：修复误触与触发不灵，底部新增手势亮条",
+                    "Beta 实验室：新增内屏手势游戏模式"},
             {"v4.23", "2026-09-26",
                     "外屏通知面板：排版与对齐有调整，快捷开关可以自己挑并新增三个动作；外屏自动旋转方向修正",
                     "新增外屏组件「自定义操作」「手机状态」、副桌面伪应用「副屏播放器」，以及首次打开的功能导览"},
@@ -180,6 +194,101 @@ public class ChangelogActivity extends Activity {
                         + " v" + versionName + "（versionCode " + versionCode + "）");
 
         renderLog(findViewById(R.id.changeContainer), versionName);
+
+        wireUpdateRow(versionName);
+    }
+
+    // ---------------- 在线更新（v4.25） ----------------
+
+    private TextView tvUpdateState;
+
+    /** 接线「检查更新」那一行：按钮发起检查，状态文字显示进度 / 结果。 */
+    private void wireUpdateRow(String currentVersion) {
+        Button btn = findViewById(R.id.btnCheckUpdate);
+        tvUpdateState = findViewById(R.id.tvUpdateState);
+        btn.setOnClickListener(v -> checkUpdate(currentVersion));
+    }
+
+    /** 后台查 Release：有新版本就弹框；已是最新 / 失败都只更新状态文字。 */
+    private void checkUpdate(String currentVersion) {
+        tvUpdateState.setText(R.string.update_checking);
+        new Thread(() -> {
+            try {
+                AppUpdater.Info info = AppUpdater.check(currentVersion);
+                runOnUiThread(() -> {
+                    if (info == null) {
+                        tvUpdateState.setText(R.string.update_latest);
+                    } else {
+                        showUpdateDialog(info);
+                    }
+                });
+            } catch (Throwable t) {
+                Log.w("Changelog", "check update failed", t);
+                runOnUiThread(() -> {
+                    tvUpdateState.setText(R.string.update_failed);
+                    Toast.makeText(this, String.valueOf(t.getMessage()),
+                            Toast.LENGTH_LONG).show();
+                });
+            }
+        }, "check-update").start();
+    }
+
+    /** 有新版本：弹框给出版本号和更新说明，确认后才下载。 */
+    private void showUpdateDialog(AppUpdater.Info info) {
+        String msg = (info.notes == null || info.notes.trim().isEmpty())
+                ? "—" : info.notes.trim();
+        new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.update_new_title) + " " + info.version)
+                .setMessage(msg)
+                .setNegativeButton(R.string.update_cancel, null)
+                .setPositiveButton(R.string.update_btn_now, (d, w) -> downloadUpdate(info))
+                .show();
+    }
+
+    /** 下载 + 安装：root / Shizuku 静默装，都没有才递系统安装器。 */
+    private void downloadUpdate(AppUpdater.Info info) {
+        tvUpdateState.setText(R.string.update_downloading);
+        new Thread(() -> {
+            try {
+                File apk = AppUpdater.download(this, info, pct -> runOnUiThread(() ->
+                        tvUpdateState.setText(pct < 0
+                                ? getString(R.string.update_downloading)
+                                : getString(R.string.update_downloading) + " " + pct + "%")));
+                runOnUiThread(() -> {
+                    tvUpdateState.setText(R.string.update_installing);
+                    if (AppUpdater.silentInstall(apk.getAbsolutePath())) {
+                        tvUpdateState.setText(R.string.update_done);
+                    } else {
+                        launchSystemInstaller();
+                    }
+                });
+            } catch (Throwable t) {
+                Log.w("Changelog", "download update failed", t);
+                runOnUiThread(() -> {
+                    tvUpdateState.setText(R.string.update_failed);
+                    Toast.makeText(this, String.valueOf(t.getMessage()),
+                            Toast.LENGTH_LONG).show();
+                });
+            }
+        }, "download-update").start();
+    }
+
+    /** 把 APK 经 ApkProvider 递给系统安装器；没放行「未知来源」时引导去设置页。 */
+    private void launchSystemInstaller() {
+        try {
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setDataAndType(ApkProvider.uri(), "application/vnd.android.package-archive");
+            i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            startActivity(i);
+        } catch (Throwable t) {
+            try {
+                startActivity(new Intent(
+                        android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                        Uri.parse("package:" + getPackageName())));
+            } catch (Throwable ignored) {
+                tvUpdateState.setText(R.string.update_failed);
+            }
+        }
     }
 
     /** 把 {@link #LOG} 铺成一条条版本记录。 */

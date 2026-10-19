@@ -902,6 +902,38 @@
                         android:textAllCaps="false" />
                 </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/SectionTitle"
+                        android:layout_marginTop="14dp"
+                        android:text="Root" />
+
+                    <TextView
+                        android:id="@+id/iRoot"
+                        style="@style/InfoIcon" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvRoot"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Root：检测中…"
+                    android:textSize="14sp" />
+
+                <Button
+                    android:id="@+id/btnRootGrant"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Root 授权 / 重新检测"
+                    android:textAllCaps="false" />
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"

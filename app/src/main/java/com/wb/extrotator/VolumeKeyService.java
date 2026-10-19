@@ -183,6 +183,8 @@ public class VolumeKeyService extends AccessibilityService {
          * （左右边缘返回、底部上滑回桌面 / 开后台）。
          */
         InnerGesture.sync(this);
+        // 服务刚连上：把当前前台应用对进来，免得游戏在前台时重连后模式停在正常态
+        InnerGesture.initForeground(this);
         /*
          * 把「过滤按键」这项能力打进日志。
          *
@@ -326,6 +328,13 @@ public class VolumeKeyService extends AccessibilityService {
         // filterKeyEvents —— 所以这个回调一直留着。
         // v4.21 起它兼职「代点弹窗」：无线调试那张确认框要靠它点掉，见 AutoAuth。
         AutoAuth.handle(event, this);
+        // 前台应用跟踪：内屏手势的「游戏模式」（两段式）靠它切正常态 / 游戏态
+        if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+            CharSequence p = event.getPackageName();
+            if (p != null) {
+                InnerGesture.onForegroundApp(this, p.toString());
+            }
+        }
     }
 
     @Override

@@ -10,8 +10,8 @@ android {
         applicationId "com.wb.extrotator"
         minSdk 29
         targetSdk 34
-        versionCode 89
-        versionName "4.23"
+        versionCode 91
+        versionName "4.25"
     }
 
     buildTypes {

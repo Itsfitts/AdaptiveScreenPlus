@@ -16,9 +16,12 @@ import rikka.shizuku.Shizuku;
 import rikka.shizuku.ShizukuBinderWrapper;
 
 /**
- * 通过 Shizuku 以 shell（ADB）身份执行命令。
+ * 特权命令执行中枢：<b>root（{@code su -c}）优先，Shizuku（借 ADB 身份）兜底</b>。
  *
- * 说明：Shizuku API 13 把 {@code Shizuku.newProcess} 改成了 private，
+ * <p>为什么双通道：root 已授权时不再依赖无线调试配对（没有调试弹窗、不怕 Shizuku
+ * 被系统杀），拔了 USB 只用 root 的场合（比如接着便携屏时）照样能跑命令。
+ *
+ * <p>Shizuku 那条路：API 13 把 {@code Shizuku.newProcess} 改成了 private，
  * 但底层 {@code IShizukuService.newProcess} 依然是公开接口，
  * 所以这里直接用 Shizuku 服务 binder 调它。
  */
@@ -50,8 +53,26 @@ public final class ShellRunner {
         }
     }
 
+    /**
+     * root 通道是否就绪。
+     *
+     * <p>纯读 {@link RootUtil} 的内存状态：不 exec、不弹窗，任何线程都能调。
+     * 状态每次回前台由 {@code RootUtil.refresh} 刷新 —— 后台里刚授权的 root
+     * 要等下一次回前台才认，这是故意的（探测会弹 root 窗，不能随手跑）。
+     */
+    public static boolean rootReady() {
+        return RootUtil.state() == RootUtil.ST_OK;
+    }
+
+    /**
+     * 任一特权通道就绪（root 或 Shizuku）。
+     *
+     * <p>语义是「能跑特权命令吗」，不是「Shizuku 通了吗」—— root 已授权时无线调试
+     * 在不在都无所谓。界面文案要显示通道名时单独判 {@link #rootReady()}，
+     * 别把这个当 Shizuku 状态读。
+     */
     public static boolean isReady() {
-        return isBinderAlive() && hasPermission();
+        return rootReady() || (isBinderAlive() && hasPermission());
     }
 
     /**
@@ -75,10 +96,21 @@ public final class ShellRunner {
         }
     }
 
-    /** 执行一条 shell 命令，返回合并后的 stdout/stderr */
+    /**
+     * 执行一条命令，返回合并后的 stdout/stderr。
+     *
+     * <p>双通道：root 已授权走 {@code su -c}，否则回落 Shizuku。
+     */
     public static String run(String cmd) {
-        if (!isReady()) {
-            return "ERR: Shizuku 未就绪";
+        if (rootReady()) {
+            String out = RootUtil.exec(cmd);
+            if (out != null) {
+                return out;
+            }
+            Log.w(TAG, "root 通道执行失败，回落 Shizuku: " + cmd);
+        }
+        if (!isBinderAlive() || !hasPermission()) {
+            return "ERR: Shizuku 未就绪且无 root";
         }
         IRemoteProcess rp = null;
         try {
@@ -125,8 +157,15 @@ public final class ShellRunner {
         if (timeoutSec <= 0) {
             return run(cmd);
         }
-        if (!isReady()) {
-            return "ERR: Shizuku 未就绪";
+        if (rootReady()) {
+            String out = RootUtil.exec(cmd, timeoutSec);
+            if (out != null) {
+                return out;
+            }
+            Log.w(TAG, "root 通道执行失败，回落 Shizuku: " + cmd);
+        }
+        if (!isBinderAlive() || !hasPermission()) {
+            return "ERR: Shizuku 未就绪且无 root";
         }
         IRemoteProcess rp = null;
         final String[] box = new String[]{""};
@@ -183,7 +222,14 @@ public final class ShellRunner {
      * @return 读到的字节；没授权 / 起不了进程返回 null。<b>阻塞</b>
      */
     public static byte[] capture(String cmd, int maxBytes) {
-        if (!isReady()) {
+        if (rootReady()) {
+            byte[] b = RootUtil.capture(cmd, maxBytes);
+            if (b != null) {
+                return b;
+            }
+            Log.w(TAG, "root 通道抓取失败，回落 Shizuku: " + cmd);
+        }
+        if (!isBinderAlive() || !hasPermission()) {
             return null;
         }
         IRemoteProcess rp = startProcess(cmd);

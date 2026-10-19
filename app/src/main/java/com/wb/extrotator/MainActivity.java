@@ -74,7 +74,7 @@ public class MainActivity extends Activity {
     private DisplayManager dm;
     private final Handler handler = new Handler(Looper.getMainLooper());
 
-    private TextView tvShizuku, tvInfo, tvLog, tvResState, tvResHint;
+    private TextView tvShizuku, tvRoot, tvInfo, tvLog, tvResState, tvResHint;
     private Switch swEnable, swResAsk, swResAutoReset, swResAutoMatch;
     private Button btnResToggle;
     private RadioGroup rgTabs;
@@ -162,6 +162,7 @@ public class MainActivity extends Activity {
         dm = (DisplayManager) getSystemService(DISPLAY_SERVICE);
 
         tvShizuku = findViewById(R.id.tvShizuku);
+        tvRoot = findViewById(R.id.tvRoot);
         tvInfo = findViewById(R.id.tvInfo);
         tvLog = findViewById(R.id.tvLog);
         tvResState = findViewById(R.id.tvResState);
@@ -260,6 +261,7 @@ public class MainActivity extends Activity {
         bindInfo(R.id.iResTiming, "接管时机", R.string.info_res_timing);
         bindInfo(R.id.iFold, "折叠/展开模式切换", R.string.info_fold);
         bindInfo(R.id.iShizuku, "Shizuku", R.string.info_shizuku);
+        bindInfo(R.id.iRoot, "Root", R.string.info_root);
         bindInfo(R.id.iRealtime, "实时状态", R.string.info_realtime);
         // 双屏模式那条说明从独立的 ⓘ 搬到「副屏状态」行尾的文字入口上；
         // 副屏管理的小标题撤了，它那条说明就挂在这儿（跟副屏状态挨着）
@@ -465,6 +467,21 @@ public class MainActivity extends Activity {
 
         findViewById(R.id.btnShizuku).setOnClickListener(v -> openShizuku());
 
+        // ---- Root 授权（KernelSU / Magisk）：跑一次 su -c id 触发授权弹窗。
+        //  探测/请求都放后台 —— 没授权时 root 管理器弹窗会让 exec 一直阻塞。
+        findViewById(R.id.btnRootGrant).setOnClickListener(v -> {
+            if (RootUtil.state() == RootUtil.ST_OK) {
+                toast("已经拥有 root 权限");
+                return;
+            }
+            if (!RootUtil.hasSu()) {
+                toast("没检测到 root（su），此栏用不到");
+                return;
+            }
+            toast("已在请求 root 授权，请在 root 管理器弹窗里允许");
+            RootUtil.refresh(() -> runOnUiThread(this::refreshRootState));
+        });
+
         // ---- 手动测试
         ((Button) findViewById(R.id.btn0)).setOnClickListener(v -> manual(0));
         ((Button) findViewById(R.id.btn90)).setOnClickListener(v -> manual(1));
@@ -507,6 +524,9 @@ public class MainActivity extends Activity {
         updateResToggleUi();
         refreshSubState();
         refreshShizukuState();
+        // ⚠ Root 探测会 exec 一次 su：没授权时 root 管理器弹窗、exec 阻塞到用户点掉，
+        //   所以必须走 RootUtil.refresh 的后台线程，回调再切回 UI 线程刷文本。
+        RootUtil.refresh(() -> runOnUiThread(this::refreshRootState));
 
         // 第一次打开这个应用时，先把「这套东西能干什么」说清楚（见 maybeShowIntro）
         maybeShowIntro();
@@ -1393,6 +1413,28 @@ public class MainActivity extends Activity {
         tvShizuku.setText(text);
     }
 
+    private void refreshRootState() {
+        if (tvRoot == null) {
+            return;
+        }
+        String text;
+        switch (RootUtil.state()) {
+            case RootUtil.ST_OK:
+                text = "Root：就绪 ✓ 已获得 root 权限。";
+                break;
+            case RootUtil.ST_DENIED:
+                text = "Root：检测到 root 管理器，但本应用还没授权 → 点「Root 授权 / 重新检测」。";
+                break;
+            case RootUtil.ST_NONE:
+                text = "Root：未检测到。设备没有 root（KernelSU / Magisk），此栏用不到。";
+                break;
+            default:
+                text = "Root：检测中…";
+                break;
+        }
+        tvRoot.setText(text);
+    }
+
     private void updateInfo() {
         if (tvInfo == null) {
             return;
@@ -1457,7 +1499,9 @@ public class MainActivity extends Activity {
         sb.append("　分辨率接管：").append(prefs.isResolutionEnabled() ? "开" : "关");
         sb.append('\n');
         sb.append("系统自动旋转：").append(sysAutoRotate() ? "开" : "关");
-        sb.append("　Shizuku：").append(ShellRunner.isReady() ? "就绪" : "未就绪");
+        sb.append("　Shell：").append(ShellRunner.isReady()
+                ? (ShellRunner.rootReady() ? "就绪（root）" : "就绪（Shizuku）")
+                : "未就绪");
         tvInfo.setText(sb.toString());
 
         if (tvResState != null) {
@@ -1829,57 +1873,194 @@ public class MainActivity extends Activity {
     // ---- DeX 模式
 
     /**
-     * DeX 的启动入口。
+     * DeX 的启动入口。流程取自阿田自用（{@code com.tianweixing.atianwidget}）的
+     * {@code SamsungDexWidgetProvider}，2026-10-18 反编译原文：
      *
-     * <p>DeX 也算双屏的一种形态（把手机当主机、另开一块桌面），所以跟「双屏模式」「副屏管理」
-     * 排在一起。
+     * <pre>{@code
+     * if cmd display get-displays | grep -q 'type EXTERNAL'; then
+     *   if [ "$(id -u)" = "0" ]; then pkill surfaceflinger;
+     *   else settings put global navigationbar_current_color 0xFF; fi
+     *   for i in 1 2 3 4 5 6 7 8 9 10; do
+     *     if cmd display get-displays | grep -q FLAG_EXTERNAL_DEX_HOSTING; then
+     *       cmd display power-off 0; cmd display power-off 1; break
+     *     fi; sleep 1
+     *   done
+     * fi
+     * }</pre>
      *
-     * <p><b>只能尽力而为</b>：三星没给第三方留「开 DeX」的接口，这里发的是社区里公认能起作用的
-     * 那个组件。它要有一块自己的输出屏，也就是说得先把便携屏插上。系统把它禁掉、或者要求 root 时，
-     * 命令行会把原话吐回来，这里照实显示在下面那行，不假装成功。
+     * <p><b>为什么不是一条 am start</b>：Flip5 官方不支持 DeX，但 root 下
+     * {@code pkill surfaceflinger} 会让系统重新枚举显示屏，三星 DeX 服务随即自动
+     * 在便携屏上 hosting（{@code cmd display get-displays} 里出现
+     * {@code FLAG_EXTERNAL_DEX_HOSTING}），桌面由系统自己拉起 —— 全程不需要 am start。
+     * 旧代码那套「settings 三件套 + 切 freeform + am start SecondaryLauncher」方向错了：
+     * 组件在 One UI 8 上仍然存在，am start 也确实能拉，但在没 hosting 的屏上只会拉起一个
+     * 空壳（实测：黑底 + 底部一排便携 dock，没有壁纸和任务栏）—— 用户看到的就是
+     * 「没开出 dex」。
+     *
+     * <p>am start 留作兜底：没 root、或重启 SF 后等不到 hosting 旗标时照拉，但回话里
+     * 明说那是空壳，不假装成功。每一步的回话都照实显示在 {@link #tvDexInfo}。
      */
     private void startDex() {
         if (!requireShell()) {
             return;
         }
         if (tvDexInfo != null) {
-            tvDexInfo.setText("正在拉起 DeX…");
+            tvDexInfo.setText("正在准备 DeX…");
         }
         new Thread(() -> {
-            String out = ShellRunner.run(
-                    "am start -n com.sec.android.app.launcher"
-                            + "/com.honeyspace.dexservice.SecondaryLauncher"
-                            + " || am start -n com.sec.android.app.desktoplauncher"
-                            + "/.DeXHomeActivity", 15);
-            final String pretty = prettyDex(out);
-            runOnUiThread(() -> {
-                if (tvDexInfo != null) {
-                    tvDexInfo.setText(pretty);
+            StringBuilder sb = new StringBuilder();
+            // ① 便携屏在不在 —— 阿田同款判据：get-displays 里有 type EXTERNAL
+            String ext = ShellRunner.run(
+                    "cmd display get-displays | grep 'type EXTERNAL'", 15);
+            if (ext == null || ext.startsWith("ERR") || ext.trim().isEmpty()) {
+                sb.append("没找到外接屏。先把便携屏插上再试。");
+                finishDex(sb.toString(), false);
+                return;
+            }
+            int dexId = parseExternalId(ext);
+            sb.append("便携屏 displayId = ").append(dexId).append('\n');
+            // ② root 重启 SurfaceFlinger —— 系统重新识别便携屏，DeX 服务自动 hosting。
+            //    这是整个流程的触发点：阿田 root 分支与 Shizuku 分支的唯一差别就是这一条。
+            boolean hosted = false;
+            if (ShellRunner.rootReady()) {
+                sb.append(step("重启 SurfaceFlinger",
+                        ShellRunner.run("pkill surfaceflinger", 10), ""));
+                // SF 重启后内屏可能是黑的，先点亮（阿田 applySelected 的结尾同款）
+                ShellRunner.run("cmd display power-on 0", 10);
+                hosted = waitDexHosting(12);
+            } else {
+                sb.append("没有 root，触发不了系统 hosting（阿田那套同样要 root）。\n");
+                // 没 root 也照阿田的 Shizuku 分支等一小会儿：万一系统自己 hosting 了呢
+                hosted = waitDexHosting(6);
+            }
+            if (hosted) {
+                // ③ hosting 成功 = 系统已经把 DeX 桌面拉起来了。关掉手机两块屏，
+                //    便携屏独享（阿田同款收尾：power-off 0 + power-off 1）。
+                ShellRunner.run("cmd display power-off 0; cmd display power-off 1", 10);
+                sb.append("DeX 已由系统拉起，看便携屏。");
+                finishDex(sb.toString(), true);
+                return;
+            }
+            // ④ 兜底：直接 am start 拉 SecondaryLauncher（LibreDeX 同款命令，
+            //    参数一个都不能少）。先 force-stop 桌面再拉 —— LibreDeX 的
+            //    restartSecondaryLauncher 也是这么干的。没 hosting 就是空壳。
+            sb.append("系统没 hosting，试着直接拉 DeX 桌面……\n");
+            ShellRunner.run("am force-stop com.sec.android.app.launcher", 10);
+            String amOut = ShellRunner.run(
+                    "am start --display " + dexId
+                            + " --activityType 2 --windowingMode 1"
+                            + " -a android.intent.action.MAIN"
+                            + " -c android.intent.category.SECONDARY_HOME"
+                            + " -n com.sec.android.app.launcher"
+                            + "/com.honeyspace.dexservice.SecondaryLauncher", 20);
+            sb.append("am start 回话：").append(
+                    amOut == null ? "没跑成（通道没就绪）"
+                            : amOut.startsWith("ERR") ? amOut
+                            : tail(amOut.trim(), 150)).append('\n');
+            // ⑤ 确认窗口落在便携屏上（LibreDeX 的 isSecondaryLauncherOnDisplay 同款判据）
+            boolean onDex = false;
+            for (int i = 0; i < 10 && !onDex; i++) {
+                if (i > 0) {
+                    try {
+                        Thread.sleep(700);
+                    } catch (InterruptedException e) {
+                        break;
+                    }
                 }
-                toast(pretty.contains("没起") || pretty.contains("挡")
-                        ? "没拉起来，看下面那行" : "命令已发出，看便携屏");
-            });
+                String v = ShellRunner.run(
+                        "dumpsys window windows | grep -A 1 'dexservice.SecondaryLauncher'"
+                                + " | grep -oE 'mDisplayId=[0-9]+' | head -1", 15);
+                onDex = v != null && !v.startsWith("ERR")
+                        && v.contains("mDisplayId=" + dexId);
+            }
+            if (onDex) {
+                sb.append("便携屏上只有一个空壳 DeX（黑底加一排在底栏的图标）—— ")
+                        .append(ShellRunner.rootReady()
+                                ? "系统没 hosting，壁纸和任务栏都没有。"
+                                : "要完整的 DeX，得给 root（KernelSU / Magisk）让系统 hosting。");
+            } else {
+                sb.append("便携屏上没等到 DeX 窗口。");
+            }
+            finishDex(sb.toString(), false);
         }, "extrot-dex").start();
     }
 
-    /** DeX 那条命令的回话翻成人话（系统返回什么就照着说什么，不替它下结论） */
-    private String prettyDex(String raw) {
-        String s = raw == null ? "" : raw.trim();
+    /**
+     * 轮询 DeX hosting 旗标：{@code cmd display get-displays} 里出现
+     * {@code FLAG_EXTERNAL_DEX_HOSTING} 即算系统已在便携屏上 hosting DeX。
+     *
+     * @param maxSec 最多等几秒（每秒一次；SF 刚重启时头一两次可能读不到，属正常）
+     */
+    private boolean waitDexHosting(int maxSec) {
+        for (int i = 0; i < maxSec; i++) {
+            String v = ShellRunner.run(
+                    "cmd display get-displays | grep -q FLAG_EXTERNAL_DEX_HOSTING"
+                            + " && echo HOSTED || echo NO", 15);
+            if (v != null && v.contains("HOSTED")) {
+                return true;
+            }
+            if (i + 1 < maxSec) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    break;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 一条命令的回话压成一行（系统返回什么就照着说什么，不替它下结论）。
+     *
+     * @param expect 期望输出；对上了算完成，对不上把原话尾巴显示出来。
+     *               传空串表示"成功就该静默"（wm 那类命令）
+     */
+    private static String step(String what, String out, String expect) {
+        if (out == null) {
+            return what + "：没跑成（通道没就绪）\n";
+        }
+        if (out.startsWith("ERR")) {
+            return what + "：" + out + '\n';
+        }
+        String s = out.trim();
+        if (s.startsWith("TIMEOUT")) {
+            return what + "：超时\n";
+        }
+        if (expect != null && !expect.isEmpty()) {
+            if (expect.equals(s)) {
+                return what + "：完成\n";
+            }
+            return what + "：回读值不对（" + tail(s, 120) + "）\n";
+        }
         if (s.isEmpty()) {
-            return "已发出启动命令（系统没回话）。";
+            return what + "：完成\n";
         }
-        String low = s.toLowerCase();
-        String body = "回话：\n" + tail(s, 380);
-        if (low.contains("must be root") || low.contains("permission denial")
-                || low.contains("securityexception")) {
-            return body + "\n\n系统把这条挡住了 —— 这份系统版本不允许从 shell 起 DeX。";
+        return what + "：" + tail(s, 200) + '\n';
+    }
+
+    /**
+     * 从 {@code cmd display get-displays | grep 'type EXTERNAL'} 的回话里取便携屏的
+     * displayId —— 阿田同款判据（get-displays 每种显示屏的 DisplayInfo 里都带
+     * {@code type XXX}）。取不到返回 -1。
+     */
+    private static int parseExternalId(String out) {
+        if (out == null || out.startsWith("ERR")) {
+            return -1;
         }
-        if (low.contains("error") || low.contains("exception")
-                || low.contains("not exist") || low.contains("not found")) {
-            return body + "\n\n没起来。先把便携屏插上再试一次；还是不行，"
-                    + "就是这份系统里没有可用的 DeX 入口。";
-        }
-        return "已发出启动命令。\n" + body;
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("Display id (\\d+)").matcher(out);
+        return m.find() ? Integer.parseInt(m.group(1)) : -1;
+    }
+
+    /** DeX 流程收尾：结果上屏 + 一个 toast */
+    private void finishDex(String text, boolean up) {
+        runOnUiThread(() -> {
+            if (tvDexInfo != null) {
+                tvDexInfo.setText(text);
+            }
+            toast(up ? "DeX 已起来，看便携屏" : "没拉起来，看下面那行");
+        });
     }
 
     /** 只留回话的尾巴 —— shell 的输出一长条，铺满屏反而看不见重点 */
@@ -1941,7 +2122,7 @@ public class MainActivity extends Activity {
 
     private boolean requireShell() {
         if (!ShellRunner.isReady()) {
-            toast("请先完成 Shizuku 授权");
+            toast("请先完成 Shizuku 或 Root 授权");
             return false;
         }
         return true;
