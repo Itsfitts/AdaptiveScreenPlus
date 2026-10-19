@@ -31,6 +31,8 @@ public class ChangelogActivity extends Activity {
     // ⚠ 版本号规矩：某版里出现被否掉的改动时，下一版不推进版本号，并整条删掉那次日志，
     //   等改动确认有效后再写回、那时才推进。
     private static final String[][] LOG = {
+            {"v4.26", "2026-10-19",
+                    "优化了注释与界面提示的文字描述"},
             {"v4.25", "2026-10-19",
                     "更新说明页新增「检查更新」，可一键下载并安装新版本",
                     "首页新增 root 授权（支持 KernelSU / APatch）；DeX 启动改由 root 重启 SurfaceFlinger 触发"},
