@@ -53,21 +53,21 @@ public class MainActivity extends Activity {
     private static final String[] LAB_PORT = {"90°", "270°"};
 
     /**
-     * 「屏幕方向」三档的取值。
+     * 「[comment]」[comment]。
      *
-     * <p>这三个数字只在界面内部用，落盘仍然是 {@link Prefs#isLockPhoneRotation()} 与
-     * {@link Prefs#getPhoneRotation()} 两个老字段 —— 这样「保存参数设置」那格、
-     * 服务里的下发逻辑、以及旧档案全都不用动。
+     * <p>[comment]，[comment]Yes {@link Prefs#isLockPhoneRotation()} [comment]
+     * {@link Prefs#getPhoneRotation()} [comment] —— [comment]「Save[comment]Settings」[comment]、
+     * [comment]、[comment]。
      */
     private static final int[] DIR_VALS = {0, 1, 2};
-    private static final String[] DIR_LABS = {"横屏锁定", "竖屏锁定", "自动旋转"};
+    private static final String[] DIR_LABS = {"Text", "Text", "Text"};
     private static final int DIR_LAND = 0, DIR_PORT = 1, DIR_AUTO = 2;
 
-    /** 「开机选项」三档：不干预 / 折叠模式（外屏桌面）/ 展开模式（内屏桌面） */
+    /** 「[comment]」[comment]：[comment] / [comment]（[comment]）/ [comment]（[comment]） */
     private static final int[] BOOT_VALS = {Prefs.BOOT_NONE, Prefs.BOOT_FOLDED, Prefs.BOOT_UNFOLDED};
-    private static final String[] BOOT_LABS = {"不设置", "外屏桌面", "内屏桌面"};
+    private static final String[] BOOT_LABS = {"TextSettings", "Text", "Text"};
 
-    /** 分辨率下限：低于这个值内屏会变得很难用，直接拒绝 */
+    /** [comment]：[comment]，[comment]Deny */
     private static final int MIN_RES = 480;
 
     private Prefs prefs;
@@ -84,33 +84,33 @@ public class MainActivity extends Activity {
     private EditText etResW, etResH, etResDpi;
     private TextView tvFoldState;
 
-    /** 刷新率小节的最高 / 最低下拉 */
+    /** [comment] / [comment] */
     private Spinner spPeakHz, spMinHz;
     private TextView tvHzState;
 
-    /** 选项卡 1 · 授权与状态 里的「快捷操作」 */
+    /** [comment] 1 · [comment] [comment]「[comment]」 */
     private Switch swQASync;
-    /** 同一排里的「外屏自动旋转」（v4.23）。跟 swQASync 是两件事，一个管内屏方向、一个管封面屏 */
+    /** [comment]「[comment]」（v4.23）。[comment] swQASync Yes[comment]，[comment]、[comment] */
     private Switch swQACoverRot;
 
-    /** 「授权与状态 → 快捷操作」里那个「打开无线调试」按钮（v4.20 是开关，v4.22 改成按钮） */
+    /** 「[comment] → [comment]」[comment]「[comment]None[comment]」[comment]（v4.20 Yes[comment]，v4.22 [comment]） */
     private Button btnQAAdbWifi;
 
-    /** 选项卡 4 · 双屏 */
+    /** [comment] 4 · [comment] */
     private LinearLayout panelDual;
     private TextView tvDualState, tvSubState, tvDexInfo;
 
-    /** 选项竖卡 · 按外接屏保存设置（每项一行、「已保存」与「当前」左右两列对比） */
+    /** [comment] · [comment]SaveSettings（[comment]、「[comment]Save」[comment]「[comment]」[comment]） */
     private TextView tvProfileHead;
     private LinearLayout profileTable;
     private Button btnSaveProfile, btnClearProfile;
 
-    /** 我们最近一次改「锁手机方向」开关的时刻，用来给它一点落盘时间 */
+    /** [comment]「[comment]」[comment]，[comment] */
     private long lockToggleAt = 0L;
-    /** 连续两次读到「系统自动旋转被打开」才认定用户改过 */
+    /** [comment]「[comment]」[comment] */
     private int lockSyncStrikes = 0;
 
-    /** 开关按钮的底色，让"开着/关着"一眼能看出来 */
+    /** [comment]，[comment]"[comment]/[comment]"[comment] */
     private static final int COLOR_ON = 0xFF2E7D32;
     private static final int COLOR_OFF = 0xFF757575;
 
@@ -124,9 +124,9 @@ public class MainActivity extends Activity {
         @Override
         public void run() {
             updateInfo();
-            // 服务那头也会改设置（例如接屏时自动套用该屏的档案），界面必须跟着回读
+            // [comment]Settings（[comment]），[comment]
             syncFromPrefs();
-            // 「按外接屏保存设置」那栏要跟着插拔实时变，但它只在自动旋转页可见时才需要刷
+            // 「[comment]SaveSettings」[comment]，[comment]
             if (panelAuto != null && panelAuto.getVisibility() == View.VISIBLE) {
                 refreshProfileUi();
             }
@@ -138,12 +138,12 @@ public class MainActivity extends Activity {
             (requestCode, grantResult) -> runOnUiThread(() -> {
                 refreshShizukuState();
                 if (grantResult == PackageManager.PERMISSION_GRANTED) {
-                    toast("Shizuku 授权成功");
+                    toast("Shizuku TextSuccess");
                     if (prefs.shouldKeepRunning()) {
                         RotationService.start(this);
                     }
                 } else {
-                    toast("授权被拒绝");
+                    toast("TextDeny");
                 }
             });
 
@@ -193,22 +193,22 @@ public class MainActivity extends Activity {
         spMinHz = findViewById(R.id.spMinHz);
         tvHzState = findViewById(R.id.tvHzState);
 
-        // ---- 快捷操作（授权与状态选项卡）
+        // ---- [comment]（[comment]）
         swQASync = findViewById(R.id.swQASync);
         swQACoverRot = findViewById(R.id.swQACoverRot);
 
-        // 无线调试；v4.22 从开关改成一次性按钮（用户提的）。
-        // ⚠ 它写的是系统那个键（Settings.Global.ADB_WIFI_ENABLED）。v4.21 起整条路不再借
-        //   Shizuku：先直接写一把，网络没登记过才展开内屏让无障碍点掉确认框（见 AdbWifi）。
-        //   这条路最长要好几秒、里面还有 sleep，所以丢后台线程，回来只报结果。
+        // None[comment]；v4.22 [comment]（[comment]）。
+        // ⚠ [comment]Yes[comment]（Settings.Global.ADB_WIFI_ENABLED）。v4.21 [comment]
+        //   Shizuku：[comment]，[comment]None[comment]（[comment] AdbWifi）。
+        //   [comment]、[comment] sleep，[comment]，[comment]。
         btnQAAdbWifi = findViewById(R.id.btnQAAdbWifi);
         if (btnQAAdbWifi != null) {
             btnQAAdbWifi.setOnClickListener(v -> openAdbWifiOnce());
         }
-        // 一键投屏（v4.31）：切双屏 + 打开投屏控制 + 全屏 + 直接开始投屏，一步做完
+        // [comment]（v4.31）：[comment] + [comment] + [comment] + [comment]，[comment]
         findViewById(R.id.btnQACast).setOnClickListener(v -> onOneKeyCast());
-        // 「折叠/展开模式切换」那个按钮去掉了 —— 折叠模式整段搬到了本页下面，
-        // 同一页里再留一个入口纯属重复。
+        // 「[comment]/[comment]」[comment] —— [comment]，
+        // [comment]。
         findViewById(R.id.btnQAOneKey).setOnClickListener(v -> onOneKeyDual());
 
         panelDual = findViewById(R.id.panelDual);
@@ -223,54 +223,54 @@ public class MainActivity extends Activity {
         } catch (Throwable ignored) {
         }
 
-        // ---- 选项卡（界面顺序：0=授权与状态，1=自动旋转，2=内屏管理，3=双屏）
+        // ---- [comment]（[comment]：0=[comment]，1=[comment]，2=[comment]，3=[comment]）
         rgTabs.setOnCheckedChangeListener((group, checkedId) ->
                 showTab(checkedId == R.id.tabAuto ? 1
                         : checkedId == R.id.tabRes ? 2
                         : checkedId == R.id.tabDual ? 3 : 0));
 
-        // ---- 右上角的「Beta 功能」入口 → BetaActivity（黑底，另一套界面）
+        // ---- [comment]「Beta [comment]」[comment] → BetaActivity（[comment]，[comment]）
         bindBetaEntry();
 
-        // ---- 标题旁的版本胶囊 → 「版本与更新」页
+        // ---- [comment] → 「[comment]Update」[comment]
         bindVersionEntry();
 
-        // ---- 最近任务里的名字用英文名。
-        // 桌面图标名由 manifest 的 android:label 决定（中文），最近任务卡片走的是
-        // TaskDescription，两处互不影响 —— 这样"桌面中文名、后台英文名"不需要两套 label。
-        // 只在最近任务里生效，不动桌面、也不动「设置 → 应用」里那个名字。
+        // ---- [comment]。
+        // [comment] manifest [comment] android:label [comment]（[comment]），[comment]Yes
+        // TaskDescription，[comment] —— [comment]"[comment]、[comment]"[comment] label。
+        // [comment]，[comment]、[comment]「Settings → [comment]」[comment]。
         setTaskDescription(new ActivityManager.TaskDescription(getString(R.string.app_name_en)));
 
-        // ---- 界面上所有「ⓘ」详情图标。
-        // v2.3 起解释性文字不再常驻在开关/按钮下面（铺开太长没人看），一律收进 ⓘ，
-        // 点一下弹对话框。正文都在 strings.xml 的 info_* 里。
-        bindInfo(R.id.iSwEnable, "自动方向同步", R.string.info_sync);
-        bindInfo(R.id.iQASync, "自适应旋转", R.string.info_sync);
-        bindInfo(R.id.iQAAdbWifi, "无线调试", R.string.info_adb_wifi);
-        bindInfo(R.id.iQACoverRot, "外屏自动旋转", R.string.info_cover_autorot);
-        bindInfo(R.id.iQACast, "一键投屏", R.string.info_qa_cast);
-        bindInfo(R.id.iSwLockPhone, "屏幕方向", R.string.info_lock_phone);
-        bindInfo(R.id.iBootMode, "开机选项", R.string.info_boot_mode);
-        bindInfo(R.id.iFixToUser, "强制忽略应用申请的方向", R.string.info_fix_to_user);
-        bindInfo(R.id.iCalib, "手动校准", R.string.info_calib);
-        bindInfo(R.id.iRepair, "修复画面", R.string.info_repair);
-        bindInfo(R.id.iProfile, "保存参数设置", R.string.info_profile);
-        bindInfo(R.id.iResFields, "分辨率与 DPI", R.string.info_res_fields);
-        bindInfo(R.id.iRefreshRate, "刷新率", R.string.info_refresh_rate);
-        bindInfo(R.id.iResAutoMatch, "分辨率自动加载", R.string.info_res_automatch);
-        bindInfo(R.id.iResTiming, "接管时机", R.string.info_res_timing);
-        bindInfo(R.id.iFold, "折叠/展开模式切换", R.string.info_fold);
+        // ---- [comment]「ⓘ」[comment]。
+        // v2.3 [comment]/[comment]（[comment]），[comment] ⓘ，
+        // [comment]。[comment] strings.xml [comment] info_* [comment]。
+        bindInfo(R.id.iSwEnable, "Text", R.string.info_sync);
+        bindInfo(R.id.iQASync, "Text", R.string.info_sync);
+        bindInfo(R.id.iQAAdbWifi, "NoneText", R.string.info_adb_wifi);
+        bindInfo(R.id.iQACoverRot, "Text", R.string.info_cover_autorot);
+        bindInfo(R.id.iQACast, "Text", R.string.info_qa_cast);
+        bindInfo(R.id.iSwLockPhone, "Text", R.string.info_lock_phone);
+        bindInfo(R.id.iBootMode, "Text", R.string.info_boot_mode);
+        bindInfo(R.id.iFixToUser, "Text", R.string.info_fix_to_user);
+        bindInfo(R.id.iCalib, "Text", R.string.info_calib);
+        bindInfo(R.id.iRepair, "Text", R.string.info_repair);
+        bindInfo(R.id.iProfile, "SaveTextSettings", R.string.info_profile);
+        bindInfo(R.id.iResFields, "Text DPI", R.string.info_res_fields);
+        bindInfo(R.id.iRefreshRate, "Text", R.string.info_refresh_rate);
+        bindInfo(R.id.iResAutoMatch, "Text", R.string.info_res_automatch);
+        bindInfo(R.id.iResTiming, "Text", R.string.info_res_timing);
+        bindInfo(R.id.iFold, "Text/Text", R.string.info_fold);
         bindInfo(R.id.iShizuku, "Shizuku", R.string.info_shizuku);
         bindInfo(R.id.iRoot, "Root", R.string.info_root);
-        bindInfo(R.id.iRealtime, "实时状态", R.string.info_realtime);
-        // 双屏模式那条说明从独立的 ⓘ 搬到「副屏状态」行尾的文字入口上；
-        // 副屏管理的小标题撤了，它那条说明就挂在这儿（跟副屏状态挨着）
-        bindInfo(R.id.tvAboutDual, "关于双屏模式", R.string.info_onekey);
-        bindInfo(R.id.iSubPanel, "副屏", R.string.info_beta_sub);
-        bindInfo(R.id.iPseudo, "副屏桌面上的伪应用", R.string.info_pseudo);
-        bindInfo(R.id.iDex, "DeX 模式", R.string.info_dex);
+        bindInfo(R.id.iRealtime, "Text", R.string.info_realtime);
+        // [comment] ⓘ [comment]「[comment]」[comment]；
+        // [comment]，[comment]（[comment]）
+        bindInfo(R.id.tvAboutDual, "Text", R.string.info_onekey);
+        bindInfo(R.id.iSubPanel, "Text", R.string.info_beta_sub);
+        bindInfo(R.id.iPseudo, "Text", R.string.info_pseudo);
+        bindInfo(R.id.iDex, "DeX Text", R.string.info_dex);
 
-        // ---- 主开关（「自动旋转」选项卡）
+        // ---- [comment]（「[comment]」[comment]）
         swEnable.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (binding) {
                 return;
@@ -278,8 +278,8 @@ public class MainActivity extends Activity {
             setSyncEnabled(isChecked);
         });
 
-        // ---- 同一个开关在「授权与状态」的快捷操作里再放一份，两边必须完全同步。
-        // 共用 setSyncEnabled + syncQuickSyncSwitch，免得两处各写一套逻辑日后跑偏。
+        // ---- [comment]「[comment]」[comment]，[comment]。
+        // [comment] setSyncEnabled + syncQuickSyncSwitch，[comment]。
         swQASync.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (binding) {
                 return;
@@ -287,10 +287,10 @@ public class MainActivity extends Activity {
             setSyncEnabled(isChecked);
         });
 
-        // ---- 外屏自动旋转（v4.23）。跟上面那个「自适应旋转」是两件事：那个管的还是内屏那边的
-        //      方向同步，这个管封面屏 —— 外屏原生不跟手机转，靠加速度计判横竖 + 下发旋转命令。
-        //      下发要发 shell，丢后台。
-        //      ⚠ 先 setChecked 再挂监听，回读那一下用 binding 压住（本类通例）。
+        // ---- [comment]（v4.23）。[comment]「[comment]」Yes[comment]：[comment]Yes[comment]
+        //      [comment]，[comment] —— [comment]，[comment] + [comment]。
+        //      [comment] shell，[comment]。
+        //      ⚠ [comment] setChecked [comment]，[comment] binding [comment]（[comment]）。
         if (swQACoverRot != null) {
             swQACoverRot.setChecked(CoverAutoRot.on(this));
             swQACoverRot.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -306,7 +306,7 @@ public class MainActivity extends Activity {
                         if (err != null) {
                             toast(err);
                         } else {
-                            toast(isChecked ? "外屏自动旋转：开" : "外屏自动旋转：关");
+                            toast(isChecked ? "Text：Text" : "Text：Text");
                         }
                         syncQuickCoverRotSwitch();
                     });
@@ -314,16 +314,16 @@ public class MainActivity extends Activity {
             });
         }
 
-        // ---- 角度
+        // ---- [comment]
         bindSpinner(spPortrait, ROT_PORT, LAB_PORT, prefs.getPortraitAngle(), prefs::setPortraitAngle);
         bindSpinner(spLandscape, ROT_ALL, LAB_ALL, prefs.getLandscapeAngle(), prefs::setLandscapeAngle);
 
-        // ---- 屏幕方向
-        // 原来是「关闭手机自动旋转，锁定横向」一个开关，现在摊成三档。落盘还是那两个老字段，
-        // 所以「保存参数设置」里「自动旋转」那一行、服务里那条 settings 命令都不必改。
+        // ---- [comment]
+        // [comment]Yes「Disable[comment]，[comment]」[comment]，[comment]。[comment]Yes[comment]，
+        // [comment]「Save[comment]Settings」[comment]「[comment]」[comment]、[comment] settings [comment]。
         bindSpinner(spScreenDir, DIR_VALS, DIR_LABS, dirValue(), this::applyScreenDir);
 
-        // ---- 开机选项（在「授权与状态」页）
+        // ---- [comment]（[comment]「[comment]」[comment]）
         bindSpinner(spBootMode, BOOT_VALS, BOOT_LABS, prefs.getBootMode(), prefs::setBootMode);
 
         cbFixToUser.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -334,7 +334,7 @@ public class MainActivity extends Activity {
             onSettingChanged();
         });
 
-        // ---- 分辨率输入
+        // ---- [comment]
         etResW.setText(String.valueOf(prefs.getResWidth()));
         etResH.setText(String.valueOf(prefs.getResHeight()));
         etResDpi.setText(String.valueOf(prefs.getResDensity()));
@@ -360,7 +360,7 @@ public class MainActivity extends Activity {
             saveResFields();
             boolean wantOn = !prefs.isResolutionEnabled();
             if (wantOn && !resFieldsValid()) {
-                toast("宽高至少 " + MIN_RES + "，请先修正分辨率");
+                toast("Text " + MIN_RES + "，Text");
                 return;
             }
             setResTakeover(wantOn, true);
@@ -385,21 +385,21 @@ public class MainActivity extends Activity {
                 return;
             }
             prefs.setAutoMatchExt(isChecked);
-            toast(isChecked ? "接入便携屏时会自动套用它的分辨率（横屏转竖屏）"
-                    : "已关闭自动套用，将一直使用你填的分辨率");
+            toast(isChecked ? "Text（Text）"
+                    : "TextDisableText，Text");
         });
 
-        // 手动读一次当前接着的便携屏的分辨率填进输入框
+        // [comment]
         findViewById(R.id.btnResFromExt).setOnClickListener(v -> fillResFromExt());
 
         findViewById(R.id.btnApplyRes).setOnClickListener(v -> {
             saveResFields();
             if (!resFieldsValid()) {
-                toast("宽高至少 " + MIN_RES);
+                toast("Text " + MIN_RES);
                 return;
             }
             if (!ShellRunner.isReady()) {
-                toast("请先完成 Shizuku 授权");
+                toast("Text Shizuku Text");
                 return;
             }
             setResTakeover(true, true);
@@ -407,52 +407,52 @@ public class MainActivity extends Activity {
 
         findViewById(R.id.btnResetRes).setOnClickListener(v -> {
             if (!ShellRunner.isReady()) {
-                toast("请先完成 Shizuku 授权");
+                toast("Text Shizuku Text");
                 return;
             }
             RotationService.resetSizeNow(this);
-            toast("正在还原内屏原生分辨率…");
+            toast("Text…");
         });
 
-        // ---- 刷新率（紧跟在「分辨率与 DPI」下面那一节）
+        // ---- [comment]（[comment]「[comment] DPI」[comment]）
         setupRefreshRate();
 
         findViewById(R.id.btnOverlay).setOnClickListener(v -> requestOverlayPermission());
 
         findViewById(R.id.btnTestPrompt).setOnClickListener(v -> RotationService.testPrompt(this));
 
-        // ---- 折叠模式（直接覆盖系统的 DeviceStateManager）
+        // ---- [comment]（[comment] DeviceStateManager）
         findViewById(R.id.btnFoldToggle).setOnClickListener(v -> onFoldToggle());
         findViewById(R.id.btnStateAuto).setOnClickListener(v -> onDeviceStateReset());
 
-        // ---- 双屏选项卡：一键把外屏变成副屏桌面
-        // 这里刻意只留一个按钮：切并发、点亮外屏、投副屏桌面是一条龙做完的；
-        // 挑应用已经在副屏桌面里点了，不需要再放一个"选应用"的入口。
+        // ---- [comment]：[comment]
+        // [comment]：[comment]、[comment]、[comment]Yes[comment]；
+        // [comment]，[comment]"[comment]"[comment]。
         findViewById(R.id.btnDualOneKey).setOnClickListener(v -> onOneKeyDual());
-        // 副屏管理（v4.11 从 Beta 实验室搬来）。三个伪应用开关的缺省值跟着
-        // AppRepo.Item.pseudoDefaultOn 走，两边必须一致 —— 那边注释写了为什么
-        // 副屏触控板默认关、投屏控制与状态展示柜默认开。
+        // [comment]（v4.11 [comment] Beta [comment]）。[comment]
+        // AppRepo.Item.pseudoDefaultOn [comment]，[comment] —— [comment]
+        // [comment]Default[comment]、[comment]Default[comment]。
         findViewById(R.id.btnSubOpen).setOnClickListener(v -> doOpenSub());
-        // v4.17：开关改成按钮式，每个按钮的底色跟着它那个伪应用的图标色走。
-        // 色值取 drawable/ic_pseudo_*.xml 里的 fillColor，改图标要同步改这里。
+        // v4.17：[comment]，[comment]。
+        // [comment] drawable/ic_pseudo_*.xml [comment] fillColor，[comment]。
         bindPseudoToggle(R.id.swPseudoPad, AppRepo.PSEUDO_TOUCHPAD, false, 0xFF2F7DFF);
         bindPseudoToggle(R.id.swPseudoCast, AppRepo.PSEUDO_CAST, true, 0xFF8E6BE8);
         bindPseudoToggle(R.id.swPseudoStatus, AppRepo.PSEUDO_STATUS, true, 0xFF21BFD6);
         bindPseudoToggle(R.id.swPseudoPlayer, AppRepo.PSEUDO_PLAYER, true, 0xFFEC407A);
         findViewById(R.id.btnDexStart).setOnClickListener(v -> startDex());
-        // 这一页那个「快捷小组件」按钮撤掉了（用户："按钮及其相关说明去掉"）。
-        // pinWidget() 留着 —— 小组件本身没删，从系统的组件列表里照样钉得上，
-        // 以后想再给个入口直接接回来就行。
+        // [comment]「[comment]」[comment]（[comment]："[comment]"）。
+        // pinWidget() [comment] —— [comment]，[comment]，
+        // [comment]。
 
-        // ---- 授权按钮
+        // ---- [comment]
         findViewById(R.id.btnGrant).setOnClickListener(v -> {
             refreshShizukuState();
             if (!ShellRunner.isBinderAlive()) {
-                toast("Shizuku 服务未运行，请先在 Shizuku App 里启动服务");
+                toast("Shizuku Text，Text Shizuku App Text");
                 return;
             }
             if (ShellRunner.hasPermission()) {
-                toast("已经拥有权限");
+                toast("Text");
                 if (prefs.shouldKeepRunning()) {
                     RotationService.start(this);
                 }
@@ -461,49 +461,49 @@ public class MainActivity extends Activity {
             try {
                 Shizuku.requestPermission(REQ_SHIZUKU);
             } catch (Throwable t) {
-                toast("请求授权失败：" + t);
+                toast("TextFailed：" + t);
             }
         });
 
         findViewById(R.id.btnShizuku).setOnClickListener(v -> openShizuku());
 
-        // ---- Root 授权（KernelSU / Magisk）：跑一次 su -c id 触发授权弹窗。
-        //  探测/请求都放后台 —— 没授权时 root 管理器弹窗会让 exec 一直阻塞。
+        // ---- Root [comment]（KernelSU / Magisk）：[comment] su -c id [comment]。
+        //  [comment]/[comment] —— [comment] root [comment] exec [comment]。
         findViewById(R.id.btnRootGrant).setOnClickListener(v -> {
             if (RootUtil.state() == RootUtil.ST_OK) {
-                toast("已经拥有 root 权限");
+                toast("Text root Text");
                 return;
             }
             if (!RootUtil.hasSu()) {
-                toast("没检测到 root（su），此栏用不到");
+                toast("Text root（su），Text");
                 return;
             }
-            toast("已在请求 root 授权，请在 root 管理器弹窗里允许");
+            toast("Text root Text，Text root TextAllow");
             RootUtil.refresh(() -> runOnUiThread(this::refreshRootState));
         });
 
-        // ---- 手动测试
+        // ---- [comment]
         ((Button) findViewById(R.id.btn0)).setOnClickListener(v -> manual(0));
         ((Button) findViewById(R.id.btn90)).setOnClickListener(v -> manual(1));
         ((Button) findViewById(R.id.btn180)).setOnClickListener(v -> manual(2));
         ((Button) findViewById(R.id.btn270)).setOnClickListener(v -> manual(3));
         ((Button) findViewById(R.id.btnFree)).setOnClickListener(v -> manual(-1));
 
-        // ---- 修复画面
+        // ---- [comment]
         findViewById(R.id.btnRepair).setOnClickListener(v -> {
             if (!ShellRunner.isReady()) {
-                toast("请先完成 Shizuku 授权");
+                toast("Text Shizuku Text");
                 return;
             }
             RotationService.repair(this);
-            toast("已对外接屏执行一次完整重排");
+            toast("Text");
         });
 
-        // ---- 按外接屏保存设置
+        // ---- [comment]SaveSettings
         btnSaveProfile.setOnClickListener(v -> onSaveProfile());
         btnClearProfile.setOnClickListener(v -> onClearProfile());
 
-        // ---- 回填已有设置
+        // ---- [comment]Settings
         swEnable.setChecked(prefs.isEnabled());
         swResAsk.setChecked(prefs.isAskOnConnect());
         swResAutoReset.setChecked(prefs.isAutoResetSize());
@@ -513,7 +513,7 @@ public class MainActivity extends Activity {
         syncQuickSyncSwitch();
         syncQuickCoverRotSwitch();
 
-        // 回到上次停留的选项卡（0=授权与状态，1=自动旋转，2=内屏管理，3=双屏）
+        // [comment]（0=[comment]，1=[comment]，2=[comment]，3=[comment]）
         int lastTab = prefs.getLastTab();
         rgTabs.check(lastTab == 1 ? R.id.tabAuto
                 : lastTab == 2 ? R.id.tabRes
@@ -524,25 +524,25 @@ public class MainActivity extends Activity {
         updateResToggleUi();
         refreshSubState();
         refreshShizukuState();
-        // ⚠ Root 探测会 exec 一次 su：没授权时 root 管理器弹窗、exec 阻塞到用户点掉，
-        //   所以必须走 RootUtil.refresh 的后台线程，回调再切回 UI 线程刷文本。
+        // ⚠ Root [comment] exec [comment] su：[comment] root [comment]、exec [comment]，
+        //   [comment] RootUtil.refresh [comment]，[comment] UI [comment]。
         RootUtil.refresh(() -> runOnUiThread(this::refreshRootState));
 
-        // 第一次打开这个应用时，先把「这套东西能干什么」说清楚（见 maybeShowIntro）
+        // [comment]，[comment]「[comment]」[comment]（[comment] maybeShowIntro）
         maybeShowIntro();
     }
 
-    // ------------------------------------------------------------- ⓘ / 版本入口
+    // ------------------------------------------------------------- ⓘ / [comment]
 
     /**
-     * 给一个「ⓘ」图标挂上点击 → 弹对话框显示详情。
+     * [comment]「ⓘ」[comment] → [comment]。
      *
-     * <p>界面上所有解释性文字都走这条路径：布局里只留操作名，细节按需展开。
-     * 找不到控件就直接跳过（布局改动时不至于把整个界面崩掉）。
+     * <p>[comment]：[comment]，[comment]。
+     * [comment]（[comment]）。
      *
-     * @param iconId    ⓘ 图标（布局里 id 以 i 开头）的控件 id
-     * @param title     对话框标题，一般就是那个操作的名称
-     * @param detailRes 正文，放在 strings.xml 的 info_* 里
+     * @param iconId    ⓘ [comment]（[comment] id [comment] i [comment]）[comment] id
+     * @param title     [comment]，[comment]Yes[comment]
+     * @param detailRes [comment]，[comment] strings.xml [comment] info_* [comment]
      */
     private void bindInfo(int iconId, String title, int detailRes) {
         View icon = findViewById(iconId);
@@ -562,11 +562,11 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * 右上角的「Beta 功能」入口。
+     * [comment]「Beta [comment]」[comment]。
      *
-     * <p>它长得像第五个选项卡，但并不切换本页的面板 —— 点它是进另一个界面
-     * （{@link BetaActivity}，整块黑底，内部分三页）。所以不要把它塞进 rgTabs，
-     * 那会把上面四个选项卡压窄，而且语义上也不是一回事。
+     * <p>[comment]，[comment] —— [comment]Yes[comment]
+     * （{@link BetaActivity}，[comment]，[comment]）。[comment] rgTabs，
+     * [comment]，[comment]Yes[comment]。
      */
     private void bindBetaEntry() {
         View btn = findViewById(R.id.btnBeta);
@@ -576,7 +576,7 @@ public class MainActivity extends Activity {
         btn.setOnClickListener(v -> startActivity(new Intent(this, BetaActivity.class)));
     }
 
-    /** 标题旁的版本胶囊：显示当前版本号，点一下进「版本与更新」。 */
+    /** [comment]：[comment]，[comment]「[comment]Update」。 */
     private void bindVersionEntry() {
         TextView chip = findViewById(R.id.btnVersion);
         if (chip == null) {
@@ -590,8 +590,8 @@ public class MainActivity extends Activity {
             }
         } catch (Throwable ignored) {
         }
-        // 版本号是从包信息读的，不是写死的 —— 改 build.gradle 之后这里自动跟着变，
-        // 不会出现"界面写着 2.2、实际装的是 2.3"这种对不上的情况。
+        // [comment]Yes[comment]，[comment]Yes[comment] —— [comment] build.gradle [comment]，
+        // [comment]"[comment] 2.2、[comment]Yes 2.3"[comment]。
         chip.setText("v" + versionName + " · " + getString(R.string.version_entry));
         chip.setOnClickListener(v ->
                 startActivity(new Intent(this, ChangelogActivity.class)));
@@ -604,12 +604,12 @@ public class MainActivity extends Activity {
         refreshSubState();
         refreshDualState(true);
         refreshProfileUi();
-        // 自愈：开关是开着的、Shizuku 也拿到了权限，但服务没在跑
-        // （例如刚覆盖安装完、或系统回收过进程）→ 打开界面就把它拉起来
+        // [comment]：[comment]Yes[comment]、Shizuku [comment]，[comment]
+        // （[comment]、[comment]）→ [comment]
         if (prefs.shouldKeepRunning() && ShellRunner.isReady() && !RotationService.isRunning()) {
             RotationService.start(this);
         }
-        // 下拉栏或别处改过「锁手机方向」之后，外屏面板上那个按钮的显示要跟上
+        // [comment]「[comment]」[comment]，[comment]
         PanelWidgetProvider.updateAll(this);
         handler.post(uiTick);
     }
@@ -631,7 +631,7 @@ public class MainActivity extends Activity {
         super.onDestroy();
     }
 
-    // ------------------------------------------------------------------ 分辨率
+    // ------------------------------------------------------------------ [comment]
 
     private static int parseInt(String s, int def) {
         try {
@@ -645,7 +645,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    /** 把三个输入框里的值收进设置。低于下限的值先不落盘，等用户改对了再说。 */
+    /** [comment]Settings。[comment]，[comment]。 */
     private void saveResFields() {
         if (binding) {
             return;
@@ -673,12 +673,12 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * 打开/关闭内屏分辨率接管。
+     * [comment]/Disable[comment]。
      *
-     * @param on        true = 开启，false = 关闭
-     * @param applyNow  开启时是否立刻把分辨率写上内屏。
-     *                  界面上点开关 = true（马上生效，用户能立刻看到）；
-     *                  只是恢复设置状态时可以传 false。
+     * @param on        true = Enable，false = Disable
+     * @param applyNow  Enable[comment]YesNo[comment]。
+     *                  [comment] = true（[comment]，[comment]）；
+     *                  [comment]Yes[comment]Settings[comment] false。
      */
     private void setResTakeover(boolean on, boolean applyNow) {
         prefs.setResolutionEnabled(on);
@@ -687,11 +687,11 @@ public class MainActivity extends Activity {
             RotationService.start(this);
             if (applyNow) {
                 if (!ShellRunner.isReady()) {
-                    toast("已开启，但还没拿到 Shizuku 授权，授权后会自动生效");
+                    toast("TextEnable，Text Shizuku Text，Text");
                 } else {
                     RotationService.applySizeNow(this);
-                    toast("已开启：内屏 → " + effSizeText()
-                            + (prefs.isAutoMatchExt() ? "（接入便携屏时会自动按它的分辨率调整）" : ""));
+                    toast("TextEnable：Text → " + effSizeText()
+                            + (prefs.isAutoMatchExt() ? "（Text）" : ""));
                 }
             }
         } else {
@@ -699,27 +699,27 @@ public class MainActivity extends Activity {
             if (!prefs.shouldKeepRunning()) {
                 RotationService.stop(this);
             }
-            toast("已关闭分辨率接管，内屏还原原生");
+            toast("TextDisableText，Text");
         }
         updateResToggleUi();
         updateInfo();
     }
 
-    /** 实际会写进内屏的尺寸文字（已转竖屏） */
+    /** [comment]（[comment]） */
     private String effSizeText() {
         int[] p = ScreenSizeUtil.portrait(prefs.getResWidth(), prefs.getResHeight());
         return p[0] + "×" + p[1];
     }
 
-    /** 把开关按钮的画面和设置同步：开=绿底，关=灰底，文字里带上当前分辨率 */
+    /** [comment]Settings[comment]：[comment]=[comment]，[comment]=[comment]，[comment] */
     private void updateResToggleUi() {
         if (btnResToggle == null) {
             return;
         }
         boolean on = prefs.isResolutionEnabled();
         String text = on
-                ? "内屏分辨率接管：已开启（" + effSizeText() + "）\n点击关闭"
-                : "内屏分辨率接管：已关闭\n点击开启（" + effSizeText() + "）";
+                ? "Text：TextEnable（" + effSizeText() + "）\nTextDisable"
+                : "Text：TextDisable\nTextEnable（" + effSizeText() + "）";
         if (!text.contentEquals(btnResToggle.getText())) {
             btnResToggle.setText(text);
         }
@@ -727,14 +727,14 @@ public class MainActivity extends Activity {
         btnResToggle.setTextColor(0xFFFFFFFF);
     }
 
-    /** 读一次当前接着的便携屏的分辨率，转成竖屏后填进输入框 */
+    /** [comment]，[comment] */
     private void fillResFromExt() {
         List<Display> ext = DisplayUtil.externalDisplays(dm);
         if (ext.isEmpty()) {
-            toast("现在没有检测到便携屏，接上后再点这里");
+            toast("Text，Text");
             return;
         }
-        // 多块屏时取像素最多的那块
+        // [comment]
         int[] best = null;
         Display bestD = null;
         for (Display d : ext) {
@@ -748,7 +748,7 @@ public class MainActivity extends Activity {
             }
         }
         if (best == null) {
-            toast("读不到这块屏的分辨率，请手动填写");
+            toast("Text，Text");
             return;
         }
         int[] n = DisplayUtil.nativeSize(bestD);
@@ -757,12 +757,12 @@ public class MainActivity extends Activity {
         etResH.setText(String.valueOf(best[1]));
         binding = false;
         prefs.setResSize(best[0], best[1]);
-        toast("已按便携屏填入 " + best[0] + "×" + best[1]
-                + (n[0] > n[1] ? "（原生 " + n[0] + "×" + n[1] + "，已转竖屏）" : ""));
+        toast("Text " + best[0] + "×" + best[1]
+                + (n[0] > n[1] ? "（Text " + n[0] + "×" + n[1] + "，Text）" : ""));
         updateResToggleUi();
     }
 
-    /** 「显示在其他应用上层」：有它才能在后台弹对话框 */
+    /** 「[comment]」：[comment] */
     private void requestOverlayPermission() {
         boolean granted = false;
         try {
@@ -770,14 +770,14 @@ public class MainActivity extends Activity {
         } catch (Throwable ignored) {
         }
         if (granted) {
-            toast("已经具备弹窗权限");
+            toast("Text");
             return;
         }
         if (!ShellRunner.isReady()) {
             openOverlaySettings();
             return;
         }
-        toast("正在尝试通过 Shizuku 授予…");
+        toast("Text Shizuku Text…");
         final String pkg = getPackageName();
         final int uid = android.os.Process.myUid();
         new Thread(() -> {
@@ -790,7 +790,7 @@ public class MainActivity extends Activity {
                 } catch (Throwable ignored) {
                 }
                 if (ok) {
-                    toast("已授予弹窗权限");
+                    toast("Text");
                 } else {
                     openOverlaySettings();
                 }
@@ -804,22 +804,22 @@ public class MainActivity extends Activity {
                     Uri.parse("package:" + getPackageName()));
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(i);
-            toast("请打开「允许显示在其他应用上层」");
+            toast("Text「AllowText」");
         } catch (Throwable t) {
             Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             try {
                 startActivity(i);
-                toast("请打开「允许显示在其他应用上层」");
+                toast("Text「AllowText」");
             } catch (Throwable t2) {
-                toast("打不开设置页：" + t2);
+                toast("TextSettingsText：" + t2);
             }
         }
     }
 
-    // ------------------------------------------------------------------ 内部
+    // ------------------------------------------------------------------ [comment]
 
-    /** 「刷新率」小节：最高 / 最低两个下拉 + 应用 / 交回系统 */
+    /** 「[comment]」[comment]：[comment] / [comment] + [comment] / [comment] */
     private void setupRefreshRate() {
         if (spPeakHz == null || spMinHz == null) {
             return;
@@ -842,20 +842,20 @@ public class MainActivity extends Activity {
             float min = modes[spMinHz.getSelectedItemPosition()];
             String err = RefreshRate.apply(this, peak, min);
             toast(err != null ? err
-                    : String.format(Locale.US, "已接管刷新率：%.0f ~ %.0f Hz", min, peak));
+                    : String.format(Locale.US, "Text：%.0f ~ %.0f Hz", min, peak));
             refreshRateState();
         });
 
         findViewById(R.id.btnResetHz).setOnClickListener(v -> {
             String err = RefreshRate.reset(this);
-            toast(err != null ? err : "已交回系统，刷新率重新随系统自适应");
+            toast(err != null ? err : "Text，Text");
             refreshRateState();
         });
 
         refreshRateState();
     }
 
-    /** 把下拉拨到某个值所在的那一档；系统值不在支持表里（或没设过）就留在第一档 */
+    /** [comment]；[comment]（[comment]）[comment] */
     private static int nearestIndex(float[] modes, float hz) {
         for (int i = 0; i < modes.length; i++) {
             if (Math.abs(modes[i] - hz) < 0.5f) {
@@ -865,18 +865,18 @@ public class MainActivity extends Activity {
         return 0;
     }
 
-    /** 刷新率那一行的状态文字：系统当前那对值 + 内屏在不在位 */
+    /** [comment]：[comment] + [comment] */
     private void refreshRateState() {
         if (tvHzState == null) {
             return;
         }
-        String now = "系统当前：" + hzText(RefreshRate.readMin(this))
+        String now = "Text：" + hzText(RefreshRate.readMin(this))
                 + " ~ " + hzText(RefreshRate.readPeak(this)) + " Hz";
         tvHzState.setText(now + (RefreshRate.innerActive(this)
-                ? " · 内屏在位" : " · 内屏不在位，高刷档位不生效"));
+                ? " · Text" : " · Text，Text"));
     }
 
-    /** 没设过的值（-1）在界面上显示成破折号，别显示成 -1 */
+    /** [comment]（-1）[comment]，[comment] -1 */
     private static String hzText(float v) {
         return v < 0 ? "—" : String.format(Locale.US, "%.0f", v);
     }
@@ -909,15 +909,15 @@ public class MainActivity extends Activity {
     }
 
     private void updateVisibility() {
-        // 「同步模式」删掉之后，两个落点角度没有"另一种模式"要避让了，常驻显示。
-        // ⚠ 条件从"固定角度模式"改成"手机方向被锁住"。
-        // 它管的是外接屏要不要理会应用自己申请的方向，而"用户方向"正是手机那一边锁的那个 ——
-        // 手机自己在自动旋转时，这项没有可依的方向，摆出来只会让人以为它此刻在管着事。
+        // 「[comment]」[comment]，[comment]"[comment]"[comment]，[comment]。
+        // ⚠ [comment]"[comment]"[comment]"[comment]"。
+        // [comment]Yes[comment]，[comment]"[comment]"[comment]Yes[comment] ——
+        // [comment]，[comment]，[comment]。
         findViewById(R.id.rowFixToUser).setVisibility(
                 prefs.isLockPhoneRotation() ? View.VISIBLE : View.GONE);
     }
 
-    /** 切换选项卡。索引按界面顺序：0=授权与状态，1=自动旋转，2=内屏管理，3=双屏 */
+    /** [comment]。[comment]：0=[comment]，1=[comment]，2=[comment]，3=[comment] */
     private void showTab(int idx) {
         if (panelAuto == null) {
             return;
@@ -929,8 +929,8 @@ public class MainActivity extends Activity {
             panelDual.setVisibility(idx == 3 ? View.VISIBLE : View.GONE);
         }
         prefs.setLastTab(idx);
-        // 折叠模式整段搬到了本页（idx 0），进来就该看到真状态，
-        // 不必等用户去点一下按钮才刷。
+        // [comment]（idx 0），[comment]，
+        // [comment]。
         if (idx == 0) {
             refreshFoldState();
         }
@@ -940,22 +940,22 @@ public class MainActivity extends Activity {
         }
     }
 
-    /** 系统当前的「自动旋转」开关是不是开着的 */
+    /** [comment]「[comment]」[comment]Yes[comment]Yes[comment] */
     private boolean sysAutoRotate() {
         try {
             return Settings.System.getInt(getContentResolver(),
                     Settings.System.ACCELEROMETER_ROTATION, 1) == 1;
         } catch (Throwable t) {
-            return false;   // 读不到就当作"没被改过"，别误关用户自己的开关
+            return false;   // Text"Text"，Text
         }
     }
 
     /**
-     * 盯着「锁手机方向」和系统实际状态对不对得上。
+     * [comment]「[comment]」[comment]。
      *
-     * <p>用户在系统下拉菜单里把「自动旋转」打开之后，本应用的开关还停在"已开启"，
-     * 应用与系统对当前方向的理解就会分叉，镜像几何跟着乱。这里的选择是尊重用户：
-     * 既然他自己开了自动旋转，就把本应用这个开关也同步关掉（而不是把系统锁回去）。
+     * <p>[comment]「[comment]」[comment]，[comment]"[comment]Enable"，
+     * [comment]，[comment]。[comment]Yes[comment]：
+     * [comment]，[comment]（[comment]Yes[comment]）。
      */
     private void syncPhoneLockSwitch() {
         if (spScreenDir == null) {
@@ -966,7 +966,7 @@ public class MainActivity extends Activity {
             lockSyncStrikes = 0;
             return;
         }
-        // 连续两次都读到才算，避免正好落在命令落盘的间隙上
+        // [comment]，[comment]
         if (++lockSyncStrikes < 2) {
             return;
         }
@@ -976,20 +976,20 @@ public class MainActivity extends Activity {
         spScreenDir.setSelection(indexOf(DIR_VALS, DIR_AUTO), false);
         binding = false;
         updateVisibility();
-        toast("检测到系统已恢复「自动旋转」，本应用的手机方向锁定已同步关闭");
+        toast("Text「Text」，TextDisable");
     }
 
-    /** 「屏幕方向」此刻是哪一档（把 (lockPhone, phoneRotation) 两个字段折成一个值） */
+    /** 「[comment]」[comment]Yes[comment]（[comment] (lockPhone, phoneRotation) [comment]） */
     private int dirValue() {
         if (!prefs.isLockPhoneRotation()) {
             return DIR_AUTO;
         }
-        // 0° = 竖屏，其余（90°/270°）都算横屏 —— 界面只给两个锁定档，
-        // 档案里万一存着 270° 也照样落在"横屏锁定"上，不会被抹掉。
+        // 0° = [comment]，[comment]（90°/270°）[comment] —— [comment]，
+        // [comment] 270° [comment]"[comment]"[comment]，[comment]。
         return prefs.getPhoneRotation() == 0 ? DIR_PORT : DIR_LAND;
     }
 
-    /** 选了「屏幕方向」之后，落盘并立刻下发（选「自动旋转」就是把控制权还给系统） */
+    /** [comment]「[comment]」[comment]，[comment]（[comment]「[comment]」[comment]Yes[comment]） */
     private void applyScreenDir(int v) {
         lockToggleAt = System.currentTimeMillis();
         lockSyncStrikes = 0;
@@ -1000,16 +1000,16 @@ public class MainActivity extends Activity {
                 RotationService.stop(this);
             }
             updateVisibility();
-            toast("已交还给系统：手机自动旋转恢复");
+            toast("Text：Text");
             return;
         }
         prefs.setLockPhoneRotation(true);
         prefs.setPhoneRotation(v == DIR_PORT ? 0 : 1);
         if (!ShellRunner.isReady()) {
-            toast("已记下设置，但还没拿到 Shizuku 授权，授权后会自动锁上");
+            toast("TextSettings，Text Shizuku Text，Text");
         } else {
-            toast(v == DIR_PORT ? "已开启：关闭手机自动旋转并锁定竖屏"
-                    : "已开启：关闭手机自动旋转并锁定横屏");
+            toast(v == DIR_PORT ? "TextEnable：DisableText"
+                    : "TextEnable：DisableText");
         }
         RotationService.lockPhoneNow(this);
         updateVisibility();
@@ -1019,18 +1019,18 @@ public class MainActivity extends Activity {
         if (prefs.isEnabled()) {
             RotationService.start(this);
         }
-        // 外屏面板上有两个开关是"画"上去的，设置一改就顺手刷一遍
+        // [comment]Yes"[comment]"[comment]，Settings[comment]
         PanelWidgetProvider.updateAll(this);
     }
 
     /**
-     * 打开 / 关闭「自适应旋转」（外接屏跟随手机的横竖屏）。
+     * [comment] / Disable「[comment]」（[comment]）。
      *
-     * <p>关闭时顺手把手机自己的「自动旋转」还回去：服务很可能还要为「内屏分辨率接管」继续常驻，
-     * 从而走不到 ACTION_STOP，手机被关掉自动旋转、方向钉死在横屏的状态就会一直留着 ——
-     * 用户看到的是「手机一直是横屏，怎么摆都不转」。
+     * <p>Disable[comment]「[comment]」[comment]：[comment]「[comment]」[comment]，
+     * [comment] ACTION_STOP，[comment]、[comment] ——
+     * [comment]Yes「[comment]Yes[comment]，[comment]」。
      *
-     * <p>但「锁手机方向」现在是独立开关：它自己还开着时只关同步，锁保持不动 —— 用户要的就是手机不自动转。
+     * <p>[comment]「[comment]」[comment]Yes[comment]：[comment]，[comment] —— [comment]Yes[comment]。
      */
     private void setSyncEnabled(boolean on) {
         prefs.setEnabled(on);
@@ -1059,14 +1059,14 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * 把界面上的开关 / 单选 / 下拉框拉回与「设置」一致。
+     * [comment] / [comment] / [comment]「Settings」[comment]。
      *
-     * <p>为什么需要周期性地做这件事：这些设置不只有界面在改 —— 服务那头也会改
-     * （最典型的是接上外接屏时自动套用它保存过的档案）。界面不回读的话，
-     * 就会出现"设置里明明关了，开关还画成开"这种自相矛盾的状态。
+     * <p>[comment]：[comment]Settings[comment] —— [comment]
+     * （[comment]Yes[comment]Save[comment]）。[comment]，
+     * [comment]"Settings[comment]，[comment]"[comment]。
      *
-     * <p>回写时先压住 {@code binding}，否则会被监听器当成用户操作再存一遍，
-     * 顺便还会弹一堆 Toast。
+     * <p>[comment] {@code binding}，No[comment]，
+     * [comment] Toast。
      */
     private void syncFromPrefs() {
         if (swEnable == null) {
@@ -1114,7 +1114,7 @@ public class MainActivity extends Activity {
         updateVisibility();
     }
 
-    /** 让「授权与状态」里的快捷开关与设置保持一致（改值时临时压住回调，避免来回弹） */
+    /** [comment]「[comment]」[comment]Settings[comment]（[comment]，[comment]） */
     private void syncQuickSyncSwitch() {
         if (swQASync == null) {
             return;
@@ -1128,7 +1128,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    /** 同一个道理，「外屏自动旋转」那一颗也去跟实况对一次 */
+    /** [comment]，「[comment]」[comment] */
     private void syncQuickCoverRotSwitch() {
         if (swQACoverRot == null) {
             return;
@@ -1143,119 +1143,119 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * 「打开无线调试」按钮（v4.22 从开关改过来）。
+     * 「[comment]None[comment]」[comment]（v4.22 [comment]）。
      *
-     * <p><b>一次性</b>：点一下把系统那个键打开。已经开着就只提示一声、不做任何事
-     * —— 它不是开关，没有"关"这一半。
+     * <p><b>[comment]</b>：[comment]。[comment]Notice[comment]、[comment]
+     * —— [comment]Yes[comment]，[comment]"[comment]"[comment]。
      *
-     * <p>这条路最长要好几秒（网络没登记过时得展开内屏、等无障碍点掉确认框、再折回），
-     * 必须丢后台；回来只报结果，界面不留状态（真实状态在系统开发者选项里看）。
+     * <p>[comment]（[comment]、[comment]None[comment]、[comment]），
+     * [comment]；[comment]，[comment]（[comment]）。
      */
     private void openAdbWifiOnce() {
         if (AdbWifi.isOn(this)) {
-            toast("无线调试已经是开着的");
+            toast("NoneTextYesText");
             return;
         }
-        toast("正在打开无线调试…");
+        toast("TextNoneText…");
         new Thread(() -> {
             final String err = AdbWifi.set(MainActivity.this, true);
             runOnUiThread(() -> {
                 if (isFinishing()) {
                     return;
                 }
-                toast(err == null ? "无线调试已打开" : ("没成功：" + err));
+                toast(err == null ? "NoneText" : ("TextSuccess：" + err));
             });
         }, "adb-wifi-on").start();
     }
 
-    // ------------------------------------------------------------------ 按外接屏保存设置
+    // ------------------------------------------------------------------ [comment]SaveSettings
 
     /**
-     * 从当前接着的外接屏里挑一块代表。
+     * [comment]。
      *
-     * <p>口径统一走 {@link DisplayUtil#largestByPanel}：界面这一栏、服务里"接屏时套用档案"、
-     * 以及"自动读面板分辨率"用的必须是**同一块**，三处各写一份迟早会跑偏。
+     * <p>[comment] {@link DisplayUtil#largestByPanel}：[comment]、[comment]"[comment]"、
+     * [comment]"[comment]"[comment]Yes**[comment]**，[comment]。
      */
     private Display mainExternal() {
         return DisplayUtil.largestByPanel(DisplayUtil.externalDisplays(dm));
     }
 
     /**
-     * 把旋转角写成角度数字，例如 {@code 90°}。
+     * [comment]，[comment] {@code 90°}。
      *
-     * <p>⚠ 不写「横向锁定 / 竖向锁定」：一个词盖住两个角度（0° 和 180° 都叫「横」，
-     * 90° 和 270° 都叫「竖」），表格里「已保存 / 当前」两列一比、两边印着同一句话，等于什么都没说。
-     * 方向交给行名交代，值直接给角度。
+     * <p>⚠ [comment]「[comment] / [comment]」：[comment]（0° [comment] 180° [comment]「[comment]」，
+     * 90° [comment] 270° [comment]「[comment]」），[comment]「[comment]Save / [comment]」[comment]、[comment]，[comment]。
+     * [comment]，[comment]。
      */
     private static String orient(int rotation) {
         return DisplayUtil.degrees(rotation) + "°";
     }
 
     /**
-     * 「自动旋转」这一格的值：{@code 开} / {@code 横 90°} / {@code 竖 0°} …
+     * 「[comment]」[comment]：{@code [comment]} / {@code [comment] 90°} / {@code [comment] 0°} …
      *
-     * <p>⚠ 语义跟 {@link #orient} <b>相反</b>，别合并成一个函数：{@code orient()} 说的是
-     * <b>外接屏</b>（便携屏面板天生横放，转 90° 画面才变竖），而手机的 90°/270° 是<b>手机自己</b>
-     * 被横过来用 —— 两边刚好反着。
+     * <p>⚠ [comment] {@link #orient} <b>[comment]</b>，[comment]：{@code orient()} [comment]Yes
+     * <b>[comment]</b>（[comment]，[comment] 90° [comment]），[comment] 90°/270° Yes<b>[comment]</b>
+     * [comment] —— [comment]。
      *
-     * <p>{@code 开} = <b>没锁</b>：「锁手机方向」这个开关的含义是「<b>关掉</b>手机自动旋转并固定方向」，
-     * 所以开关为 false 时才是「开」。
+     * <p>{@code [comment]} = <b>[comment]</b>：「[comment]」[comment]Yes「<b>[comment]</b>[comment]」，
+     * [comment] false [comment]Yes「[comment]」。
      *
-     * <p>⚠ 必须带上角度数字：光写「横向锁定 / 竖向锁定」的话一个词盖着两个角度
-     * （「横向」到底是 90° 还是 270° 看不出来）。行名「自动旋转」自己不表方向，所以那个「横 / 竖」留着。
-     * 180° / 270° 只可能在旧档案里出现，一律按横屏算。
+     * <p>⚠ [comment]：[comment]「[comment] / [comment]」[comment]
+     * （「[comment]」[comment]Yes 90° [comment]Yes 270° [comment]）。[comment]「[comment]」[comment]，[comment]「[comment] / [comment]」[comment]。
+     * 180° / 270° [comment]，[comment]。
      */
     private static String phoneRotation(DisplayProfile.Item it) {
         if (!it.lockPhone) {
-            return "开";
+            return "Text";
         }
         int deg = DisplayUtil.degrees(it.phoneRot);
-        return ((deg == 90 || deg == 270) ? "横 " : "竖 ") + deg + "°";
+        return ((deg == 90 || deg == 270) ? "Text " : "Text ") + deg + "°";
     }
 
 
     /**
-     * 表格里要显示的项，每项是 {@code {行名, 值}}，顺序即显示顺序。
+     * [comment]，[comment]Yes {@code {[comment], [comment]}}，[comment]。
      *
-     * <p>名字一律压在 4 个汉字以内 —— 一行装两项、每格只有 50dp 左右，名字长了会被裁掉
-     * （见 item_profile_row.xml 的注释）。
+     * <p>[comment] 4 [comment] —— [comment]、[comment] 50dp [comment]，[comment]
+     * （[comment] item_profile_row.xml [comment]）。
      *
-     * <p>「方向同步」「自动旋转」照旧<b>不参与接屏时的自动套用</b>
-     * （见 {@link DisplayProfile.Item#applyTo}），「已保存」列只是记下你上次为这块屏保存时它们是什么状态。
+     * <p>「[comment]」「[comment]」[comment]<b>[comment]</b>
+     * （[comment] {@link DisplayProfile.Item#applyTo}），「[comment]Save」[comment]Yes[comment]Save[comment]Yes[comment]。
      *
-     * <p>分辨率与 DPI 不在表里，跟在首行那条摘要后面（见 {@link #profileHead}）。
+     * <p>[comment] DPI [comment]，[comment]（[comment] {@link #profileHead}）。
      */
     private static String[][] profileItems(DisplayProfile.Item it) {
         return new String[][]{
-                {"方向同步", it.sync ? "开" : "关"},
-                {"自动旋转", phoneRotation(it)},
-                {"竖屏方向", orient(it.portrait)},
-                {"横屏方向", orient(it.landscape)},
-                {"DPI", it.resDensity > 0 ? String.valueOf(it.resDensity) : "不改"},
+                {"Text", it.sync ? "Text" : "Text"},
+                {"Text", phoneRotation(it)},
+                {"Text", orient(it.portrait)},
+                {"Text", orient(it.landscape)},
+                {"DPI", it.resDensity > 0 ? String.valueOf(it.resDensity) : "Text"},
         };
     }
 
     /**
-     * 首行摘要：这块屏是谁 · 面板是多少 · 给它设了多少分辨率 · 这个分辨率存没存。
+     * [comment]：[comment]Yes[comment] · [comment]Yes[comment] · [comment] · [comment]。
      *
-     * <p>分辨率不再单占一行 —— 面板像素数本来就印在这一行上，紧跟着写一句
-     * "设置分辨率 1080×1920"最省地方，也不会和「自动套面板分辨率」那个开关打架。
+     * <p>[comment] —— [comment]，[comment]
+     * "Settings[comment] 1080×1920"[comment]，[comment]「[comment]」[comment]。
      */
     private static String profileHead(Display d, DisplayProfile.Item cur, DisplayProfile.Item saved) {
-        String res = cur.resEnabled ? (cur.resW + "×" + cur.resH) : "不改";
+        String res = cur.resEnabled ? (cur.resW + "×" + cur.resH) : "Text";
         boolean same = saved != null
                 && saved.resEnabled == cur.resEnabled
                 && saved.resW == cur.resW
                 && saved.resH == cur.resH;
-        return DisplayProfile.label(d) + " · 设置分辨率 " + res + (same ? "（已保存）" : "（未保存）");
+        return DisplayProfile.label(d) + " · SettingsText " + res + (same ? "（TextSave）" : "（TextSave）");
     }
 
     /**
-     * 去档案里按行名取值。
+     * [comment]。
      *
-     * <p>**不能按下标对齐**：行名以后还可能增删（v4.13 就删掉了「同步模式」那一行），
-     * 按下标取的话删一行就整体错位，会拿"横屏方向"的当前值去比"DPI"的存档值。
-     * 所以按行名找，找不到就回一个破折号。
+     * <p>**[comment]**：[comment]（v4.13 [comment]「[comment]」[comment]），
+     * [comment]，[comment]"[comment]"[comment]"DPI"[comment]。
+     * [comment]，[comment]。
      */
     private static String savedValue(String[][] items, String name) {
         if (items == null) {
@@ -1270,13 +1270,13 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * 重建「保存参数设置」那张表。
+     * [comment]「Save[comment]Settings」[comment]。
      *
-     * <p>形状是"**一行两项**、每项都有 `已保存` 与 `当前` 两列"。v2.6 那版一行一项、
-     * 一共十行，竖着占掉大半屏还看不到底；现在 3 行看完，而"哪项改过还没存"照样
-     * 一眼可见 —— 两列不一样的就是。
+     * <p>[comment]Yes"**[comment]**、[comment] `[comment]Save` [comment] `[comment]` [comment]"。v2.6 [comment]、
+     * [comment]，[comment]；[comment] 3 [comment]，[comment]"[comment]"[comment]
+     * [comment] —— [comment]Yes。
      *
-     * <p>没接外接屏时整张表收起，只留一句提示 + 那排按钮置灰（那时也存不了）。
+     * <p>[comment]，[comment]Notice + [comment]（[comment]）。
      */
     private void refreshProfileUi() {
         if (tvProfileHead == null || profileTable == null) {
@@ -1284,7 +1284,7 @@ public class MainActivity extends Activity {
         }
         Display d = mainExternal();
         if (d == null) {
-            tvProfileHead.setText("未检测到外接屏 —— 接上便携屏后，这里会显示它的参数");
+            tvProfileHead.setText("Text —— Text，Text");
             profileTable.setVisibility(View.GONE);
             btnSaveProfile.setEnabled(false);
             btnClearProfile.setEnabled(false);
@@ -1302,10 +1302,10 @@ public class MainActivity extends Activity {
         String[][] curItems = profileItems(cur);
         String[][] oldItems = saved == null ? null : profileItems(saved);
 
-        // 内容每秒都可能变，整表重建最省事 ——
-        // 也免去了维护"第几个子 View 对应第几项设置"这层映射
+        // [comment]，[comment] ——
+        // [comment]"[comment] View [comment]Settings"[comment]
         profileTable.removeAllViews();
-        String[] head = {"设置项", "已保存", "当前"};
+        String[] head = {"SettingsText", "TextSave", "Text"};
         profileTable.addView(profileRow(head, head, true));
         for (int i = 0; i < curItems.length; i += 2) {
             String[] a = item(curItems[i], oldItems);
@@ -1314,16 +1314,16 @@ public class MainActivity extends Activity {
         }
     }
 
-    /** 把一项 {@code {行名, 值}} 配上它在档案里的值，凑成一行三格。 */
+    /** [comment] {@code {[comment], [comment]}} [comment]，[comment]。 */
     private static String[] item(String[] curItem, String[][] oldItems) {
         return new String[]{curItem[0], savedValue(oldItems, curItem[0]), curItem[1]};
     }
 
     /**
-     * 一行两栏，每栏三格（行名 + 已保存 + 当前）；{@code b} 为 null 时右半留空。
+     * [comment]，[comment]（[comment] + [comment]Save + [comment]）；{@code b} [comment] null [comment]。
      *
-     * <p>行模板在 {@code res/layout/item_profile_row.xml}，这里只填内容 ——
-     * 字号、等宽字、权重都留在 XML 里，和界面其它部分一个来源。
+     * <p>[comment] {@code res/layout/item_profile_row.xml}，[comment] ——
+     * [comment]、[comment]、[comment] XML [comment]，[comment]。
      */
     private View profileRow(String[] a, String[] b, boolean header) {
         View row = getLayoutInflater().inflate(R.layout.item_profile_row, profileTable, false);
@@ -1338,7 +1338,7 @@ public class MainActivity extends Activity {
         return row;
     }
 
-    /** 填一栏三格；表头压暗一点，和下面的数据行分开。 */
+    /** [comment]；[comment]，[comment]。 */
     private void fillProfileCell(View row, int nameId, int savedId, int nowId,
                                  String[] v, boolean header) {
         TextView name = row.findViewById(nameId);
@@ -1358,42 +1358,42 @@ public class MainActivity extends Activity {
     private void onSaveProfile() {
         Display d = mainExternal();
         if (d == null) {
-            toast("现在没接外接屏，没法保存");
+            toast("Text，TextSave");
             return;
         }
         String sig = DisplayProfile.signature(d);
         if (sig.isEmpty()) {
-            toast("这块屏没上报可识别的身份信息，存不了（换根线或换台设备试试）");
+            toast("Text，Text（Text）");
             return;
         }
         DisplayProfile.saveFrom(this, sig, DisplayProfile.label(d), d.getDisplayId(), prefs);
         refreshProfileUi();
-        toast("已把这一整套设置记到这块屏名下，下次它接上来自动套用");
+        toast("TextSettingsText，Text");
     }
 
     private void onClearProfile() {
         Display d = mainExternal();
         if (d == null) {
-            toast("现在没接外接屏");
+            toast("Text");
             return;
         }
         String sig = DisplayProfile.signature(d);
         if (!DisplayProfile.exists(this, sig)) {
-            toast("这块屏还没保存过");
+            toast("TextSaveText");
             return;
         }
         DisplayProfile.clear(this, sig);
         refreshProfileUi();
-        toast("已清除这块屏的记录");
+        toast("Text");
     }
 
     private void manual(int rotation) {
         if (!ShellRunner.isReady()) {
-            toast("请先完成 Shizuku 授权");
+            toast("Text Shizuku Text");
             return;
         }
         RotationService.manual(this, rotation);
-        toast(rotation < 0 ? "已恢复自动旋转" : ("已锁定 " + DisplayUtil.degrees(rotation) + "°"));
+        toast(rotation < 0 ? "Text" : ("Text " + DisplayUtil.degrees(rotation) + "°"));
     }
 
     private void refreshShizukuState() {
@@ -1402,13 +1402,13 @@ public class MainActivity extends Activity {
         }
         String text;
         if (!isShizukuInstalled()) {
-            text = "Shizuku：未安装。请先安装 Shizuku（点右边按钮），它负责把 ADB 权限借给本应用。";
+            text = "Shizuku：Text。Text Shizuku（Text），Text ADB Text。";
         } else if (!ShellRunner.isBinderAlive()) {
-            text = "Shizuku：已安装但服务没在运行。打开 Shizuku 启动服务后回到这里。";
+            text = "Shizuku：Text。Text Shizuku Text。";
         } else if (!ShellRunner.hasPermission()) {
-            text = "Shizuku：服务运行中，但本应用还没拿到授权 → 点「授权 / 重新检测」。";
+            text = "Shizuku：Text，Text → Text「Text / Text」。";
         } else {
-            text = "Shizuku：就绪 ✓ 已获得 shell（ADB）权限，可以下发旋转命令了。";
+            text = "Shizuku：Text ✓ Text shell（ADB）Text，Text。";
         }
         tvShizuku.setText(text);
     }
@@ -1420,16 +1420,16 @@ public class MainActivity extends Activity {
         String text;
         switch (RootUtil.state()) {
             case RootUtil.ST_OK:
-                text = "Root：就绪 ✓ 已获得 root 权限。";
+                text = "Root：Text ✓ Text root Text。";
                 break;
             case RootUtil.ST_DENIED:
-                text = "Root：检测到 root 管理器，但本应用还没授权 → 点「Root 授权 / 重新检测」。";
+                text = "Root：Text root Text，Text → Text「Root Text / Text」。";
                 break;
             case RootUtil.ST_NONE:
-                text = "Root：未检测到。设备没有 root（KernelSU / Magisk），此栏用不到。";
+                text = "Root：Text。Text root（KernelSU / Magisk），Text。";
                 break;
             default:
-                text = "Root：检测中…";
+                text = "Root：Text…";
                 break;
         }
         tvRoot.setText(text);
@@ -1439,69 +1439,69 @@ public class MainActivity extends Activity {
         if (tvInfo == null) {
             return;
         }
-        // 系统那一侧可能把「自动旋转」改回去了，先同步一下开关
+        // [comment]「[comment]」[comment]，[comment]
         syncPhoneLockSwitch();
 
         Display def = DisplayUtil.defaultDisplay(dm);
         List<Display> ext = DisplayUtil.externalDisplays(dm);
 
         StringBuilder sb = new StringBuilder();
-        // 这一行原来单独占一块「快捷状态」盒子，现在并进实时状态里，省一块版面
-        sb.append("屏幕：").append(DisplayUtil.isOn(def) ? "内屏亮（展开）" : "内屏灭（折叠 / 息屏）")
-                .append("　外接屏：").append(ext.isEmpty() ? "未接入" : ext.size() + " 块").append('\n');
-        // 方向判断的输入源是「真正亮着的那块内置屏」：折叠机合盖后内屏是灭的，
-        // 灭屏的 rotation 停在旧值，用它当输入会得出恒定的"竖屏"（→ 外接屏被锁到竖屏角度）。
+        // [comment]「[comment]」[comment]，[comment]，[comment]
+        sb.append("Text：").append(DisplayUtil.isOn(def) ? "Text（Text）" : "Text（Text / Text）")
+                .append("　Text：").append(ext.isEmpty() ? "Text" : ext.size() + " Text").append('\n');
+        // [comment]Yes「[comment]」：[comment]Yes[comment]，
+        // [comment] rotation [comment]，[comment]"[comment]"（→ [comment]）。
         Display phone = DisplayUtil.activePhoneDisplay(dm);
-        sb.append("手机方向：");
+        sb.append("Text：");
         if (!DisplayUtil.isOn(phone)) {
-            sb.append("读不到（屏幕未点亮，维持上一次判断）");
+            sb.append("Text（Text，Text）");
         } else {
-            sb.append(DisplayUtil.isPhonePortrait(phone) ? "竖屏" : "横屏")
-                    .append("（依据 ").append(DisplayUtil.kindOf(dm, phone))
+            sb.append(DisplayUtil.isPhonePortrait(phone) ? "Text" : "Text")
+                    .append("（Text ").append(DisplayUtil.kindOf(dm, phone))
                     .append(" rotation=").append(phone.getRotation()).append("）");
         }
         sb.append('\n');
 
         String ov = DisplayUtil.sizeOverrideInfo(def);
         if (ov == null) {
-            sb.append("内屏分辨率：" + DisplayUtil.sizeOf(def) + "（原生，无覆盖）\n");
+            sb.append("Text：" + DisplayUtil.sizeOf(def) + "（Text，NoneText）\n");
         } else {
-            sb.append("内屏分辨率：⚠ 存在覆盖 ").append(ov);
+            sb.append("Text：⚠ Text ").append(ov);
             if (prefs.isSizeApplied()) {
-                sb.append(" ← 本应用设置\n");
+                sb.append(" ← TextSettings\n");
             } else {
-                sb.append(" ← 别的应用设置，点「还原原生」可清除\n");
+                sb.append(" ← TextSettings，Text「Text」Text\n");
             }
         }
 
         if (ext.isEmpty()) {
-            sb.append("便携屏：未检测到\n");
+            sb.append("Text：Text\n");
         } else {
             for (Display d : ext) {
-                sb.append("便携屏：").append(DisplayUtil.describeFull(d)).append('\n');
+                sb.append("Text：").append(DisplayUtil.describeFull(d)).append('\n');
                 int[] s = DisplayUtil.suggestedInternalSize(d);
                 if (s[0] > 0) {
-                    sb.append("　　　　建议内屏分辨率：").append(s[0]).append("×").append(s[1]).append('\n');
+                    sb.append("　　　　Text：").append(s[0]).append("×").append(s[1]).append('\n');
                 }
             }
         }
-        sb.append("方向同步：").append(prefs.isEnabled() ? "开" : "关");
-        // 连角度一起写出来。光写「开（横向）」看不出锁的是 90° 还是 270°，
-        // 跟参数表里那个「横向锁定」是同一个毛病。
-        // 以前这里写死"横向" —— 界面只能锁横向。现在多了竖屏锁定，按角度自己判。
-        sb.append("　手机方向锁定：");
+        sb.append("Text：").append(prefs.isEnabled() ? "Text" : "Text");
+        // [comment]。[comment]「[comment]（[comment]）」[comment]Yes 90° [comment]Yes 270°，
+        // [comment]「[comment]」Yes[comment]。
+        // [comment]"[comment]" —— [comment]。[comment]，[comment]。
+        sb.append("　Text：");
         if (prefs.isLockPhoneRotation()) {
             int d = DisplayUtil.degrees(prefs.getPhoneRotation());
-            sb.append("开（").append(d == 0 || d == 180 ? "竖 " : "横 ").append(d).append("°）");
+            sb.append("Text（").append(d == 0 || d == 180 ? "Text " : "Text ").append(d).append("°）");
         } else {
-            sb.append("关");
+            sb.append("Text");
         }
-        sb.append("　分辨率接管：").append(prefs.isResolutionEnabled() ? "开" : "关");
+        sb.append("　Text：").append(prefs.isResolutionEnabled() ? "Text" : "Text");
         sb.append('\n');
-        sb.append("系统自动旋转：").append(sysAutoRotate() ? "开" : "关");
+        sb.append("Text：").append(sysAutoRotate() ? "Text" : "Text");
         sb.append("　Shell：").append(ShellRunner.isReady()
-                ? (ShellRunner.rootReady() ? "就绪（root）" : "就绪（Shizuku）")
-                : "未就绪");
+                ? (ShellRunner.rootReady() ? "Text（root）" : "Text（Shizuku）")
+                : "Not Ready");
         tvInfo.setText(sb.toString());
 
         if (tvResState != null) {
@@ -1509,29 +1509,29 @@ public class MainActivity extends Activity {
             int cw = prefs.getResWidth();
             int ch = prefs.getResHeight();
             int[] eff = ScreenSizeUtil.portrait(cw, ch);
-            rs.append("填写的分辨率：").append(cw).append("×").append(ch);
+            rs.append("Text：").append(cw).append("×").append(ch);
             if (cw > ch) {
-                rs.append("（横向）");
+                rs.append("（Text）");
             }
             int dpi = prefs.getResDensity();
             if (dpi > 0) {
                 rs.append("　DPI：").append(dpi);
             }
             rs.append('\n');
-            rs.append("实际写入内屏：").append(eff[0]).append("×").append(eff[1]);
+            rs.append("Text：").append(eff[0]).append("×").append(eff[1]);
             if (cw > ch) {
-                rs.append("　← 已自动转成竖屏");
+                rs.append("　← Text");
             }
             rs.append('\n');
             if (ov == null) {
-                rs.append("当前状态：内屏为原生分辨率（未覆盖）");
+                rs.append("Text：Text（Text）");
             } else if (prefs.isSizeApplied()) {
-                rs.append("当前状态：已由本应用覆盖为 ").append(ov);
+                rs.append("Text：Text ").append(ov);
             } else {
-                rs.append("当前状态：被其他应用覆盖 ").append(ov);
+                rs.append("Text：Text ").append(ov);
             }
             if (prefs.isSizeApplied()) {
-                rs.append(prefs.isResBoundToExt() ? "（便携屏接入时自动加的）" : "（手动应用，不会自动还原）");
+                rs.append(prefs.isResBoundToExt() ? "（Text）" : "（Text，Text）");
             }
             rs.append('\n');
             boolean overlay = false;
@@ -1539,8 +1539,8 @@ public class MainActivity extends Activity {
                 overlay = Settings.canDrawOverlays(this);
             } catch (Throwable ignored) {
             }
-            rs.append("弹窗权限：").append(overlay ? "已授予（可直接弹对话框）"
-                    : "未授予（退化为横幅通知，点「授予弹窗权限」可开启）");
+            rs.append("Text：").append(overlay ? "Text（Text）"
+                    : "Text（Text，Text「Text」TextEnable）");
             tvResState.setText(rs.toString());
         }
 
@@ -1549,12 +1549,12 @@ public class MainActivity extends Activity {
             int ch = prefs.getResHeight();
             int[] eff = ScreenSizeUtil.portrait(cw, ch);
             StringBuilder h = new StringBuilder();
-            h.append("横屏分辨率会自动转成竖屏：1920×1080 → 1080×1920。\n");
-            h.append("当前将写入内屏：").append(eff[0]).append("×").append(eff[1]);
+            h.append("Text：1920×1080 → 1080×1920。\n");
+            h.append("Text：").append(eff[0]).append("×").append(eff[1]);
             if (!ext.isEmpty() && prefs.isAutoMatchExt()) {
                 int[] s = DisplayUtil.suggestedInternalSize(ext.get(0));
                 if (s[0] > 0) {
-                    h.append("　|　便携屏建议：").append(s[0]).append("×").append(s[1]);
+                    h.append("　|　Text：").append(s[0]).append("×").append(s[1]);
                 }
             }
             tvResHint.setText(h.toString());
@@ -1564,13 +1564,13 @@ public class MainActivity extends Activity {
         syncQuickCoverRotSwitch();
         updateResToggleUi();
 
-        // 停在「双屏」页时才刷它，避免每秒白跑
+        // [comment]「[comment]」[comment]，[comment]
         if (panelDual != null && panelDual.getVisibility() == View.VISIBLE) {
             refreshDualState(false);
         }
 
         String log = RotationService.LAST_LOG;
-        tvLog.setText(log == null || log.isEmpty() ? "（暂无执行记录）" : log);
+        tvLog.setText(log == null || log.isEmpty() ? "（TextNoneText）" : log);
     }
 
     private boolean isShizukuInstalled() {
@@ -1592,7 +1592,7 @@ public class MainActivity extends Activity {
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(i);
         } catch (Throwable t) {
-            toast("打不开 Shizuku：" + t);
+            toast("Text Shizuku：" + t);
         }
     }
 
@@ -1607,23 +1607,23 @@ public class MainActivity extends Activity {
         }
     }
 
-    // ------------------------------------------------------------- 首次打开时的说明
+    // ------------------------------------------------------------- [comment]
 
-    /** 「首次打开应用」那个说明弹窗弹过没有 */
+    /** 「[comment]」[comment] */
     private static final String FILE_INTRO = "extrot_intro";
     private static final String KEY_INTRO_SHOWN = "intro_shown";
 
     /**
-     * 第一次打开这个应用时，把「这套东西能干什么」列给用户看一眼。
+     * [comment]，[comment]「[comment]」[comment]。
      *
-     * <p>用户的原话是「建议增加第一次打开应用的弹窗显示，让用户能够一眼了解我们软件的核心功能」——
-     * <b>首次</b>即可，所以这里记一个"弹过了"的标记，之后不再弹。
-     * 跟 {@code BetaActivity} 那个每次进都弹的说明不是一回事：那个是"这一页是实验性质"的
-     * 免责说明，看一次不够；这个是产品导览，第一次知道就够了。
-     * 想知道每个版本改了什么，主界面上有「更新日志」入口。
+     * <p>[comment]Yes「[comment]，[comment]」——
+     * <b>[comment]</b>[comment]，[comment]"[comment]"[comment]，[comment]。
+     * [comment] {@code BetaActivity} [comment]Yes[comment]：[comment]Yes"[comment]Yes[comment]"[comment]
+     * [comment]，[comment]；[comment]Yes[comment]，[comment]。
+     * [comment]，[comment]「Update[comment]」[comment]。
      *
-     * <p>⚠ 正文用自定义布局 + 固定高度 ScrollView，理由同 {@code dialog_beta_intro.xml}：
-     * 正文一长，AlertDialog 的 message 会先把高度吃光，底部被裁掉。
+     * <p>⚠ [comment]Custom[comment] + [comment] ScrollView，[comment] {@code dialog_beta_intro.xml}：
+     * [comment]，AlertDialog [comment] message [comment]，[comment]。
      */
     private void maybeShowIntro() {
         if (isFinishing()) {
@@ -1638,17 +1638,17 @@ public class MainActivity extends Activity {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.app_name)
                 .setView(body)
-                .setPositiveButton("知道了", null)
+                .setPositiveButton("Text", null)
                 .show();
     }
 
-    // ------------------------------------------------------------------ 折叠 / 双屏
+    // ------------------------------------------------------------------ [comment] / [comment]
 
     /**
-     * 折叠 ↔ 展开。
+     * [comment] ↔ [comment]。
      *
-     * <p>状态表与命令封装都在 {@link DualScreen} 里 —— 桌面小组件走的是同一套，
-     * 免得两处各写一份、日后跑偏。
+     * <p>[comment] {@link DualScreen} [comment] —— [comment]Yes[comment]，
+     * [comment]、[comment]。
      */
     private void onFoldToggle() {
         if (!requireShell()) {
@@ -1657,14 +1657,14 @@ public class MainActivity extends Activity {
         new Thread(() -> {
             final int target = DualScreen.toggleFold(this);
             runOnUiThread(() -> {
-                toast(target < 0 ? "切换失败：没有 Shizuku 授权"
-                        : "已切到「" + DualScreen.stateName(target) + "」");
+                toast(target < 0 ? "TextFailed：Text Shizuku Text"
+                        : "Text「" + DualScreen.stateName(target) + "」");
                 refreshFoldState();
             });
         }, "extrot-fold").start();
     }
 
-    /** 交还给折叠传感器（清掉覆盖，恢复自动） */
+    /** [comment]（[comment]，[comment]） */
     private void onDeviceStateReset() {
         if (!requireShell()) {
             return;
@@ -1672,19 +1672,19 @@ public class MainActivity extends Activity {
         new Thread(() -> {
             DualScreen.resetState();
             runOnUiThread(() -> {
-                toast("已交还给折叠传感器（恢复自动）");
+                toast("Text（Text）");
                 refreshFoldState();
             });
         }, "extrot-dsr").start();
     }
 
-    /** 读一次当前折叠状态刷新到界面（会起线程，别放进每秒刷新的循环里） */
+    /** [comment]（[comment]，[comment]） */
     private void refreshFoldState() {
         if (tvFoldState == null) {
             return;
         }
         if (!ShellRunner.isReady()) {
-            tvFoldState.setText("折叠状态：需要先完成 Shizuku 授权");
+            tvFoldState.setText("Text：Text Shizuku Text");
             return;
         }
         new Thread(() -> {
@@ -1696,47 +1696,47 @@ public class MainActivity extends Activity {
                 if (tvFoldState == null) {
                     return;
                 }
-                // 三个值一起报：被别的软件改过覆盖时，"当前生效"和"折叠传感器"
-                // 会不一样，画面在哪块屏则由实际亮屏情况推出来 —— 一眼能看出谁在说谎
-                tvFoldState.setText("当前生效：" + DualScreen.stateName(st)
+                // [comment]：[comment]，"[comment]"[comment]"[comment]"
+                // [comment]，[comment] —— [comment]
+                tvFoldState.setText("Text：" + DualScreen.stateName(st)
                         + " [id=" + st + "]\n"
-                        + "折叠传感器：" + DualScreen.stateName(phy)
-                        + " · 画面在" + (cover ? "外屏" : "内屏") + "\n"
-                        + "外接屏数量：" + exts);
+                        + "Text：" + DualScreen.stateName(phy)
+                        + " · Text" + (cover ? "Text" : "Text") + "\n"
+                        + "Text：" + exts);
             });
         }, "extrot-foldq").start();
     }
 
-    // ------------------------------------------------------------------ 双屏 / 副屏
+    // ------------------------------------------------------------------ [comment] / [comment]
 
-    /** 封面屏（折叠机外屏）的 display id，找不到返回 -1 */
+    /** [comment]（[comment]）[comment] display id，[comment] -1 */
     private int coverDisplayId() {
         Display c = DisplayUtil.coverDisplay(dm);
         return c == null ? -1 : c.getDisplayId();
     }
 
-    /** 第一块真正的外接屏（便携屏）的 display id，没有返回 -1 */
+    /** [comment]（[comment]）[comment] display id，[comment] -1 */
     private int firstExtDisplayId() {
         List<Display> ext = DisplayUtil.externalDisplays(dm);
         return ext.isEmpty() ? -1 : ext.get(0).getDisplayId();
     }
 
     /**
-     * 一键双屏：切并发 → 等外屏就绪 → 把副屏桌面投到外屏。
+     * [comment]：[comment] → [comment] → [comment]。
      *
-     * <p>整套流程（含"切完并发要等系统把外屏那块 Display 建起来"的时序）在
-     * {@link DualScreen#oneKeyDual} 里，桌面小组件点一下走的是同一段代码。
+     * <p>[comment]（[comment]"[comment] Display [comment]"[comment]）[comment]
+     * {@link DualScreen#oneKeyDual} [comment]，[comment]Yes[comment]。
      */
     private void onOneKeyDual() {
         if (!requireShell()) {
             return;
         }
-        toast("正在切到并发双屏…");
+        toast("Text…");
         new Thread(() -> {
             final boolean ok = DualScreen.oneKeyDual(this, dm);
             runOnUiThread(() -> {
-                toast(ok ? "已并发点亮，副屏桌面已投到外屏"
-                        : "已切到并发，但外屏没就绪；请确认手机是展开的");
+                toast(ok ? "Text，Text"
+                        : "Text，Text；TextYesText");
                 refreshFoldState();
                 refreshDualState(false);
             });
@@ -1744,21 +1744,21 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * 一键投屏：切并发双屏 → 把「投屏控制」投到副屏 → 它自己全屏、直接开始投屏。
+     * [comment]：[comment] → [comment]「[comment]」[comment] → [comment]、[comment]。
      *
-     * <p>四步并一步。原来是「启动双屏模式」→ 到副屏上找到「投屏控制」→ 点「开始投屏」，
-     * 中间要点三层。整套流程在 {@link DualScreen#oneKeyCast} 里，这边只负责丢后台线程、报结果。
+     * <p>[comment]。[comment]Yes「[comment]」→ [comment]「[comment]」→ [comment]「[comment]」，
+     * [comment]。[comment] {@link DualScreen#oneKeyCast} [comment]，[comment]、[comment]。
      */
     private void onOneKeyCast() {
         if (!requireShell()) {
             return;
         }
-        toast("正在切到双屏并打开投屏…");
+        toast("Text…");
         new Thread(() -> {
             final boolean ok = DualScreen.oneKeyCast(this, dm);
             runOnUiThread(() -> {
-                toast(ok ? "投屏控制已投到副屏，这就开始投屏"
-                        : "已切到并发，但没投上去；请确认手机是展开的");
+                toast(ok ? "Text，Text"
+                        : "Text，Text；TextYesText");
                 refreshFoldState();
                 refreshDualState(false);
             });
@@ -1766,78 +1766,78 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * 把某个小组件钉到当前桌面（Android 8 起的 requestPinAppWidget）。
+     * [comment]（Android 8 [comment] requestPinAppWidget）。
      *
-     * <p>折叠机上翻系统的「小组件」列表挺麻烦，所以给个一键入口。系统会弹一个确认框，
-     * 用户点了才真正放上去；桌面本身不支持时退回到提示用户手动添加。
+     * <p>[comment]「[comment]」[comment]，[comment]。[comment]，
+     * [comment]；[comment]Notice[comment]。
      */
     private void pinWidget(Class<?> provider, String name) {
         try {
             AppWidgetManager awm = (AppWidgetManager) getSystemService(APPWIDGET_SERVICE);
             if (awm == null || !awm.isRequestPinAppWidgetSupported()) {
-                toast("当前桌面不支持一键添加，请长按桌面 → 小组件 → 自适应屏幕");
+                toast("Text，Text → Text → Text");
                 return;
             }
             if (awm.requestPinAppWidget(new ComponentName(this, provider), null, null)) {
-                toast("请在弹出的小窗里点「添加」，把「" + name + "」放到桌面");
+                toast("Text「Text」，Text「" + name + "」Text");
             } else {
-                toast("系统没接受这个请求，请到桌面的小组件列表里手动添加");
+                toast("Text，Text");
             }
         } catch (Throwable t) {
-            toast("添加失败：" + t);
+            toast("TextFailed：" + t);
         }
     }
 
-    // ---- 副屏管理（v4.11 从 Beta 实验室的「副屏管理」页整段搬过来）
+    // ---- [comment]（v4.11 [comment] Beta [comment]「[comment]」[comment]）
 
     /**
-     * 「打开副屏桌面」—— 把副屏桌面投到第二块屏上，<b>不切双屏模式</b>。
+     * 「[comment]」—— [comment]，<b>[comment]</b>。
      *
-     * <p>与上面那个「启动双屏模式」的区别就在这一点：那个会先 {@code cmd device_state state 4}
-     * 把整机切成并发状态（内屏那边做的事会跟着变），这个只投内容，手机当前是什么状态就还是什么状态。
+     * <p>[comment]「[comment]」[comment]：[comment] {@code cmd device_state state 4}
+     * [comment]（[comment]），[comment]，[comment]Yes[comment]Yes[comment]。
      */
     private void doOpenSub() {
         if (CoverDisplay.id(this) <= 0) {
-            toast("这台机器上没有封面屏");
+            toast("Text");
             return;
         }
         if (!requireShell()) {
             return;
         }
-        toast("正在打开副屏…");
+        toast("Text…");
         new Thread(() -> {
             final boolean ok = DualScreen.openSecondaryHome(this, dm);
             runOnUiThread(() -> {
-                toast(ok ? "副屏桌面已投上去" : "没投上去，检查 Shizuku 与封面屏状态");
+                toast(ok ? "Text" : "Text，Text Shizuku Text");
                 refreshSubState();
             });
         }, "extrot-sub").start();
     }
 
-    /** 副屏管理那行的状态：封面屏在不在、id 是几 */
+    /** [comment]：[comment]、id Yes[comment] */
     private void refreshSubState() {
         if (tvSubState == null) {
             return;
         }
         int id = CoverDisplay.id(this);
         tvSubState.setText(id <= 0
-                ? "没找到封面屏。"
-                : ("副屏（封面屏）display=" + id + "。"));
+                ? "Text。"
+                : ("Text（Text）display=" + id + "。"));
     }
 
     /**
-     * 绑一个伪应用开关（v4.17 起是按钮式）。
+     * [comment]（v4.17 [comment]Yes[comment]）。
      *
-     * <p>控件是 {@link CheckBox}：用户要的是"按一下变个色"，不是一行一个拨码开关。
-     * {@code color} 是那个伪应用图标的主色，开着当底色、关着用半透明灰；
-     * 布局里的 id 还叫 {@code swPseudo*}，是历史名字，别按名字去猜控件类型。
+     * <p>[comment]Yes {@link CheckBox}：[comment]Yes"[comment]"，[comment]Yes[comment]。
+     * {@code color} Yes[comment]，[comment]、[comment]；
+     * [comment] id [comment] {@code swPseudo*}，Yes[comment]，[comment]。
      *
-     * <p>⚠ <b>先 setChecked 再挂监听，顺序不能反</b>：反过来的话 setChecked 会被当成
-     * 「用户刚拨了一下」，把缺省值当场写进 prefs —— 那之后「默认值」就永久变成了
-     * 用户第一次进这一页时的样子，以后改代码里的缺省也没用。
+     * <p>⚠ <b>[comment] setChecked [comment]，[comment]</b>：[comment] setChecked [comment]
+     * 「[comment]」，[comment] prefs —— [comment]「Default[comment]」[comment]
+     * [comment]，[comment]。
      *
-     * <p>关掉 / 打开的即时效果：副屏桌面下次 {@code load()} 时才重新取列表，
-     * 所以这里只写 prefs + 提示一句，不去骚扰已经开着的副屏桌面。
+     * <p>[comment] / [comment]：[comment] {@code load()} [comment]，
+     * [comment] prefs + Notice[comment]，[comment]。
      */
     private void bindPseudoToggle(int viewId, String pkg, boolean defaultOn, int color) {
         CheckBox cb = findViewById(viewId);
@@ -1851,16 +1851,16 @@ public class MainActivity extends Activity {
             ExtPrefs.setPseudoOn(this, pkg, isOn);
             applyPseudoLook(cb, color, isOn);
             String name = cb.getText().toString();
-            toast(isOn ? "副屏桌面上会显示「" + name + "」"
-                    : "「" + name + "」不再显示在副屏桌面上");
+            toast(isOn ? "Text「" + name + "」"
+                    : "「" + name + "」Text");
         });
     }
 
     /**
-     * 按钮式开关的配色：开的底色 = 图标主色，关的是半透明灰；文字跟着换白 / 灰。
+     * [comment]：[comment] = [comment]，[comment]Yes[comment]；[comment] / [comment]。
      *
-     * <p>圆角取 8dp，跟 {@code drawable/pseudo_toggle_bg.xml} 对齐 —— 那份只在第一帧
-     * 垫底，跑起来之后背景由这里整个换掉。
+     * <p>[comment] 8dp，[comment] {@code drawable/pseudo_toggle_bg.xml} [comment] —— [comment]
+     * [comment]，[comment]。
      */
     private void applyPseudoLook(CheckBox cb, int color, boolean on) {
         GradientDrawable bg = new GradientDrawable();
@@ -1870,11 +1870,11 @@ public class MainActivity extends Activity {
         cb.setTextColor(on ? 0xFFFFFFFF : 0xFFBBBBBB);
     }
 
-    // ---- DeX 模式
+    // ---- DeX [comment]
 
     /**
-     * DeX 的启动入口。流程取自阿田自用（{@code com.tianweixing.atianwidget}）的
-     * {@code SamsungDexWidgetProvider}，2026-10-18 反编译原文：
+     * DeX [comment]。[comment]（{@code com.tianweixing.atianwidget}）[comment]
+     * {@code SamsungDexWidgetProvider}，2026-10-18 [comment]：
      *
      * <pre>{@code
      * if cmd display get-displays | grep -q 'type EXTERNAL'; then
@@ -1888,63 +1888,63 @@ public class MainActivity extends Activity {
      * fi
      * }</pre>
      *
-     * <p><b>为什么不是一条 am start</b>：Flip5 官方不支持 DeX，但 root 下
-     * {@code pkill surfaceflinger} 会让系统重新枚举显示屏，三星 DeX 服务随即自动
-     * 在便携屏上 hosting（{@code cmd display get-displays} 里出现
-     * {@code FLAG_EXTERNAL_DEX_HOSTING}），桌面由系统自己拉起 —— 全程不需要 am start。
-     * 旧代码那套「settings 三件套 + 切 freeform + am start SecondaryLauncher」方向错了：
-     * 组件在 One UI 8 上仍然存在，am start 也确实能拉，但在没 hosting 的屏上只会拉起一个
-     * 空壳（实测：黑底 + 底部一排便携 dock，没有壁纸和任务栏）—— 用户看到的就是
-     * 「没开出 dex」。
+     * <p><b>[comment]Yes[comment] am start</b>：Flip5 [comment] DeX，[comment] root [comment]
+     * {@code pkill surfaceflinger} [comment]，[comment] DeX [comment]
+     * [comment] hosting（{@code cmd display get-displays} [comment]
+     * {@code FLAG_EXTERNAL_DEX_HOSTING}），[comment] —— [comment] am start。
+     * [comment]「settings [comment] + [comment] freeform + am start SecondaryLauncher」[comment]：
+     * [comment] One UI 8 [comment]，am start [comment]，[comment] hosting [comment]
+     * [comment]（[comment]：[comment] + [comment] dock，[comment]）—— [comment]Yes
+     * 「[comment] dex」。
      *
-     * <p>am start 留作兜底：没 root、或重启 SF 后等不到 hosting 旗标时照拉，但回话里
-     * 明说那是空壳，不假装成功。每一步的回话都照实显示在 {@link #tvDexInfo}。
+     * <p>am start [comment]：[comment] root、[comment] SF [comment] hosting [comment]，[comment]
+     * [comment]Yes[comment]，[comment]Success。[comment] {@link #tvDexInfo}。
      */
     private void startDex() {
         if (!requireShell()) {
             return;
         }
         if (tvDexInfo != null) {
-            tvDexInfo.setText("正在准备 DeX…");
+            tvDexInfo.setText("Text DeX…");
         }
         new Thread(() -> {
             StringBuilder sb = new StringBuilder();
-            // ① 便携屏在不在 —— 阿田同款判据：get-displays 里有 type EXTERNAL
+            // ① [comment] —— [comment]：get-displays [comment] type EXTERNAL
             String ext = ShellRunner.run(
                     "cmd display get-displays | grep 'type EXTERNAL'", 15);
             if (ext == null || ext.startsWith("ERR") || ext.trim().isEmpty()) {
-                sb.append("没找到外接屏。先把便携屏插上再试。");
+                sb.append("Text。Text。");
                 finishDex(sb.toString(), false);
                 return;
             }
             int dexId = parseExternalId(ext);
-            sb.append("便携屏 displayId = ").append(dexId).append('\n');
-            // ② root 重启 SurfaceFlinger —— 系统重新识别便携屏，DeX 服务自动 hosting。
-            //    这是整个流程的触发点：阿田 root 分支与 Shizuku 分支的唯一差别就是这一条。
+            sb.append("Text displayId = ").append(dexId).append('\n');
+            // ② root [comment] SurfaceFlinger —— [comment]，DeX [comment] hosting。
+            //    [comment]Yes[comment]：[comment] root [comment] Shizuku [comment]Yes[comment]。
             boolean hosted = false;
             if (ShellRunner.rootReady()) {
-                sb.append(step("重启 SurfaceFlinger",
+                sb.append(step("Text SurfaceFlinger",
                         ShellRunner.run("pkill surfaceflinger", 10), ""));
-                // SF 重启后内屏可能是黑的，先点亮（阿田 applySelected 的结尾同款）
+                // SF [comment]Yes[comment]，[comment]（[comment] applySelected [comment]）
                 ShellRunner.run("cmd display power-on 0", 10);
                 hosted = waitDexHosting(12);
             } else {
-                sb.append("没有 root，触发不了系统 hosting（阿田那套同样要 root）。\n");
-                // 没 root 也照阿田的 Shizuku 分支等一小会儿：万一系统自己 hosting 了呢
+                sb.append("Text root，Text hosting（Text root）。\n");
+                // [comment] root [comment] Shizuku [comment]：[comment] hosting [comment]
                 hosted = waitDexHosting(6);
             }
             if (hosted) {
-                // ③ hosting 成功 = 系统已经把 DeX 桌面拉起来了。关掉手机两块屏，
-                //    便携屏独享（阿田同款收尾：power-off 0 + power-off 1）。
+                // ③ hosting Success = [comment] DeX [comment]。[comment]，
+                //    [comment]（[comment]：power-off 0 + power-off 1）。
                 ShellRunner.run("cmd display power-off 0; cmd display power-off 1", 10);
-                sb.append("DeX 已由系统拉起，看便携屏。");
+                sb.append("DeX Text，Text。");
                 finishDex(sb.toString(), true);
                 return;
             }
-            // ④ 兜底：直接 am start 拉 SecondaryLauncher（LibreDeX 同款命令，
-            //    参数一个都不能少）。先 force-stop 桌面再拉 —— LibreDeX 的
-            //    restartSecondaryLauncher 也是这么干的。没 hosting 就是空壳。
-            sb.append("系统没 hosting，试着直接拉 DeX 桌面……\n");
+            // ④ [comment]：[comment] am start [comment] SecondaryLauncher（LibreDeX [comment]，
+            //    [comment]）。[comment] force-stop [comment] —— LibreDeX [comment]
+            //    restartSecondaryLauncher [comment]Yes[comment]。[comment] hosting [comment]Yes[comment]。
+            sb.append("Text hosting，Text DeX Text……\n");
             ShellRunner.run("am force-stop com.sec.android.app.launcher", 10);
             String amOut = ShellRunner.run(
                     "am start --display " + dexId
@@ -1953,11 +1953,11 @@ public class MainActivity extends Activity {
                             + " -c android.intent.category.SECONDARY_HOME"
                             + " -n com.sec.android.app.launcher"
                             + "/com.honeyspace.dexservice.SecondaryLauncher", 20);
-            sb.append("am start 回话：").append(
-                    amOut == null ? "没跑成（通道没就绪）"
+            sb.append("am start Text：").append(
+                    amOut == null ? "Text（Text）"
                             : amOut.startsWith("ERR") ? amOut
                             : tail(amOut.trim(), 150)).append('\n');
-            // ⑤ 确认窗口落在便携屏上（LibreDeX 的 isSecondaryLauncherOnDisplay 同款判据）
+            // ⑤ [comment]（LibreDeX [comment] isSecondaryLauncherOnDisplay [comment]）
             boolean onDex = false;
             for (int i = 0; i < 10 && !onDex; i++) {
                 if (i > 0) {
@@ -1974,22 +1974,22 @@ public class MainActivity extends Activity {
                         && v.contains("mDisplayId=" + dexId);
             }
             if (onDex) {
-                sb.append("便携屏上只有一个空壳 DeX（黑底加一排在底栏的图标）—— ")
+                sb.append("Text DeX（Text）—— ")
                         .append(ShellRunner.rootReady()
-                                ? "系统没 hosting，壁纸和任务栏都没有。"
-                                : "要完整的 DeX，得给 root（KernelSU / Magisk）让系统 hosting。");
+                                ? "Text hosting，Text。"
+                                : "Text DeX，Text root（KernelSU / Magisk）Text hosting。");
             } else {
-                sb.append("便携屏上没等到 DeX 窗口。");
+                sb.append("Text DeX Text。");
             }
             finishDex(sb.toString(), false);
         }, "extrot-dex").start();
     }
 
     /**
-     * 轮询 DeX hosting 旗标：{@code cmd display get-displays} 里出现
-     * {@code FLAG_EXTERNAL_DEX_HOSTING} 即算系统已在便携屏上 hosting DeX。
+     * [comment] DeX hosting [comment]：{@code cmd display get-displays} [comment]
+     * {@code FLAG_EXTERNAL_DEX_HOSTING} [comment] hosting DeX。
      *
-     * @param maxSec 最多等几秒（每秒一次；SF 刚重启时头一两次可能读不到，属正常）
+     * @param maxSec [comment]（[comment]；SF [comment]，[comment]）
      */
     private boolean waitDexHosting(int maxSec) {
         for (int i = 0; i < maxSec; i++) {
@@ -2011,38 +2011,38 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * 一条命令的回话压成一行（系统返回什么就照着说什么，不替它下结论）。
+     * [comment]（[comment]，[comment]）。
      *
-     * @param expect 期望输出；对上了算完成，对不上把原话尾巴显示出来。
-     *               传空串表示"成功就该静默"（wm 那类命令）
+     * @param expect [comment]；[comment]，[comment]。
+     *               [comment]"Success[comment]"（wm [comment]）
      */
     private static String step(String what, String out, String expect) {
         if (out == null) {
-            return what + "：没跑成（通道没就绪）\n";
+            return what + "：Text（Text）\n";
         }
         if (out.startsWith("ERR")) {
             return what + "：" + out + '\n';
         }
         String s = out.trim();
         if (s.startsWith("TIMEOUT")) {
-            return what + "：超时\n";
+            return what + "：Text\n";
         }
         if (expect != null && !expect.isEmpty()) {
             if (expect.equals(s)) {
-                return what + "：完成\n";
+                return what + "：Text\n";
             }
-            return what + "：回读值不对（" + tail(s, 120) + "）\n";
+            return what + "：Text（" + tail(s, 120) + "）\n";
         }
         if (s.isEmpty()) {
-            return what + "：完成\n";
+            return what + "：Text\n";
         }
         return what + "：" + tail(s, 200) + '\n';
     }
 
     /**
-     * 从 {@code cmd display get-displays | grep 'type EXTERNAL'} 的回话里取便携屏的
-     * displayId —— 阿田同款判据（get-displays 每种显示屏的 DisplayInfo 里都带
-     * {@code type XXX}）。取不到返回 -1。
+     * [comment] {@code cmd display get-displays | grep 'type EXTERNAL'} [comment]
+     * displayId —— [comment]（get-displays [comment] DisplayInfo [comment]
+     * {@code type XXX}）。[comment] -1。
      */
     private static int parseExternalId(String out) {
         if (out == null || out.startsWith("ERR")) {
@@ -2053,35 +2053,35 @@ public class MainActivity extends Activity {
         return m.find() ? Integer.parseInt(m.group(1)) : -1;
     }
 
-    /** DeX 流程收尾：结果上屏 + 一个 toast */
+    /** DeX [comment]：[comment] + [comment] toast */
     private void finishDex(String text, boolean up) {
         runOnUiThread(() -> {
             if (tvDexInfo != null) {
                 tvDexInfo.setText(text);
             }
-            toast(up ? "DeX 已起来，看便携屏" : "没拉起来，看下面那行");
+            toast(up ? "DeX Text，Text" : "Text，Text");
         });
     }
 
-    /** 只留回话的尾巴 —— shell 的输出一长条，铺满屏反而看不见重点 */
+    /** [comment] —— shell [comment]，[comment] */
     private static String tail(String s, int n) {
         return s.length() <= n ? s : ("…" + s.substring(s.length() - n));
     }
 
-    /** 双屏页顶部的状态文字 */
+    /** [comment] */
     private void refreshDualState(boolean withFold) {
         if (tvDualState == null) {
             return;
         }
         StringBuilder sb = new StringBuilder();
         Display def = DisplayUtil.defaultDisplay(dm);
-        sb.append("内屏：ID 0 · ").append(DisplayUtil.sizeOf(def))
-                .append(" · ").append(DisplayUtil.isOn(def) ? "已点亮" : "未点亮").append('\n');
+        sb.append("Text：ID 0 · ").append(DisplayUtil.sizeOf(def))
+                .append(" · ").append(DisplayUtil.isOn(def) ? "Text" : "Text").append('\n');
 
         List<Display> secs = DisplayUtil.secondaryDisplays(dm);
         if (secs.isEmpty()) {
-            sb.append("其他屏：当前一块都看不到\n");
-            sb.append("　（外屏要先点上面的「一键启动双屏」点亮；便携屏要先插上）\n");
+            sb.append("Text：Text\n");
+            sb.append("　（Text「Text」Text；Text）\n");
         } else {
             for (Display d : secs) {
                 sb.append(DisplayUtil.kindOf(dm, d))
@@ -2089,23 +2089,23 @@ public class MainActivity extends Activity {
                         .append(" · ").append(DisplayUtil.sizeOf(d));
                 int[] n = DisplayUtil.nativeSize(d);
                 if (n[0] > 0) {
-                    sb.append(" · 原生 ").append(n[0]).append("×").append(n[1]);
+                    sb.append(" · Text ").append(n[0]).append("×").append(n[1]);
                 }
-                sb.append(" · ").append(DisplayUtil.isOn(d) ? "已点亮 ✓" : "未点亮");
-                sb.append(d.getDisplayId() == coverDisplayId() ? "　← 副屏桌面投这里" : "　← 外接屏");
+                sb.append(" · ").append(DisplayUtil.isOn(d) ? "Text ✓" : "Text");
+                sb.append(d.getDisplayId() == coverDisplayId() ? "　← Text" : "　← Text");
                 sb.append('\n');
             }
         }
 
-        // 诊断：每块屏的身份判据。排查「封面屏没被认出来」时就看这段。
-        // 注意这里用的是 DisplayUtil.allDisplays（按 id 探测），
-        // 因为 dm.getDisplays() 会把封面屏整个漏掉 —— 这正是当初认不出它的原因。
+        // [comment]：[comment]。[comment]「[comment]」[comment]。
+        // [comment]Yes DisplayUtil.allDisplays（[comment] id [comment]），
+        // [comment] dm.getDisplays() [comment] —— [comment]Yes[comment]。
         Display d0 = DisplayUtil.defaultDisplay(dm);
-        sb.append("默认屏名：").append(d0 == null ? "?" : String.valueOf(d0.getName())).append('\n');
+        sb.append("DefaultText：").append(d0 == null ? "?" : String.valueOf(d0.getName())).append('\n');
         try {
             for (Display d : DisplayUtil.allDisplays(dm)) {
                 sb.append("id=").append(d.getDisplayId())
-                        .append(" 名=").append(String.valueOf(d.getName()))
+                        .append(" Text=").append(String.valueOf(d.getName()))
                         .append(" cutout=").append(d.getCutout() != null)
                         .append(" flags=0x").append(Integer.toHexString(d.getFlags()))
                         .append('\n');
@@ -2122,7 +2122,7 @@ public class MainActivity extends Activity {
 
     private boolean requireShell() {
         if (!ShellRunner.isReady()) {
-            toast("请先完成 Shizuku 或 Root 授权");
+            toast("Text Shizuku Text Root Text");
             return false;
         }
         return true;

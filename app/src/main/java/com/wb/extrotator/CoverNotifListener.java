@@ -21,33 +21,33 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 「外屏侧边栏」的通知来源 —— 一个 {@link NotificationListenerService}：系统把通知「抄送」一份
- * 给我们，我们在内存里留最近 {@link #MAX} 条，侧边栏拉出来时直接读这份快照。
+ * 「[comment]」[comment] —— [comment] {@link NotificationListenerService}：[comment]「[comment]」[comment]
+ * [comment]，[comment] {@link #MAX} [comment]，[comment]。
  *
- * <p><b>为什么要单独一个服务</b>：读别人的通知是「通知使用权」，跟无障碍服务是两码事情，
- * 得单独授权 —— 界面上那个「授予通知使用权」按钮就是走 Shizuku 发 {@link #GRANT_CMD} 这条。
+ * <p><b>[comment]</b>：[comment]Yes「[comment]」，[comment]None[comment]Yes[comment]，
+ * [comment] —— [comment]「[comment]」[comment]Yes[comment] Shizuku [comment] {@link #GRANT_CMD} [comment]。
  *
- * <p>刻意<b>不落盘</b>：通知内容属于隐私，进程一死这份快照就没了，比「存到 prefs 里下次
- * 还能看」要干净；用户没接侧边栏时也不会有任何东西留在机器上。
+ * <p>[comment]<b>[comment]</b>：[comment]，[comment]，[comment]「[comment] prefs [comment]
+ * [comment]」[comment]；[comment]。
  */
 public class CoverNotifListener extends NotificationListenerService {
 
     private static final String TAG = "CoverNotif";
 
-    /** 快照上限。外屏那个面板一屏也就看几条，多了没意义还费内存 */
+    /** [comment]。[comment]，[comment] */
     public static final int MAX = 12;
 
-    /** 授权用的 shell 命令（界面上的按钮发它）。组件名 = 包名/类全名 */
+    /** [comment] shell [comment]（[comment]）。[comment] = [comment]/[comment] */
     public static String grantCmd(Context c) {
         return "cmd notification allow_listener "
                 + c.getPackageName() + "/" + CoverNotifListener.class.getName();
     }
 
     private static final List<Entry> SNAP = new ArrayList<>();
-    /** 连接状态由系统回调维护，界面只读 */
+    /** [comment]，[comment] */
     private static volatile boolean connected;
 
-    /** 一条通知的精简副本（只留面板要显示与要用得上的那几个字段） */
+    /** [comment]（[comment]） */
     public static final class Entry {
         public final String key;
         public final String pkg;
@@ -55,9 +55,9 @@ public class CoverNotifListener extends NotificationListenerService {
         public final String text;
         public final long when;
         public final PendingIntent contentIntent;
-        /** 应用名（通知中心要按应用分栏、要显示图标） */
+        /** [comment]（[comment]、[comment]） */
         public final String label;
-        /** 应用图标；读不到就是 null，界面那边用首字母圆顶着 */
+        /** [comment]；[comment]Yes null，[comment] */
         public final Drawable icon;
 
         Entry(String key, String pkg, String title, String text, long when,
@@ -73,13 +73,13 @@ public class CoverNotifListener extends NotificationListenerService {
         }
     }
 
-    // ------------------------------------------------------------------ 系统回调
+    // ------------------------------------------------------------------ [comment]
 
     @Override
     public void onListenerConnected() {
         super.onListenerConnected();
         connected = true;
-        Log.i(TAG, "通知使用权已连上");
+        Log.i(TAG, "Text");
         refreshAll();
     }
 
@@ -90,13 +90,13 @@ public class CoverNotifListener extends NotificationListenerService {
         synchronized (SNAP) {
             SNAP.clear();
         }
-        Log.w(TAG, "通知使用权断开");
+        Log.w(TAG, "Text");
     }
 
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
-        // ⚠ 这是**系统叫的**回调：这里抛出去就等于进程 FATAL（无障碍服务也在同一个进程里），
-        //    没有第二次机会 —— 所以整段包一层，出什么事都只记日志。
+        // ⚠ [comment]Yes**[comment]**[comment]：[comment] FATAL（None[comment]），
+        //    [comment] —— [comment]，[comment]。
         try {
             if (sbn == null || !isShowable(sbn)) {
                 return;
@@ -112,10 +112,10 @@ public class CoverNotifListener extends NotificationListenerService {
                     SNAP.remove(SNAP.size() - 1);
                 }
             }
-            // 面板开着的话让它重建一次列表
+            // [comment]
             CoverSidebar.onNotificationsChanged();
         } catch (Throwable t) {
-            Log.w(TAG, "收到通知时出错（已吞掉，不能让进程死）", t);
+            Log.w(TAG, "Text（Text，Text）", t);
         }
     }
 
@@ -130,11 +130,11 @@ public class CoverNotifListener extends NotificationListenerService {
             }
             CoverSidebar.onNotificationsChanged();
         } catch (Throwable t) {
-            Log.w(TAG, "通知消失时出错（已吞掉，不能让进程死）", t);
+            Log.w(TAG, "Text（Text，Text）", t);
         }
     }
 
-    /** 把系统当前挂着的通知整个重新读一遍（刚连上、或者面板每次拉开时调） */
+    /** [comment]（[comment]、[comment]） */
     public static void refreshAll() {
         try {
             CoverNotifListener self = Holder.self;
@@ -154,25 +154,25 @@ public class CoverNotifListener extends NotificationListenerService {
                     }
                 }
             }
-            // 新的在前
+            // [comment]
             Collections.sort(fresh, (a, b) -> Long.compare(b.when, a.when));
             synchronized (SNAP) {
                 SNAP.clear();
                 SNAP.addAll(fresh.subList(0, Math.min(fresh.size(), MAX)));
             }
         } catch (Throwable t) {
-            Log.w(TAG, "重读通知失败", t);
+            Log.w(TAG, "TextFailed", t);
         }
     }
 
-    /** 面板要显示的快照副本 */
+    /** [comment] */
     public static List<Entry> snapshot() {
         synchronized (SNAP) {
             return new ArrayList<>(SNAP);
         }
     }
 
-    /** 丢掉某一条（面板上那个 × ） */
+    /** [comment]（[comment] × ） */
     public static void dismiss(String key) {
         try {
             CoverNotifListener self = Holder.self;
@@ -180,7 +180,7 @@ public class CoverNotifListener extends NotificationListenerService {
                 self.cancelNotification(key);
             }
         } catch (Throwable t) {
-            Log.w(TAG, "清除通知失败", t);
+            Log.w(TAG, "TextFailed", t);
         }
         synchronized (SNAP) {
             removeKey(key);
@@ -188,12 +188,12 @@ public class CoverNotifListener extends NotificationListenerService {
     }
 
     /**
-     * 使用权到手了没。
+     * [comment]。
      *
-     * <p>⚠ 别用 {@code NotificationManager.getEnabledListenerPackages(Context)} ——
-     * 那是 <b>AndroidX</b> 的 {@code NotificationManagerCompat} 才有的，平台类上没有，
-     * 直接编译不过。这里读系统设置里那串白名单：{@code enabled_notification_listeners}，
-     * 里面是「包名/类名」用冒号连起来的列表。
+     * <p>⚠ [comment] {@code NotificationManager.getEnabledListenerPackages(Context)} ——
+     * [comment]Yes <b>AndroidX</b> [comment] {@code NotificationManagerCompat} [comment]，[comment]，
+     * [comment]。[comment]Settings[comment]：{@code enabled_notification_listeners}，
+     * [comment]Yes「[comment]/[comment]」[comment]。
      */
     public static boolean granted(Context c) {
         try {
@@ -207,7 +207,7 @@ public class CoverNotifListener extends NotificationListenerService {
             return flat.contains(me.flattenToString())
                     || flat.contains(me.flattenToShortString());
         } catch (Throwable t) {
-            Log.w(TAG, "查通知使用权失败", t);
+            Log.w(TAG, "TextFailed", t);
         }
         return false;
     }
@@ -216,9 +216,9 @@ public class CoverNotifListener extends NotificationListenerService {
         return connected;
     }
 
-    // ------------------------------------------------------------------ 内部
+    // ------------------------------------------------------------------ [comment]
 
-    /** 实例的弱引用存放处（静态内部类，避免在服务里放 static 字段被 lint 骂） */
+    /** [comment]（[comment]，[comment] static [comment] lint [comment]） */
     private static final class Holder {
         static CoverNotifListener self;
     }
@@ -239,13 +239,13 @@ public class CoverNotifListener extends NotificationListenerService {
     }
 
     /**
-     * 按 key 丢掉一条。
+     * [comment] key [comment]。
      *
-     * <p>⚠⚠ 必须自己判下标：{@code indexOf} 找不到时返回 <b>-1</b>，而
-     * {@code List.remove(int)} 遇到 -1 是<b>抛 {@code IndexOutOfBoundsException}</b>、
-     * 不是「什么都不做」。只要来一条「不在快照里的通知消失」事件（常驻通知、分组摘要都被
-     * {@link #isShowable} 挡在快照外，可它们照样回调），写成
-     * {@code SNAP.remove(indexOf(...))} 就会当场 FATAL —— 实测崩溃：
+     * <p>⚠⚠ [comment]：{@code indexOf} [comment] <b>-1</b>，[comment]
+     * {@code List.remove(int)} [comment] -1 Yes<b>[comment] {@code IndexOutOfBoundsException}</b>、
+     * [comment]Yes「[comment]」。[comment]「[comment]」[comment]（[comment]、[comment]
+     * {@link #isShowable} [comment]，[comment]），[comment]
+     * {@code SNAP.remove(indexOf(...))} [comment] FATAL —— [comment]：
      * {@code Index -1 out of bounds for length 0}。
      */
     private static void removeKey(String key) {
@@ -272,7 +272,7 @@ public class CoverNotifListener extends NotificationListenerService {
         }
     }
 
-    /** 值不值得显示：常驻的、系统自留的、以及本应用自己的都不要 */
+    /** [comment]：[comment]、[comment]、[comment] */
     private static boolean isShowable(StatusBarNotification sbn) {
         try {
             Notification n = sbn.getNotification();
@@ -312,9 +312,9 @@ public class CoverNotifListener extends NotificationListenerService {
         }
     }
 
-    // ------------------------------------------------------------------ 应用名与图标
+    // ------------------------------------------------------------------ [comment]
 
-    /** 名字与图标都按包名缓存一份：通知一来就查一次，别每次都读盘 */
+    /** [comment]：[comment]，[comment] */
     private static final Map<String, String> LABELS = new HashMap<>();
     private static final Map<String, Drawable> ICONS = new HashMap<>();
 
@@ -324,8 +324,8 @@ public class CoverNotifListener extends NotificationListenerService {
     }
 
     /**
-     * 应用名。读不到（包可见性拦着、或者已经卸载）就退成包名末段，
-     * 界面那边也还有一层兜底 —— 这里绝不返回 null。
+     * [comment]。[comment]（[comment]、[comment]）[comment]，
+     * [comment] —— [comment] null。
      */
     private static String appLabel(String pkg) {
         if (pkg == null) {
@@ -357,7 +357,7 @@ public class CoverNotifListener extends NotificationListenerService {
         return out;
     }
 
-    /** 应用图标。拿不到就返回 null（界面画首字母圆）—— 缓存里 null 也算缓存过 */
+    /** [comment]。[comment] null（[comment]）—— [comment] null [comment] */
     private static Drawable appIcon(String pkg) {
         if (pkg == null) {
             return null;
@@ -383,11 +383,11 @@ public class CoverNotifListener extends NotificationListenerService {
         return out;
     }
 
-    /** 给界面用的一句状态话 */
+    /** [comment] */
     public static String statusText(Context c) {
         if (!granted(c)) {
-            return "未授予通知使用权 —— 面板里就看不到通知";
+            return "Text —— Text";
         }
-        return alive() ? "通知使用权已就绪" : "已授权，但服务还没挂上（切一次开关或重启应用即可）";
+        return alive() ? "TextReady" : "Authorized，Text（Text）";
     }
 }

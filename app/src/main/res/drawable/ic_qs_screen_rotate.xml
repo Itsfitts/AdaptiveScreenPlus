@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  快捷开关图标：外屏自动旋转。
-  用材料设计里那张「屏幕旋转」（一块斜着的屏 + 两头各一个拐弯箭头），
-  跟同一排里的「自动旋转」（一圈圆箭头）一眼能分开 —— 两个图标必须不一样，
-  这一排的小方块上没有文字，图标是唯一的区分。
-  颜色写死白，实际颜色由界面 setColorFilter 决定。
--->
+
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"

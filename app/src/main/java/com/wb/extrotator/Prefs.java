@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 /**
- * 设置存储。
- * 角度统一使用 Android Surface.ROTATION_* 常量：0=0°, 1=90°, 2=180°, 3=270°。
+ * Settings[comment]。
+ * [comment] Android Surface.ROTATION_* [comment]：0=0°, 1=90°, 2=180°, 3=270°。
  */
 public final class Prefs {
 
@@ -25,7 +25,7 @@ public final class Prefs {
         sp.edit().putBoolean("enabled", v).apply();
     }
 
-    /** 手机竖屏时外接屏该锁到哪个角度（默认 90°） */
+    /** [comment]（Default 90°） */
     public int getPortraitAngle() {
         return sp.getInt("portrait_angle", 1);
     }
@@ -34,7 +34,7 @@ public final class Prefs {
         sp.edit().putInt("portrait_angle", v).apply();
     }
 
-    /** 手机横屏时外接屏该锁到哪个角度（默认 0°） */
+    /** [comment]（Default 0°） */
     public int getLandscapeAngle() {
         return sp.getInt("landscape_angle", 0);
     }
@@ -44,10 +44,10 @@ public final class Prefs {
     }
 
     /**
-     * 是否同时下发 wm fixed-to-user-rotation，强制忽略应用自己申请的方向。
+     * YesNo[comment] wm fixed-to-user-rotation，[comment]。
      *
-     * <p>⚠ 默认「关」（v4.26 用户点名改的）：它会在<b>插屏那一刻</b>就把画面钉到某个角度，
-     * 外接显示器第一次插进来的人看到的就是「歪脖子」。要钉的自己去打开。
+     * <p>⚠ Default「[comment]」（v4.26 [comment]）：[comment]<b>[comment]</b>[comment]，
+     * [comment]Yes「[comment]」。[comment]。
      */
     public boolean isFixToUserRotation() {
         return sp.getBoolean("fix_to_user", false);
@@ -57,12 +57,12 @@ public final class Prefs {
         sp.edit().putBoolean("fix_to_user", v).apply();
     }
 
-    // ---------------------------------------------------------------- 手机自身旋转
+    // ---------------------------------------------------------------- [comment]
 
     /**
-     * 启用同步时，顺手把「手机自动旋转」关掉并锁定方向。
-     * 目的：手机方向不再被重力感应来回翻转，外接屏也就不会被反复重排，
-     * 从源头减少显示几何被频繁改写导致的画面错位。
+     * [comment]，[comment]「[comment]」[comment]。
+     * [comment]：[comment]，[comment]，
+     * [comment]。
      */
     public boolean isLockPhoneRotation() {
         return sp.getBoolean("lock_phone_rotation", true);
@@ -72,7 +72,7 @@ public final class Prefs {
         sp.edit().putBoolean("lock_phone_rotation", v).apply();
     }
 
-    /** 锁定到哪个角度（1 = 90° = 横向，2 = 180°，3 = 270°，0 = 0°）。默认 1（横向）。 */
+    /** [comment]（1 = 90° = [comment]，2 = 180°，3 = 270°，0 = 0°）。Default 1（[comment]）。 */
     public int getPhoneRotation() {
         return sp.getInt("phone_rotation", 1);
     }
@@ -81,11 +81,11 @@ public final class Prefs {
         sp.edit().putInt("phone_rotation", v).apply();
     }
 
-    // ---------------------------------------------------------------- 内屏分辨率（替代 SecondScreen）
+    // ---------------------------------------------------------------- [comment]（[comment] SecondScreen）
 
     /**
-     * 独立开关：连接便携显示屏时，是否把手机内屏改成分辨率覆盖。
-     * 与「自动方向同步」互不影响 —— 关掉旋转同步，分辨率接管依然可以单独工作。
+     * [comment]：[comment]，YesNo[comment]。
+     * [comment]「[comment]」[comment] —— [comment]，[comment]。
      */
     public boolean isResolutionEnabled() {
         return sp.getBoolean("res_enabled", false);
@@ -107,7 +107,7 @@ public final class Prefs {
         sp.edit().putInt("res_w", w).putInt("res_h", h).apply();
     }
 
-    /** 同时修改 DPI；0 = 不修改（默认） */
+    /** [comment] DPI；0 = [comment]（Default） */
     public int getResDensity() {
         return sp.getInt("res_density", 0);
     }
@@ -116,7 +116,7 @@ public final class Prefs {
         sp.edit().putInt("res_density", v).apply();
     }
 
-    /** 检测到便携屏插入时弹窗询问（默认开） */
+    /** [comment]（Default[comment]） */
     public boolean isAskOnConnect() {
         return sp.getBoolean("res_ask", true);
     }
@@ -125,7 +125,7 @@ public final class Prefs {
         sp.edit().putBoolean("res_ask", v).apply();
     }
 
-    /** 便携屏拔掉后自动把内屏分辨率还原回原生（默认开） */
+    /** [comment]（Default[comment]） */
     public boolean isAutoResetSize() {
         return sp.getBoolean("res_auto_reset", true);
     }
@@ -135,9 +135,9 @@ public final class Prefs {
     }
 
     /**
-     * 接入便携屏时，自动读取它的面板原生分辨率并套用（默认开）。
-     * <p>面板多是横向的（1920×1080），会自动转成竖屏 1080×1920 再写入内屏，
-     * 这样就不用手动去查、去填了。
+     * [comment]，[comment]（Default[comment]）。
+     * <p>[comment]Yes[comment]（1920×1080），[comment] 1080×1920 [comment]，
+     * [comment]、[comment]。
      */
     public boolean isAutoMatchExt() {
         return sp.getBoolean("res_auto_match", true);
@@ -147,7 +147,7 @@ public final class Prefs {
         sp.edit().putBoolean("res_auto_match", v).apply();
     }
 
-    /** 本应用当前是否已给内屏加上了分辨率覆盖（用于判断拔屏后要不要还原） */
+    /** [comment]YesNo[comment]（[comment]） */
     public boolean isSizeApplied() {
         return sp.getBoolean("res_applied", false);
     }
@@ -157,9 +157,9 @@ public final class Prefs {
     }
 
     /**
-     * 这个覆盖是不是「因为接了便携屏」才加上的。
-     * <p>true  → 拔掉便携屏 / 应用重启时若发现没接屏，自动还原（这是常规用法）
-     * <p>false → 用户在界面上点「立即应用」手动加的，跟便携屏无关，不动它
+     * [comment]Yes[comment]Yes「[comment]」[comment]。
+     * <p>true  → [comment] / [comment]，[comment]（[comment]Yes[comment]）
+     * <p>false → [comment]「[comment]」[comment]，[comment]None[comment]，[comment]
      */
     public boolean isResBoundToExt() {
         return sp.getBoolean("res_bound", false);
@@ -169,7 +169,7 @@ public final class Prefs {
         sp.edit().putBoolean("res_bound", v).apply();
     }
 
-    /** DPI 覆盖是否由本应用下发过（只有下发过才去 reset，避免误清用户自己的设置） */
+    /** DPI [comment]YesNo[comment]（[comment] reset，[comment]Settings） */
     public boolean isDensityApplied() {
         return sp.getBoolean("res_density_applied", false);
     }
@@ -179,32 +179,32 @@ public final class Prefs {
     }
 
     /**
-     * 服务是否需要常驻。
+     * [comment]YesNo[comment]。
      *
-     * <p>三个功能各自独立，任何一个开着就都得让服务活着：
-     * 旋转同步、分辨率接管、以及<b>手机方向锁定</b>。
-     * <p>最后一项是后来补上的 —— 以前它只跟着旋转同步走，导致"只想锁横向、
-     * 不想做方向同步"这种用法根本没法用（开关点了没反应）。
+     * <p>[comment]，[comment]：
+     * [comment]、[comment]、[comment]<b>[comment]</b>。
+     * <p>[comment]Yes[comment] —— [comment]，[comment]"[comment]、
+     * [comment]"[comment]（[comment]）。
      */
     public boolean shouldKeepRunning() {
         return isEnabled() || isResolutionEnabled() || isLockPhoneRotation();
     }
 
-    // ---------------------------------------------------------------- 开机选项
+    // ---------------------------------------------------------------- [comment]
 
-    /** 开机后不干预，交给折叠传感器（默认） */
+    /** [comment]，[comment]（Default） */
     public static final int BOOT_NONE = 0;
-    /** 关机重开之后切到折叠模式，进外屏桌面 */
+    /** [comment]，[comment] */
     public static final int BOOT_FOLDED = 1;
-    /** 关机重开之后切到展开模式，进内屏桌面 */
+    /** [comment]，[comment] */
     public static final int BOOT_UNFOLDED = 2;
 
     /**
-     * 开机选项。
+     * [comment]。
      *
-     * <p>跟「折叠模式」那两条按钮用的是同一套 {@code cmd device_state state N}，
-     * 区别只是执行的时机从"你按下去"挪到了"开机之后"。所以它同样需要 Shizuku 可用 ——
-     * 靠无线调试启动的 Shizuku 重启后要手动拉一次，那种情况下这一档会安静地跳过。
+     * <p>[comment]「[comment]」[comment]Yes[comment] {@code cmd device_state state N}，
+     * [comment]Yes[comment]"[comment]"[comment]"[comment]"。[comment] Shizuku [comment] ——
+     * [comment]None[comment] Shizuku [comment]，[comment]。
      */
     public int getBootMode() {
         return sp.getInt("boot_mode", BOOT_NONE);
@@ -214,7 +214,7 @@ public final class Prefs {
         sp.edit().putInt("boot_mode", v).apply();
     }
 
-    /** 上次停留的选项卡（0=自动旋转，1=内屏分辨率，2=授权与状态） */
+    /** [comment]（0=[comment]，1=[comment]，2=[comment]） */
     public int getLastTab() {
         return sp.getInt("last_tab", 0);
     }

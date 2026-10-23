@@ -38,50 +38,50 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Beta 功能页。
+ * Beta [comment]。
  *
- * <p>从主界面右上角的「Beta 实验室」进入，是一个跟主界面完全分开的界面：整块黑底，
- * 内部分「外屏管理 / 指令操作 / 手势增强」三页。
+ * <p>[comment]「Beta [comment]」[comment]，Yes[comment]：[comment]，
+ * [comment]「[comment] / [comment] / [comment]」[comment]。
  *
- * <p>为什么不做成主界面的第五个选项卡：这一页是黑底，颜色体系和主界面那套浅色完全不同，
- * 塞进同一个布局里每个控件都得写两套颜色；而且主界面那排选项卡已经排了四个，
- * 再塞第五个会把这四个压窄一圈。
+ * <p>[comment]：[comment]Yes[comment]，[comment]，
+ * [comment]；[comment]，
+ * [comment]。
  *
- * <p>各页的实现分别在 {@link CoverDisplay}（外屏设置）、{@link QuickActions} 与
- * {@link QuickPrefs}（侧键操作）、{@link CustomCmds}（自定义指令）。
+ * <p>[comment] {@link CoverDisplay}（[comment]Settings）、{@link QuickActions} [comment]
+ * {@link QuickPrefs}（[comment]）、{@link CustomCmds}（Custom[comment]）。
  *
- * <p><b>线程约定</b>：这一页里所有会走 binder / sleep 的操作统一丢进 {@link #pool}（单线程）执行，
- * 结果再回主线程刷界面。用单线程而不是线程池，是因为这些命令本身有先后依赖（先设 size 再读状态），
- * 并发跑会互相盖掉。
+ * <p><b>[comment]</b>：[comment] binder / sleep [comment] {@link #pool}（[comment]）[comment]，
+ * [comment]。[comment]Yes[comment]，Yes[comment]（[comment] size [comment]），
+ * [comment]。
  */
 public class BetaActivity extends Activity {
 
     private final Handler ui = new Handler(Looper.getMainLooper());
     private final ExecutorService pool = Executors.newSingleThreadExecutor();
 
-    // ---- 外屏设置页的控件
+    // ---- [comment]Settings[comment]
     private EditText etW, etH, etDpi;
     private TextView tvCoverState;
     private LinearLayout listPresets;
-    /** 「外屏启动器」区块的状态行（显示已勾选几个应用） */
+    /** 「[comment]」[comment]（[comment]） */
     private TextView tvLauncherState;
-    // ---- 指令操作页的控件
+    // ---- [comment]
     private TextView tvAssistState, tvVolumeState;
     private LinearLayout listCustomCmds;
-    /** 「侧键操作」里当前显示哪一个按键的设置（{@link QuickPrefs#SIDE_ASSIST} 等三选一） */
+    /** 「[comment]」[comment]Settings（{@link QuickPrefs#SIDE_ASSIST} [comment]） */
     private String keyTarget = QuickPrefs.SIDE_ASSIST;
-    /** 「去掉应用黑边」的状态行（v4.2 搬去「指令操作」页，v4.17 又搬到「应用管理」页） */
+    /** 「[comment]」[comment]（v4.2 [comment]「[comment]」[comment]，v4.17 [comment]「[comment]」[comment]） */
     private TextView tvEdgeState;
-    /** 「应用管理」页的状态行：当前名单几个应用 */
+    /** 「[comment]」[comment]：[comment] */
     private TextView tvRepairBrief;
-    /** 回读时我们自己拨开关的挡板，见 {@link #setNavImmSwitch} */
+    /** [comment]，[comment] {@link #setNavImmSwitch} */
     private boolean navImmSyncing;
-    /** 「外屏自动旋转」那个开关的挡板：下发没成要把开关拨回去，那一下不是用户操作 */
+    /** 「[comment]」[comment]：[comment]，[comment]Yes[comment] */
     private boolean coverRotSyncing;
 
-    /** 当前显示的预设列表（与文件里的那份同步） */
+    /** [comment]（[comment]） */
     private List<CoverPresets.Preset> presets;
-    /** 封面屏面板原生值，用来生成默认预设、也是「恢复默认」的依据 */
+    /** [comment]，[comment]Default[comment]、[comment]Yes「[comment]Default」[comment] */
     private int physW, physH, physDpi;
 
     @Override
@@ -94,7 +94,7 @@ public class BetaActivity extends Activity {
             back.setOnClickListener(v -> finish());
         }
 
-        // 四个面板与四个选项卡 id 一对一，不做下标换算 —— 只有四页，不值得再引一层索引。
+        // [comment] id [comment]，[comment] —— [comment]，[comment]。
         RadioGroup tabs = findViewById(R.id.rgBetaTabs);
         if (tabs != null) {
             tabs.setOnCheckedChangeListener((group, checkedId) -> {
@@ -125,15 +125,15 @@ public class BetaActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        // 从系统设置页回来时，无障碍的开启状态可能变了
+        // [comment]Settings[comment]，None[comment]Enable[comment]
         refreshQuickState();
-        // 可能刚在外屏配置页里勾完应用回来
+        // [comment]
         refreshLauncherState();
-        // 名单可能被「修复界面」那页（或阿田自用、MultiStar 本体）改过了
+        // [comment]「[comment]」[comment]（[comment]、MultiStar [comment]）[comment]
         refreshRepairBrief();
-        // 系统里那一项可能被 NavStar 改过，回来重新对一次
+        // [comment] NavStar [comment]，[comment]
         refreshNavImmState();
-        // 这个开关在别处（主界面快捷操作 / 老虎机）也能拨，回来对一次
+        // [comment]（[comment] / [comment]）[comment]，[comment]
         refreshCoverAutoRotSwitch();
     }
 
@@ -144,7 +144,7 @@ public class BetaActivity extends Activity {
         super.onDestroy();
     }
 
-    // ================================================================== 通用小工具
+    // ================================================================== [comment]
 
     private void showPanel(int viewId, boolean visible) {
         View v = findViewById(viewId);
@@ -163,28 +163,28 @@ public class BetaActivity extends Activity {
     }
 
     /**
-     * 与主界面同一套「ⓘ」写法（见 MainActivity.bindInfo）。
-     * 详情正文都放在 strings.xml 的 info_* 里，写法规矩也照旧：只写功能 / 用法 / 注意事项。
+     * [comment]「ⓘ」[comment]（[comment] MainActivity.bindInfo）。
+     * [comment] strings.xml [comment] info_* [comment]，[comment]：[comment] / [comment] / [comment]。
      */
     private void bindInfo() {
-        bindInfo(R.id.iBetaTop, "Beta 实验室", R.string.info_beta_intro);
-        bindInfo(R.id.iBetaExt, "外屏管理", R.string.info_beta_ext);
-        bindInfo(R.id.iBetaCoverRes, "分辨率与 DPI", R.string.info_beta_cover_res);
-        bindInfo(R.id.iBetaPreset, "分辨率预设", R.string.info_beta_preset);
-        bindInfo(R.id.iBetaRotate, "外屏旋转", R.string.info_beta_rotate);
-        bindInfo(R.id.iBetaCoverAutoRot, "外屏自动旋转", R.string.info_cover_autorot);
-        bindInfo(R.id.iBetaLauncher, "外屏启动器", R.string.info_launcher);
-        bindInfo(R.id.iBetaCmd, "指令操作", R.string.info_beta_cmd);
-        bindInfo(R.id.iBetaKey, "侧键操作", R.string.info_beta_key);
-        bindInfo(R.id.iBetaCustom, "自定义指令", R.string.info_beta_custom);
-        bindInfo(R.id.iBetaExternal, "外部调用", R.string.info_beta_external);
-        bindInfo(R.id.iBetaEdge, "去掉应用黑边", R.string.info_edge_cutout);
-        bindInfo(R.id.iBetaCoverRecents, "手势条", R.string.info_cover_recents);
-        bindInfo(R.id.iBetaSidebar, "外屏侧边栏", R.string.info_cover_sidebar);
-        bindInfo(R.id.iBetaInner, "内屏手势", R.string.info_inner_gesture);
-        bindInfo(R.id.iBetaGameGesture, "游戏模式", R.string.info_game_gesture);
-        bindInfo(R.id.iBetaNavImm, "隐藏三键导航", R.string.info_nav_immersive);
-        bindInfo(R.id.iBetaApp, "应用管理", R.string.info_repair_app);
+        bindInfo(R.id.iBetaTop, "Beta Text", R.string.info_beta_intro);
+        bindInfo(R.id.iBetaExt, "Text", R.string.info_beta_ext);
+        bindInfo(R.id.iBetaCoverRes, "Text DPI", R.string.info_beta_cover_res);
+        bindInfo(R.id.iBetaPreset, "Text", R.string.info_beta_preset);
+        bindInfo(R.id.iBetaRotate, "Text", R.string.info_beta_rotate);
+        bindInfo(R.id.iBetaCoverAutoRot, "Text", R.string.info_cover_autorot);
+        bindInfo(R.id.iBetaLauncher, "Text", R.string.info_launcher);
+        bindInfo(R.id.iBetaCmd, "Text", R.string.info_beta_cmd);
+        bindInfo(R.id.iBetaKey, "Text", R.string.info_beta_key);
+        bindInfo(R.id.iBetaCustom, "CustomText", R.string.info_beta_custom);
+        bindInfo(R.id.iBetaExternal, "Text", R.string.info_beta_external);
+        bindInfo(R.id.iBetaEdge, "Text", R.string.info_edge_cutout);
+        bindInfo(R.id.iBetaCoverRecents, "Text", R.string.info_cover_recents);
+        bindInfo(R.id.iBetaSidebar, "Text", R.string.info_cover_sidebar);
+        bindInfo(R.id.iBetaInner, "Text", R.string.info_inner_gesture);
+        bindInfo(R.id.iBetaGameGesture, "Text", R.string.info_game_gesture);
+        bindInfo(R.id.iBetaNavImm, "Text", R.string.info_nav_immersive);
+        bindInfo(R.id.iBetaApp, "Text", R.string.info_repair_app);
     }
 
     private void bindInfo(int iconId, String title, int detailRes) {
@@ -204,37 +204,37 @@ public class BetaActivity extends Activity {
         });
     }
 
-    /** 统一处理「Shizuku 没就绪」：返回 true 表示已经提示过了，调用方直接 return */
+    /** [comment]「Shizuku [comment]」：[comment] true [comment]Notice[comment]，[comment] return */
     private boolean needShizuku() {
         if (CoverDisplay.id(this) <= 0) {
-            toast("这台机器上没有封面屏");
+            toast("Text");
             return true;
         }
         if (!ShellRunner.isReady()) {
-            toast("Shizuku 未就绪，请先在主界面授权");
+            toast("Shizuku Not Ready，Text");
             return true;
         }
         return false;
     }
 
-    // ================================================================== 手势增强
+    // ================================================================== [comment]
 
     /**
-     * 「手势增强」页的两个开关。
+     * 「[comment]」[comment]。
      *
-     * <p>⚠ 先 setChecked 再挂监听，理由见 {@link #bindPseudoSwitch}。
+     * <p>⚠ [comment] setChecked [comment]，[comment] {@link #bindPseudoSwitch}。
      *
-     * <p><b>手势条</b> —— 只是在封面屏上补一层，但要用<b>无障碍服务的上下文</b>才加得上
-     * （{@code TYPE_ACCESSIBILITY_OVERLAY} 是无障碍服务专属的窗口类型），所以这里交给
-     * {@link VolumeKeyService} 去转一道；<b>侧边栏</b> —— 只有开关。
+     * <p><b>[comment]</b> —— [comment]Yes[comment]，[comment]<b>None[comment]</b>[comment]
+     * （{@code TYPE_ACCESSIBILITY_OVERLAY} YesNone[comment]），[comment]
+     * {@link VolumeKeyService} [comment]；<b>[comment]</b> —— [comment]。
      */
-    // ================================================================== 应用管理
+    // ================================================================== [comment]
 
     /**
-     * 「应用管理」这一页现在只有一件事：进「修复界面」那张名单。
+     * 「[comment]」[comment]：[comment]「[comment]」[comment]。
      *
-     * <p>状态行上的数字是<b>回读</b>出来的，不是我们记着的那份 —— 读要过 Shizuku，
-     * 所以丢后台线程，回来再贴上去。
+     * <p>[comment]Yes<b>[comment]</b>[comment]，[comment]Yes[comment] —— [comment] Shizuku，
+     * [comment]，[comment]。
      */
     private void bindRepairPanel() {
         tvRepairBrief = findViewById(R.id.tvRepairBrief);
@@ -251,15 +251,15 @@ public class BetaActivity extends Activity {
         if (tv == null) {
             return;
         }
-        tv.setText("读取中…");
+        tv.setText("Text…");
         pool.execute(() -> {
             CoverRepair.Snapshot s = CoverRepair.read();
             final String text;
             if (s == null || !s.valid()) {
-                text = "读不回名单 —— Shizuku 没就绪？";
+                text = "Text —— Shizuku Text？";
             } else {
-                text = "当前名单 " + CoverRepair.packages(s).size() + " 个应用"
-                        + (CoverRepair.hasSnapshot(this) ? " · 已存改动前的快照" : "");
+                text = "Text " + CoverRepair.packages(s).size() + " Text"
+                        + (CoverRepair.hasSnapshot(this) ? " · Text" : "");
             }
             ui.post(() -> tv.setText(text));
         });
@@ -278,14 +278,14 @@ public class BetaActivity extends Activity {
             recents.setOnCheckedChangeListener((b, on) -> {
                 ExtPrefs.setCoverRecentsGesture(this, on);
                 if (on && !QuickPrefs.isAccessibilityEnabled(this)) {
-                    toast("手势条要无障碍服务在跑，先去「指令操作」页把它打开");
+                    toast("TextNoneText，Text「Text」Text");
                 }
                 VolumeKeyService.syncCoverRecents();
-                toast(on ? "外屏底部上滑停顿 → 打开后台" : "已关掉手势条");
+                toast(on ? "Text → Text" : "Text");
                 refreshEdgeState();
             });
         }
-        // 捕获带三档。⚠ 先 setChecked 再挂 listener —— 反了就成"初始化那一发把用户档位覆盖掉"。
+        // [comment]。⚠ [comment] setChecked [comment] listener —— [comment]"[comment]"。
         RadioGroup band = findViewById(R.id.rgRecentsBand);
         if (band != null) {
             int cur = ExtPrefs.coverRecentsBand(this);
@@ -297,12 +297,12 @@ public class BetaActivity extends Activity {
                 }
                 ExtPrefs.setCoverRecentsBand(this, pick);
                 VolumeKeyService.refreshCoverRecents();
-                toast("捕获带改成「" + (pick == 0 ? "小" : pick == 2 ? "大" : "中")
-                        + "」—— 手势条已按新高度重装");
+                toast("Text「" + (pick == 0 ? "Text" : pick == 2 ? "Text" : "Text")
+                        + "」—— Text");
             });
         }
 
-        // 触发区宽度四档。同样先 setChecked 再挂 listener。
+        // [comment]。[comment] setChecked [comment] listener。
         RadioGroup zone = findViewById(R.id.rgRecentsZone);
         if (zone != null) {
             int z = ExtPrefs.coverRecentsZone(this);
@@ -317,26 +317,26 @@ public class BetaActivity extends Activity {
                 }
                 ExtPrefs.setCoverRecentsZone(this, pick);
                 VolumeKeyService.refreshCoverRecents();
-                toast("触发区改成「" + zoneWidthName(pick) + "」—— 手势条已按新宽度重装");
+                toast("Text「" + zoneWidthName(pick) + "」—— Text");
             });
         }
 
-        // 「外屏 0° 时固定在左下角」。0° 下外屏最底下那一条被系统遮罩压着，
-        // 手势条留在正中会跟它叠在一起；左下角那一块没有应用内容，放那儿两不耽误。
-        // ⚠ 先 setChecked 再挂 listener —— 反了就等于"初始化那一发把用户的选择覆盖掉"。
+        // 「[comment] 0° [comment]」。0° [comment]，
+        // [comment]；[comment]，[comment]。
+        // ⚠ [comment] setChecked [comment] listener —— [comment]"[comment]"。
         CheckBox corner = findViewById(R.id.cbRecentsCorner);
         if (corner != null) {
             corner.setChecked(ExtPrefs.coverRecentsCornerLeft(this));
             corner.setOnCheckedChangeListener((b, on) -> {
                 ExtPrefs.setCoverRecentsCornerLeft(this, on);
                 VolumeKeyService.refreshCoverRecents();
-                toast(on ? "外屏 0° 时手势条挪到左下角" : "手势条回到正中");
+                toast(on ? "Text 0° Text" : "Text");
             });
         }
 
 
-        // 系统「导航条」设置的直达入口。手势条能不能安心接管"上滑"，
-        // 取决于系统导航模式 —— 全面屏手势会在同一串触摸上再判一次。
+        // [comment]「[comment]」Settings[comment]。[comment]"[comment]"，
+        // [comment] —— [comment]。
         View navMode = findViewById(R.id.btnNavMode);
         if (navMode != null) {
             navMode.setOnClickListener(v -> doOpenNavMode());
@@ -348,10 +348,10 @@ public class BetaActivity extends Activity {
             sidebar.setOnCheckedChangeListener((b, on) -> {
                 ExtPrefs.setCoverSidebar(this, on);
                 if (on && !QuickPrefs.isAccessibilityEnabled(this)) {
-                    toast("侧边栏要无障碍服务在跑，先去「指令操作」页把它打开");
+                    toast("TextNoneText，Text「Text」Text");
                 }
                 VolumeKeyService.syncSidebar();
-                toast(on ? "外屏侧边栏：已开（从选定的那一段往里拉）" : "外屏侧边栏：已关");
+                toast(on ? "Text：Text（Text）" : "Text：Text");
                 refreshEdgeState();
             });
         }
@@ -363,22 +363,22 @@ public class BetaActivity extends Activity {
         }
     }
 
-    // ---------------------------------------------------------------- 隐藏三键导航
+    // ---------------------------------------------------------------- [comment]
 
     /**
-     * 「隐藏三键导航」的开关。
+     * 「[comment]」[comment]。
      *
-     * <p>⚠ 先 setChecked 再挂监听 —— 反了就等于"初始化那一发把用户的开关拨回去"（本页通例）。
+     * <p>⚠ [comment] setChecked [comment] —— [comment]"[comment]"（[comment]）。
      *
-     * <p>开关的位置以<b>系统里回读到的策略</b>为准；这里先按本地记的那份显示一下，
-     * 进页面后 {@link #refreshNavImmState()} 会拿真值纠正。
+     * <p>[comment]<b>[comment]</b>[comment]；[comment]，
+     * [comment] {@link #refreshNavImmState()} [comment]。
      */
     private void bindNavImmPanel() {
         Switch sw = findViewById(R.id.swNavImm);
         if (sw != null) {
             sw.setChecked(ExtPrefs.navImmOn(this));
             sw.setOnCheckedChangeListener((b, on) -> {
-                // 回读时是我们自己把开关拨回原位的，那一下不是用户操作
+                // [comment]Yes[comment]，[comment]Yes[comment]
                 if (navImmSyncing) {
                     return;
                 }
@@ -388,12 +388,12 @@ public class BetaActivity extends Activity {
     }
 
     /**
-     * 「内屏手势」的开关。
+     * 「[comment]」[comment]。
      *
-     * <p>跟「隐藏三键导航」不同，这一条<b>不写系统设置</b>：那三条热区由无障碍服务来贴，
-     * 所以这里只要把开关记下来、再让服务对齐一次就行。
+     * <p>[comment]「[comment]」[comment]，[comment]<b>[comment]Settings</b>：[comment]None[comment]，
+     * [comment]、[comment]。
      *
-     * <p>装不上（无障碍没在跑）时当场说清 —— 不然用户拨了开关、划半天没反应。
+     * <p>[comment]（None[comment]）[comment] —— [comment]、[comment]。
      */
     private void bindInnerGesture() {
         Switch sw = findViewById(R.id.swInnerGesture);
@@ -405,9 +405,9 @@ public class BetaActivity extends Activity {
             ExtPrefs.setInnerGesture(this, on);
             VolumeKeyService.syncInnerGesture();
             if (on && !InnerGesture.installed()) {
-                toast("没装上，先确认无障碍服务在跑");
+                toast("Text，TextNoneText");
             } else {
-                toast(on ? "内屏手势已开" : "内屏手势已关");
+                toast(on ? "Text" : "Text");
             }
         });
 
@@ -426,21 +426,21 @@ public class BetaActivity extends Activity {
         refreshGameAppsBtn();
     }
 
-    /** 「游戏模式」入口按钮上的字：没勾过显示"选择应用"，勾了显示"已勾 N 个应用" */
+    /** 「[comment]」[comment]：[comment]"[comment]"，[comment]"[comment] N [comment]" */
     private void refreshGameAppsBtn() {
         TextView t = findViewById(R.id.btnGameGestureApps);
         if (t == null) {
             return;
         }
         int n = ExtPrefs.gameGestureApps(this).size();
-        t.setText(n == 0 ? "选择应用" : "已勾 " + n + " 个应用");
+        t.setText(n == 0 ? "Text" : "Text " + n + " Text");
     }
 
     /**
-     * 「游戏模式」应用勾选对话框：勾上的应用在前台时，内屏底部上滑换成两段式
-     * （先召唤亮条、再从亮条上划），见 {@link InnerGesture}。
+     * 「[comment]」[comment]：[comment]，[comment]
+     * （[comment]、[comment]），[comment] {@link InnerGesture}。
      *
-     * <p>枚举要读图标（IO），按 {@link AppRepo#load} 的规矩丢后台线程，回来再弹。
+     * <p>[comment]（IO），[comment] {@link AppRepo#load} [comment]，[comment]。
      */
     private void openGameAppsDialog() {
         pool.execute(() -> {
@@ -455,7 +455,7 @@ public class BetaActivity extends Activity {
                     return;
                 }
                 if (apps.isEmpty()) {
-                    toast("一个应用都没枚举到");
+                    toast("Text");
                     return;
                 }
                 showGameAppsDialog(apps);
@@ -514,9 +514,9 @@ public class BetaActivity extends Activity {
             ad.notifyDataSetChanged();
         });
         new AlertDialog.Builder(this)
-                .setTitle("游戏模式：勾上常玩的游戏")
+                .setTitle("Text：Text")
                 .setView(lv)
-                .setPositiveButton("完成", (d, w) -> {
+                .setPositiveButton("Text", (d, w) -> {
                     if (!before.equals(picked)) {
                         for (AppRepo.Item it : apps) {
                             boolean on = picked.contains(it.pkg);
@@ -524,22 +524,22 @@ public class BetaActivity extends Activity {
                                 ExtPrefs.setGameGestureApp(this, it.pkg, on);
                             }
                         }
-                        // 勾选变了 ⇒ 按当前前台应用重新对一次两段式模式
+                        // [comment] ⇒ [comment]
                         InnerGesture.reevalMode(this);
                     }
                     refreshGameAppsBtn();
                 })
-                .setNegativeButton("取消", null)
+                .setNegativeButton("Cancel", null)
                 .show();
     }
 
-    /** 换内屏手势的画法。只是怎么画的事，不用重装捕获带 */
+    /** [comment]。[comment]Yes[comment]，[comment] */
     private void pickGestureAnim(int style) {
         ExtPrefs.setGestureAnimStyle(this, style);
         applyGestureAnim();
     }
 
-    /** 两档画成一对分段按钮：选中的那格换成实心绿（跟子选项卡同色） */
+    /** [comment]：[comment]（[comment]） */
     private void applyGestureAnim() {
         int now = ExtPrefs.gestureAnimStyle(this);
         paintSegment(R.id.btnAnimNative, now == GestureAnim.STYLE_NATIVE);
@@ -556,16 +556,16 @@ public class BetaActivity extends Activity {
     }
 
     /**
-     * 拨「隐藏三键导航」。
+     * [comment]「[comment]」。
      *
-     * <p>这是一件<b>动系统设置</b>的事：改的是 {@code Settings.Global.policy_control}，
-     * 走 {@link NavBarImmersive#apply}。成没成都得回读校验一次 —— 装了 NavStar 的机器上它会
-     * 按自己的偏好把同一项重写回去，不校验就会变成"界面显示开了、条还在"。
+     * <p>[comment]Yes[comment]<b>[comment]Settings</b>[comment]：[comment]Yes {@code Settings.Global.policy_control}，
+     * [comment] {@link NavBarImmersive#apply}。[comment] —— [comment] NavStar [comment]
+     * [comment]，[comment]"[comment]、[comment]"。
      */
     private void doNavImm(final boolean on) {
         if (!ShellRunner.isReady()) {
-            toast("Shizuku 未就绪，请先在主界面授权");
-            setNavImmSwitch(!on);           // 拨回去，别让开关停在没生效的位置上
+            toast("Shizuku Not Ready，Text");
+            setNavImmSwitch(!on);           // Text，Text
             return;
         }
         final Context app = getApplicationContext();
@@ -573,20 +573,20 @@ public class BetaActivity extends Activity {
             final String err = NavBarImmersive.apply(app, on);
             ui.post(() -> {
                 toast(err != null ? err
-                        : (on ? "系统导航条已整条藏起来" : "已还原接管前的设置"));
+                        : (on ? "Text" : "TextSettings"));
                 refreshNavImmState();
             });
         });
     }
 
     /**
-     * 静默回读系统里那一项，让开关跟着它走（页面上没有状态行了）。
+     * [comment]，[comment]（[comment]）。
      *
-     * <p>⚠ 回读结果要盖掉本地记的那份 —— 用户可能自己改过设置，或者 NavStar 把值换成了
-     * 带排除项的版本；开关得跟着系统现状，不能跟着我们记的。
+     * <p>⚠ [comment] —— [comment]Settings，[comment] NavStar [comment]
+     * [comment]；[comment]，[comment]。
      *
-     * <p>读不到（Shizuku 没就绪）就什么都不动：这时候拨开关本来也拨不动，
-     * 硬把开关摆成某个位置反而是撒谎。
+     * <p>[comment]（Shizuku [comment]）[comment]：[comment]，
+     * [comment]Yes[comment]。
      */
     private void refreshNavImmState() {
         if (!ShellRunner.isReady()) {
@@ -608,7 +608,7 @@ public class BetaActivity extends Activity {
         });
     }
 
-    /** 把开关拨到指定位置，<b>不算用户操作</b>（不会再去写系统） */
+    /** [comment]，<b>[comment]</b>（[comment]） */
     private void setNavImmSwitch(boolean on) {
         Switch sw = findViewById(R.id.swNavImm);
         if (sw == null || sw.isChecked() == on) {
@@ -620,94 +620,94 @@ public class BetaActivity extends Activity {
     }
 
     /**
-     * 触发区宽度四档的名字（跟布局里那四个单选项一一对应）。
+     * [comment]（[comment]）。
      *
-     * <p>⚠ 不能叫 {@code zoneName} —— 侧边栏那边已经有一个同签名的 {@code zoneName(int)}
-     * （那是"上/中/下"的段名），重名直接编译不过。
+     * <p>⚠ [comment] {@code zoneName} —— [comment] {@code zoneName(int)}
+     * （[comment]Yes"[comment]/[comment]/[comment]"[comment]），[comment]。
      */
     private static String zoneWidthName(int pick) {
         switch (pick) {
             case 0:
-                return "窄 1/4";
+                return "Text 1/4";
             case 2:
-                return "宽 1/2";
+                return "Text 1/2";
             case 3:
-                return "满宽";
+                return "Text";
             default:
-                return "中 1/3";
+                return "Text 1/3";
         }
     }
 
     /**
-     * 点「一键去掉所有应用黑边」。
+     * [comment]「[comment]」。
      *
-     * <p><b>一次性动作，不是开关</b>：给机器上每个已装应用下发 {@link CutoutPolicy#POL_OFF}
-     * （让窗口铺进挖孔），跳开系统设置与本应用。
+     * <p><b>[comment]，[comment]Yes[comment]</b>：[comment] {@link CutoutPolicy#POL_OFF}
+     * （[comment]），[comment]Settings[comment]。
      *
-     * <p>几百个包挨个发一条 binder，实测十几到二十秒，所以整段丢到 {@link #pool} 里跑，
-     * 期间界面只更新状态行。预检（版本不认 / Shizuku 没就绪）放在最前面，直接退回，不假装成功。
+     * <p>[comment] binder，[comment]，[comment] {@link #pool} [comment]，
+     * [comment]Update[comment]。[comment]（[comment] / Shizuku [comment]）[comment]，[comment]，[comment]Success。
      */
     private void doApplyCutout() {
         if (!CutoutPolicy.supported()) {
-            toast("这台机器的 Android 版本没有对应的功能号，这个按钮用不了");
+            toast("Text Android Text，Text");
             refreshEdgeState();
             return;
         }
         if (!ShellRunner.isReady()) {
-            toast("Shizuku 未就绪，请先在主界面授权");
+            toast("Shizuku Not Ready，Text");
             refreshEdgeState();
             return;
         }
-        // 这个 prefs 现在只当"点过没有"的记录，不再当状态（真状态去系统里回读）
+        // [comment] prefs [comment]"[comment]"[comment]，[comment]（[comment]）
         ExtPrefs.setCutoutGlobal(this, true);
         final Context app = getApplicationContext();
         if (tvEdgeState != null) {
-            tvEdgeState.setText("正在给所有应用下发挖孔策略…（几百个包，要十几秒）");
+            tvEdgeState.setText("Text…（Text，Text）");
         }
         pool.execute(() -> {
             final String out = CutoutPolicy.applyAll(app, CutoutPolicy.POL_OFF);
             ui.post(() -> {
-                toast(out.startsWith("ERR") ? out : ("完成 · " + out));
+                toast(out.startsWith("ERR") ? out : ("Text · " + out));
                 refreshEdgeState();
             });
         });
     }
 
     /**
-     * 打开系统的「导航条」设置页。
+     * [comment]「[comment]」Settings[comment]。
      *
-     * <p>用户提的：底部那条手势条想安心接管"上滑"，前提是系统别在同一串触摸上再判一次。
-     * 系统自己的「底部上滑回桌面」在「全面屏手势」模式下会跟它抢（现象是后台刚出来又回桌面），
-     * 换成「导航条」之后封面屏底部那条系统手势区就没了。
-     * 所以在这儿给个直达入口，别让人自己去设置里一层层翻。
+     * <p>[comment]：[comment]"[comment]"，[comment]Yes[comment]。
+     * [comment]「[comment]」[comment]「[comment]」[comment]（[comment]Yes[comment]），
+     * [comment]「[comment]」[comment]。
+     * [comment]，[comment]Settings[comment]。
      */
     private void doOpenNavMode() {
         if (!ShellRunner.isReady()) {
-            toast("Shizuku 未就绪，请先在主界面授权");
+            toast("Shizuku Not Ready，Text");
             return;
         }
-        toast("正在打开系统的「导航条」设置…");
+        toast("Text「Text」Settings…");
         pool.execute(() -> {
-            // ⚠ $ 必须待在单引号里，否则会被 shell 当变量吃掉，解析成不存在的组件
+            // ⚠ $ [comment]，No[comment] shell [comment]，[comment]
             final String out = ShellRunner.run(
                     "am start -n 'com.android.settings/.Settings$NavigationBarSettingsActivity'"
                             + " || am start -a android.settings.DISPLAY_SETTINGS"
                             + " || am start -a android.settings.SETTINGS", 15);
             ui.post(() -> toast(out == null || out.contains("Error")
-                    ? "没打开，手动去：设置 → 显示 → 导航条"
-                    : "已打开，改成「导航条」即可"));
+                    ? "Text，Text：Settings → Text → Text"
+                    : "Text，Text「Text」Text"));
         });
     }
 
-    /** 「去掉应用黑边」的状态行：当场回读一个样本包的策略值 + 点过按钮没有 */
+    /** 「[comment]」[comment]：[comment] + [comment] */
     /**
-     * 「外屏侧边栏」的其余设置。
+     * 「[comment]」[comment]Settings。
      *
-     * <p>动画效果、位置（左/右 × 上/中/下）、面板内容、通知使用权状态与授权按钮。
+     * <p>[comment]、[comment]（[comment]/[comment] × [comment]/[comment]/[comment]）、[comment]、[comment]。
      *
-     * <p>⚠ 位置与内容都必须"拆了重装"才生效 ⇒ 一律走
-     * {@link VolumeKeyService#refreshSidebar()}；只改 prefs 是不会动的
-     * （感应带的窗口几何是在安装那一刻定死的，跟手势条的捕获带同一条道理）。
+     * <p>⚠ [comment]"[comment]"[comment] ⇒ [comment]
+     * {@link VolumeKeyService#refreshSidebar()}；[comment] prefs Yes[comment]
+     * （[comment]Yes[comment]，[comment]）。
      */
     private void bindSidebarPanel() {
         RadioGroup anim = findViewById(R.id.rgSidebarAnim);
@@ -722,7 +722,7 @@ public class BetaActivity extends Activity {
                 }
                 ExtPrefs.setSidebarStyle(this, pick);
                 VolumeKeyService.refreshSidebar();
-                toast("侧边栏动画：" + animName(pick));
+                toast("Text：" + animName(pick));
             });
         }
 
@@ -737,7 +737,7 @@ public class BetaActivity extends Activity {
                 }
                 ExtPrefs.setSidebarSide(this, pick);
                 VolumeKeyService.refreshSidebar();
-                toast("侧边栏挪到" + (pick == 0 ? "左" : "右") + "侧");
+                toast("Text" + (pick == 0 ? "Text" : "Text") + "Text");
             });
         }
 
@@ -753,7 +753,7 @@ public class BetaActivity extends Activity {
                 }
                 ExtPrefs.setSidebarZone(this, pick);
                 VolumeKeyService.refreshSidebar();
-                toast("感应带挪到" + zoneName(pick) + "段");
+                toast("Text" + zoneName(pick) + "Text");
             });
         }
 
@@ -767,29 +767,29 @@ public class BetaActivity extends Activity {
     }
 
     private static String zoneName(int z) {
-        return z == 0 ? "上" : (z == 2 ? "下" : "中");
+        return z == 0 ? "Text" : (z == 2 ? "Text" : "Text");
     }
 
     /**
-     * 「面板内容」那四个勾：0=通知 1=最近任务 2=返回 3=回到桌面。
+     * 「[comment]」[comment]：0=[comment] 1=[comment] 2=[comment] 3=[comment]。
      *
-     * <p>这四个下标就是 {@link ExtPrefs#SIDEBAR_ITEM_IDS} 的顺序（跟布局里从上到下一致）——
-     * 勾几项、面板上就留几档，档位顺序也照这个次序。
+     * <p>[comment]Yes {@link ExtPrefs#SIDEBAR_ITEM_IDS} [comment]（[comment]）——
+     * [comment]、[comment]，[comment]。
      */
-    /** 「动画效果」那三个的名字（日志与提示共用） */
+    /** 「[comment]」[comment]（[comment]Notice[comment]） */
     private static String animName(int kind) {
-        return kind == 1 ? "调速齿轮" : (kind == 3 ? "抽奖轮盘" : "动力圆环");
+        return kind == 1 ? "Text" : (kind == 3 ? "Text" : "Text");
     }
 
     /**
-     * 按存下来的次序把「面板内容」那四行填上：第 i 行放
-     * {@link ExtPrefs#sidebarOrder(Context)} 里的第 i 个指令。
+     * [comment]「[comment]」[comment]：[comment] i [comment]
+     * {@link ExtPrefs#sidebarOrder(Context)} [comment] i [comment]。
      *
-     * <p>⚠ 四行是<b>按位置</b>读出来的（cbSbItem0 ~ 3 就是从上面数第 1 ~ 4 行），
-     * 换次序只是"把内容重写一遍" —— 不搬 View。ViewGroup 里挪孩子有过 parent 没摘干净、
-     * 再 addView 直接抛的坑，不值当。
+     * <p>⚠ [comment]Yes<b>[comment]</b>[comment]（cbSbItem0 ~ 3 [comment]Yes[comment] 1 ~ 4 [comment]），
+     * [comment]Yes"[comment]" —— [comment] View。ViewGroup [comment] parent [comment]、
+     * [comment] addView [comment]，[comment]。
      *
-     * <p>每行重填时先摘掉监听再 {@code setChecked}，免得这次程序性改动被当成用户点了一下。
+     * <p>[comment] {@code setChecked}，[comment]。
      */
     private void applySbItemsOrder() {
         final int[] cbIds = {R.id.cbSbItem0, R.id.cbSbItem1, R.id.cbSbItem2, R.id.cbSbItem3};
@@ -799,7 +799,7 @@ public class BetaActivity extends Activity {
         final boolean[] on = ExtPrefs.sidebarItemsOn(this);
         for (int i = 0; i < order.length && i < cbIds.length; i++) {
             final int act = order[i];
-            final int row = i;      // lambda 只能捕获 final，循环变量 i 不算
+            final int row = i;      // lambda Text final，Text i Text
             final int at = ExtPrefs.itemIndex(act);
             CheckBox cb = findViewById(cbIds[i]);
             if (cb != null && at >= 0) {
@@ -822,10 +822,10 @@ public class BetaActivity extends Activity {
     }
 
     /**
-     * 勾上 / 取消某一项。
+     * [comment] / Cancel[comment]。
      *
-     * <p>⚠ 参数是<b>指令号</b>，不是第几行 —— 勾选状态那四位是按
-     * {@link ExtPrefs#SIDEBAR_ITEM_IDS} 的下标存的，跟界面上的行号无关。
+     * <p>⚠ [comment]Yes<b>[comment]</b>，[comment]Yes[comment] —— [comment]Yes[comment]
+     * {@link ExtPrefs#SIDEBAR_ITEM_IDS} [comment]，[comment]None[comment]。
      */
     private void setSbItem(int act, boolean isOn) {
         int at = ExtPrefs.itemIndex(act);
@@ -837,11 +837,11 @@ public class BetaActivity extends Activity {
         ExtPrefs.setSidebarItemsOn(this, cur);
         VolumeKeyService.refreshSidebar();
         if (ExtPrefs.sidebarSlots(this).length == 0) {
-            toast("面板内容一项都没勾，面板上不会留档位");
+            toast("Text，Text");
         }
     }
 
-    /** 把第 at 行跟它上面（dir = -1）/ 下面（dir = +1）那行对调 */
+    /** [comment] at [comment]（dir = -1）/ [comment]（dir = +1）[comment] */
     private void moveSbItemAt(int at, int dir) {
         int[] order = ExtPrefs.sidebarOrder(this);
         int to = at + dir;
@@ -856,36 +856,36 @@ public class BetaActivity extends Activity {
         VolumeKeyService.refreshSidebar();
     }
 
-    /** 到头那一侧的箭头压暗、也点不动（顶行没有"上"、底行没有"下"） */
+    /** [comment]、[comment]（[comment]"[comment]"、[comment]"[comment]"） */
     private static void dimSortArrow(View v, boolean usable) {
         v.setEnabled(usable);
         v.setAlpha(usable ? 1f : 0.22f);
     }
 
-    /** 通知使用权那一行的状态（每次进页面、每次授权完都刷） */
+    /** [comment]（[comment]、[comment]） */
     private void refreshNotifState() {
         TextView tv = findViewById(R.id.tvNotifState);
         if (tv != null) {
-            tv.setText("通知使用权：" + CoverNotifListener.statusText(this));
+            tv.setText("Text：" + CoverNotifListener.statusText(this));
         }
     }
 
     /**
-     * 一键授「通知使用权」。
+     * [comment]「[comment]」。
      *
-     * <p>这是跟无障碍**分开**的一把权限，系统设置里在「通知 → 通知使用权」。
-     * 走 Shizuku 发 {@code cmd notification allow_listener} 就不用让用户自己去翻菜单。
+     * <p>[comment]Yes[comment]None[comment]**[comment]**[comment]，[comment]Settings[comment]「[comment] → [comment]」。
+     * [comment] Shizuku [comment] {@code cmd notification allow_listener} [comment]。
      */
     private void doGrantNotif() {
         if (!ShellRunner.isReady()) {
-            toast("需要 Shizuku 才能一键授权（也可以去系统设置 → 通知 → 通知使用权里手动开）");
+            toast("Text Shizuku Text（TextSettings → Text → Text）");
             return;
         }
-        toast("正在授予通知使用权…");
+        toast("Text…");
         final Context ctx = this;
         pool.execute(() -> {
             String out = ShellRunner.run(CoverNotifListener.grantCmd(ctx), 12);
-            android.util.Log.i("BetaActivity", "授予通知使用权 => " + out);
+            android.util.Log.i("BetaActivity", "Text => " + out);
             try {
                 Thread.sleep(700);
             } catch (InterruptedException ignored) {
@@ -894,7 +894,7 @@ public class BetaActivity extends Activity {
             final boolean ok = CoverNotifListener.granted(ctx);
             runOnUiThread(() -> {
                 refreshNotifState();
-                toast(ok ? "通知使用权已授予" : "授权好像没成，去系统设置里手动开一下");
+                toast(ok ? "Text" : "Text，TextSettingsText");
             });
         });
     }
@@ -905,11 +905,11 @@ public class BetaActivity extends Activity {
             return;
         }
         if (!CutoutPolicy.supported()) {
-            tv.setText("这台机器没有对应的功能号（sdk=" + Build.VERSION.SDK_INT
-                    + "，release=" + Build.VERSION.RELEASE + "），这个按钮用不了。");
+            tv.setText("Text（sdk=" + Build.VERSION.SDK_INT
+                    + "，release=" + Build.VERSION.RELEASE + "），Text。");
             return;
         }
-        tv.setText("读取中…");
+        tv.setText("Text…");
         final String probe = pickProbePackage();
         pool.execute(() -> {
             final int v = CutoutPolicy.read(this, probe);
@@ -918,30 +918,30 @@ public class BetaActivity extends Activity {
                     return;
                 }
                 StringBuilder sb = new StringBuilder();
-                sb.append("样本　").append(probe).append(" 策略=");
+                sb.append("Text　").append(probe).append(" Text=");
                 if (v < 0) {
-                    sb.append("读不到（Shizuku 没就绪？）");
+                    sb.append("Text（Shizuku Text？）");
                 } else {
                     sb.append(v);
                     if (v == CutoutPolicy.POL_OFF) {
-                        sb.append("（铺进挖孔 ⇒ 没有黑边）");
+                        sb.append("（Text ⇒ Text）");
                     } else if (v == CutoutPolicy.POL_DEFAULT) {
-                        sb.append("（默认档）");
+                        sb.append("（DefaultText）");
                     }
                 }
                 sb.append(ExtPrefs.cutoutGlobal(this)
-                        ? "\n上次　点过按钮" : "\n上次　没点过按钮");
-                sb.append("\n改动要对已经打开的应用生效，得把它重新拉起来一次。");
+                        ? "\nText　Text" : "\nText　Text");
+                sb.append("\nText，Text。");
                 tvEdgeState.setText(sb.toString());
             });
         });
     }
 
     /**
-     * 回读用哪个包当样本。
+     * [comment]。
      *
-     * <p>挑一个<b>一定装在机器上的第三方应用</b>：系统设置与我们自己都在下发时被跳过，
-     * 拿它们当样本说明不了问题。挑不到就退回设置 —— 它至少保证读得到。
+     * <p>[comment]<b>[comment]</b>：[comment]Settings[comment]，
+     * [comment]。[comment]Settings —— [comment]。
      */
     private String pickProbePackage() {
         for (String p : new String[]{"com.tencent.mobileqq", "tv.danmaku.bili",
@@ -955,23 +955,23 @@ public class BetaActivity extends Activity {
         return "com.android.settings";
     }
 
-    // ================================================================== 首次进入的说明
+    // ================================================================== [comment]
 
-    /** 「Beta 实验室」的说明弹窗要不要再弹，存这儿 */
+    /** 「Beta [comment]」[comment]，[comment] */
     private static final String FILE_INTRO = "extrot_beta";
     private static final String KEY_INTRO_OFF = "intro_off";
-    /** 上次把这个"不再弹出"勾下去时是哪个 versionCode */
+    /** [comment]"[comment]"[comment]Yes[comment] versionCode */
     private static final String KEY_INTRO_VER = "intro_off_ver";
 
     /**
-     * 第一次进这一页时把说明弹出来。
+     * [comment]。
      *
-     * <p>弹窗里带一个「默认不再弹出」勾选框：勾上之后再进就不弹了，想再看随时点标题右边那个 ⓘ
-     * （两处用的是同一段正文）。
+     * <p>[comment]「Default[comment]」[comment]：[comment]，[comment] ⓘ
+     * （[comment]Yes[comment]）。
      *
-     * <p>⚠ 这个「不再弹出」只在同一版里算数。用户要的是「别人装了我的新包，一进 Beta 实验室就能
-     * 看到我的说明和注意事项」—— 换了一版就是新东西，之前那次「不再提醒」作废，重新弹一次。
-     * 所以勾的时候连版本号一起记，进来时对一下：对不上就照弹。
+     * <p>⚠ [comment]「[comment]」[comment]。[comment]Yes「[comment]，[comment] Beta [comment]
+     * [comment]」—— [comment]Yes[comment]，[comment]「[comment]」[comment]，[comment]。
+     * [comment]，[comment]：[comment]。
      */
     private void maybeShowIntro() {
         SharedPreferences sp = getSharedPreferences(FILE_INTRO, MODE_PRIVATE);
@@ -980,14 +980,14 @@ public class BetaActivity extends Activity {
         if (off || isFinishing()) {
             return;
         }
-        // 用自定义布局而不是 setMessage + setMultiChoiceItems：后者把勾选框挂在
-        // 正文下面，正文一长就先被裁掉（实测在封面屏上连正文都截断了）。
+        // [comment]Custom[comment]Yes setMessage + setMultiChoiceItems：[comment]
+        // [comment]，[comment]（[comment]）。
         View body = getLayoutInflater().inflate(R.layout.dialog_beta_intro, null);
         final android.widget.CheckBox cb = body.findViewById(R.id.cbBetaIntroOff);
         new AlertDialog.Builder(this)
-                .setTitle("Beta 实验室")
+                .setTitle("Beta Text")
                 .setView(body)
-                .setPositiveButton("知道了", (d, w) -> {
+                .setPositiveButton("Text", (d, w) -> {
                     if (cb != null && cb.isChecked()) {
                         getSharedPreferences(FILE_INTRO, MODE_PRIVATE).edit()
                                 .putBoolean(KEY_INTRO_OFF, true)
@@ -998,7 +998,7 @@ public class BetaActivity extends Activity {
                 .show();
     }
 
-    /** 本机的 versionCode，用来判"这个不再弹出是不是当前这一版勾的" */
+    /** [comment] versionCode，[comment]"[comment]Yes[comment]Yes[comment]" */
     private int myVersionCode() {
         try {
             return getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
@@ -1007,7 +1007,7 @@ public class BetaActivity extends Activity {
         }
     }
 
-    // ================================================================== 外屏设置
+    // ================================================================== [comment]Settings
 
     private void bindCoverPanel() {
         etW = findViewById(R.id.etCoverW);
@@ -1034,7 +1034,7 @@ public class BetaActivity extends Activity {
             resetPreset.setOnClickListener(v -> {
                 presets = CoverPresets.resetToDefault(this, physW, physH, physDpi);
                 renderPresets();
-                toast("已恢复默认预设");
+                toast("TextDefaultText");
             });
         }
 
@@ -1047,10 +1047,10 @@ public class BetaActivity extends Activity {
             rotateReset.setOnClickListener(v -> doCoverRotateReset());
         }
 
-        // ---- 外屏自动旋转（v4.23）。跟上面那颗「旋转 90°」是同一件事的两半：那颗手动一下
-        //      一下点，这个让外屏自己跟着手机的横竖转（外屏原生不跟手机转）。下发要发 shell，
-        //      丢后台；回来再刷一次状态行，好让上面那行度数马上变成新值。
-        //      ⚠ 先 setChecked 再挂监听 —— 反了就等于"初始化那一发把用户的开关拨回去"（本页通例）。
+        // ---- [comment]（v4.23）。[comment]「[comment] 90°」Yes[comment]：[comment]
+        //      [comment]，[comment]（[comment]）。[comment] shell，
+        //      [comment]；[comment]，[comment]。
+        //      ⚠ [comment] setChecked [comment] —— [comment]"[comment]"（[comment]）。
         Switch coverAutoRot = findViewById(R.id.swCoverAutoRot);
         if (coverAutoRot != null) {
             coverAutoRot.setChecked(CoverAutoRot.on(this));
@@ -1063,12 +1063,12 @@ public class BetaActivity extends Activity {
                     ui.post(() -> {
                         if (err != null) {
                             toast(err);
-                            // 没成 → 拨回去，别让开关停在没生效的位置上
+                            // [comment] → [comment]，[comment]
                             coverRotSyncing = true;
                             coverAutoRot.setChecked(!on);
                             coverRotSyncing = false;
                         } else {
-                            toast(on ? "外屏自动旋转：开" : "外屏自动旋转：关");
+                            toast(on ? "Text：Text" : "Text：Text");
                         }
                         refreshCoverState();
                     });
@@ -1076,7 +1076,7 @@ public class BetaActivity extends Activity {
             });
         }
 
-        // ---- 外屏启动器
+        // ---- [comment]
         tvLauncherState = findViewById(R.id.tvLauncherState);
 
         View openLauncher = findViewById(R.id.btnLauncherOpen);
@@ -1091,14 +1091,14 @@ public class BetaActivity extends Activity {
     }
 
     /**
-     * 「打开配置页」。
+     * 「[comment]」。
      *
-     * <p>刻意做成跟「点外屏上那个齿轮」走同一条路（{@link SecondaryLauncher#launchOwn}），
-     * 而不是本机直接 {@code startActivity}：配置页是个 GridView + 搜索框的重界面，
-     * 放在外屏上打开才能顺手看见「改完外屏长什么样」。
+     * <p>[comment]「[comment]」[comment]（{@link SecondaryLauncher#launchOwn}），
+     * [comment]Yes[comment] {@code startActivity}：[comment]Yes[comment] GridView + [comment]，
+     * [comment]「[comment]」。
      *
-     * <p>投屏不再要求 Shizuku —— 没有授权时 {@code launchOwn} 会走三星的封面屏通道；
-     * 两条都走不通才退化成普通启动（落在手机内屏），功能不残废，只是位置不对。
+     * <p>[comment] Shizuku —— [comment] {@code launchOwn} [comment]；
+     * [comment]（[comment]），[comment]，[comment]Yes[comment]。
      */
     private void openLauncherConfig() {
         int display = CoverDisplay.id(this);
@@ -1115,23 +1115,23 @@ public class BetaActivity extends Activity {
     }
 
     /**
-     * 「怎么钉到外屏」。
+     * 「[comment]」。
      *
-     * <p>这块只能在系统设置里手动完成，adb 代劳不了 —— 外屏托盘是三星桌面自己管的，
-     * 没有对外接口能往里塞组件。所以这里只把路径说清楚，不让用户自己找。
+     * <p>[comment]Settings[comment]，adb [comment] —— [comment]Yes[comment]，
+     * [comment]。[comment]，[comment]。
      */
     private void showPinHelp() {
         if (isFinishing()) {
             return;
         }
         new AlertDialog.Builder(this)
-                .setTitle("把启动器放到外屏")
+                .setTitle("Text")
                 .setMessage(R.string.info_launcher_pin)
                 .setPositiveButton(android.R.string.ok, null)
                 .show();
     }
 
-    /** 「外屏自动旋转」那个开关跟着实况走（在主界面快捷操作、老虎机里拨过也跟得上） */
+    /** 「[comment]」[comment]（[comment]、[comment]） */
     private void refreshCoverAutoRotSwitch() {
         Switch sw = findViewById(R.id.swCoverAutoRot);
         if (sw == null) {
@@ -1145,20 +1145,20 @@ public class BetaActivity extends Activity {
         }
     }
 
-    /** 刷新「外屏启动器」区块的状态行 */
+    /** [comment]「[comment]」[comment] */
     private void refreshLauncherState() {
         if (tvLauncherState == null) {
             return;
         }
         int n = LauncherPrefs.apps(this).size();
         if (n == 0) {
-            tvLauncherState.setText("还没勾选应用。点「打开配置页」，在外屏上勾选要显示的应用。");
+            tvLauncherState.setText("Text。Text「Text」，Text。");
         } else {
-            tvLauncherState.setText("已勾选 " + n + " 个应用。外屏上的启动器会自动跟着变，不用重新添加组件。");
+            tvLauncherState.setText("Text " + n + " Text。Text，Text。");
         }
     }
 
-    /** 读一次封面屏状态并刷新界面（后台读、主线程刷） */
+    /** [comment]（[comment]、[comment]） */
     private void refreshCoverState() {
         pool.execute(() -> {
             CoverDisplay.State st = CoverDisplay.read(this);
@@ -1171,28 +1171,28 @@ public class BetaActivity extends Activity {
             return;
         }
         if (st.displayId <= 0) {
-            tvCoverState.setText("找不到封面屏。");
+            tvCoverState.setText("Text。");
             return;
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append("面板原生   ").append(nz(st.physSize, "?")).append("   ").append(st.physDpi).append("dpi\n");
-        sb.append("当前覆盖   ");
+        sb.append("Text   ").append(nz(st.physSize, "?")).append("   ").append(st.physDpi).append("dpi\n");
+        sb.append("Text   ");
         if (st.overridden()) {
-            sb.append(st.hasSizeOverride() ? st.overrideSize : "（未改分辨率）");
+            sb.append(st.hasSizeOverride() ? st.overrideSize : "（Text）");
             sb.append("   ");
-            sb.append(st.hasDpiOverride() ? st.overrideDpi + "dpi" : "（未改 DPI）");
+            sb.append(st.hasDpiOverride() ? st.overrideDpi + "dpi" : "（Text DPI）");
         } else {
-            sb.append("无");
+            sb.append("None");
         }
         sb.append('\n');
-        sb.append("旋转       ").append(CoverDisplay.degreeText(st.rotation));
+        sb.append("Text       ").append(CoverDisplay.degreeText(st.rotation));
         if (st.rotation != CoverDisplay.ROT_FREE) {
-            sb.append("（已锁定）");
+            sb.append("（Text）");
         }
         tvCoverState.setText(sb.toString());
 
-        // 面板原生值留一份，给默认预设和输入框用
+        // [comment]，[comment]Default[comment]
         if (st.physSize != null && st.physSize.contains("x")) {
             String[] p = st.physSize.split("x");
             try {
@@ -1203,7 +1203,7 @@ public class BetaActivity extends Activity {
             }
         }
 
-        // 输入框只在为空时填 —— 避免把用户正在敲的内容冲掉
+        // [comment] —— [comment]
         if (etW != null && TextUtils.isEmpty(etW.getText())) {
             String w = st.hasSizeOverride() ? st.overrideSize : st.physSize;
             if (w != null && w.contains("x")) {
@@ -1237,13 +1237,13 @@ public class BetaActivity extends Activity {
         int h = parse(etH);
         int dpi = parse(etDpi);
         if (w <= 0 || h <= 0) {
-            toast("分辨率要填成「宽」和「高」两个数字");
+            toast("Text「Text」Text「Text」Text");
             return;
         }
         pool.execute(() -> {
             String err = CoverDisplay.applySize(this, w, h, dpi);
             ui.post(() -> {
-                toast(err == null ? ("已覆盖为 " + w + "×" + h + (dpi > 0 ? " / " + dpi + "dpi" : "")) : err);
+                toast(err == null ? ("Text " + w + "×" + h + (dpi > 0 ? " / " + dpi + "dpi" : "")) : err);
                 refreshCoverState();
             });
         });
@@ -1254,13 +1254,13 @@ public class BetaActivity extends Activity {
             return;
         }
         new AlertDialog.Builder(this)
-                .setTitle("恢复默认")
-                .setMessage("把封面屏的分辨率和 DPI 恢复成面板原生值？")
+                .setTitle("TextDefault")
+                .setMessage("Text DPI Text？")
                 .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton("恢复", (d, w) -> pool.execute(() -> {
+                .setPositiveButton("Text", (d, w) -> pool.execute(() -> {
                     String err = CoverDisplay.resetSize(this, true);
                     ui.post(() -> {
-                        toast(err == null ? "已恢复默认" : err);
+                        toast(err == null ? "TextDefault" : err);
                         if (etW != null) {
                             etW.setText("");
                         }
@@ -1287,7 +1287,7 @@ public class BetaActivity extends Activity {
         }
     }
 
-    // ---------------------------------------------------------------- 预设列表
+    // ---------------------------------------------------------------- [comment]
 
     private void renderPresets() {
         if (listPresets == null) {
@@ -1302,7 +1302,7 @@ public class BetaActivity extends Activity {
         }
         if (presets.isEmpty()) {
             TextView tv = new TextView(this);
-            tv.setText("还没有预设，点右上角「＋ 新增」加一条。");
+            tv.setText("Text，Text「＋ Add」Text。");
             tv.setTextColor(0x8CFFFFFF);
             tv.setTextSize(13);
             tv.setPadding(0, dp(6), 0, 0);
@@ -1341,7 +1341,7 @@ public class BetaActivity extends Activity {
         row.addView(col);
 
         TextView hint = new TextView(this);
-        hint.setText("点应用");
+        hint.setText("Text");
         hint.setTextColor(0xFF7FC77F);
         hint.setTextSize(12);
         row.addView(hint);
@@ -1370,7 +1370,7 @@ public class BetaActivity extends Activity {
         pool.execute(() -> {
             String err = CoverDisplay.applySize(this, p.w, p.h, p.dpi);
             ui.post(() -> {
-                toast(err == null ? ("已应用「" + p.name + "」") : err);
+                toast(err == null ? ("Text「" + p.name + "」") : err);
                 refreshCoverState();
             });
         });
@@ -1382,10 +1382,10 @@ public class BetaActivity extends Activity {
         }
         final CoverPresets.Preset p = presets.get(index);
         new AlertDialog.Builder(this)
-                .setTitle("删除预设")
-                .setMessage("删掉「" + p.name + "」（" + p.summary() + "）？")
+                .setTitle("DeleteText")
+                .setMessage("Text「" + p.name + "」（" + p.summary() + "）？")
                 .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton("删除", (d, w) -> {
+                .setPositiveButton("Delete", (d, w) -> {
                     CoverPresets.removeAt(this, presets, index);
                     renderPresets();
                 })
@@ -1393,22 +1393,22 @@ public class BetaActivity extends Activity {
     }
 
     /**
-     * 新增 / 编辑预设。
+     * Add / Edit[comment]。
      *
-     * <p>没有引入额外的布局文件：这个弹窗只有三个输入框，用代码拼比再多一个 xml 更好维护
-     * （那些只有一处用到的布局文件散在 res/layout 里，回头很难判断能不能删）。
+     * <p>[comment]：[comment]，[comment] xml [comment]
+     * （[comment] res/layout [comment]，[comment]）。
      *
-     * @param editIndex 传 -1 表示新增
+     * @param editIndex [comment] -1 [comment]Add
      */
     private void showPresetEditor(final int editIndex) {
-        // 状态还没读回来时 presets 是 null（首次读状态是异步的），这里补一次，
-        // 免得用户手快先点了「＋ 新增」就崩
+        // [comment] presets Yes null（[comment]Yes[comment]），[comment]，
+        // [comment]「＋ Add」[comment]
         if (presets == null) {
             presets = CoverPresets.load(this, physW, physH, physDpi);
             renderPresets();
         }
         if (editIndex < 0 && presets.size() >= CoverPresets.MAX) {
-            toast("最多 " + CoverPresets.MAX + " 组预设");
+            toast("Text " + CoverPresets.MAX + " Text");
             return;
         }
         final CoverPresets.Preset editing =
@@ -1421,7 +1421,7 @@ public class BetaActivity extends Activity {
         box.setPadding(pad, dp(8), pad, 0);
 
         final EditText name = new EditText(this);
-        name.setHint("名称，例如 小窗模式");
+        name.setHint("Text，Text Text");
         if (editing != null) {
             name.setText(editing.name);
         }
@@ -1432,21 +1432,21 @@ public class BetaActivity extends Activity {
         sizeRow.setPadding(0, dp(10), 0, 0);
 
         final EditText w = new EditText(this);
-        w.setHint("宽");
+        w.setHint("Text");
         w.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
         w.setLayoutParams(new LinearLayout.LayoutParams(0,
                 ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         sizeRow.addView(w);
 
         final EditText h = new EditText(this);
-        h.setHint("高");
+        h.setHint("Text");
         h.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
         h.setLayoutParams(new LinearLayout.LayoutParams(0,
                 ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         sizeRow.addView(h);
 
         final EditText dpi = new EditText(this);
-        dpi.setHint("DPI，可空");
+        dpi.setHint("DPI，Text");
         dpi.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
         dpi.setLayoutParams(new LinearLayout.LayoutParams(0,
                 ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
@@ -1458,27 +1458,27 @@ public class BetaActivity extends Activity {
             h.setText(String.valueOf(editing.h));
             dpi.setText(editing.dpi > 0 ? String.valueOf(editing.dpi) : "");
         } else {
-            // 新增时给个起点：当前面板原生尺寸
+            // Add[comment]：[comment]
             w.setText(String.valueOf(physW > 0 ? physW : 748));
             h.setText(String.valueOf(physH > 0 ? physH : 720));
             dpi.setText(String.valueOf(physDpi > 0 ? physDpi : 340));
         }
 
         new AlertDialog.Builder(this)
-                .setTitle(editIndex >= 0 ? "编辑预设" : "新增预设")
+                .setTitle(editIndex >= 0 ? "EditText" : "AddText")
                 .setView(box)
                 .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton("保存", (d, which) -> {
+                .setPositiveButton("Save", (d, which) -> {
                     String nm = name.getText().toString().trim();
                     int ww = parseIntText(w);
                     int hh = parseIntText(h);
                     int dd = parseIntText(dpi);
                     if (TextUtils.isEmpty(nm)) {
-                        toast("给预设起个名字");
+                        toast("Text");
                         return;
                     }
                     if (ww <= 0 || hh <= 0) {
-                        toast("分辨率要填成两个数字");
+                        toast("Text");
                         return;
                     }
                     if (editing != null) {
@@ -1504,7 +1504,7 @@ public class BetaActivity extends Activity {
         }
     }
 
-    // ---------------------------------------------------------------- 旋转
+    // ---------------------------------------------------------------- [comment]
 
     private void doCoverRotate() {
         if (needShizuku()) {
@@ -1513,7 +1513,7 @@ public class BetaActivity extends Activity {
         pool.execute(() -> {
             int deg = CoverDisplay.rotate(this);
             ui.post(() -> {
-                toast(deg < 0 ? "旋转失败" : ("外屏已转到 " + CoverDisplay.degreeText(deg)));
+                toast(deg < 0 ? "TextFailed" : ("Text " + CoverDisplay.degreeText(deg)));
                 refreshCoverState();
             });
         });
@@ -1526,19 +1526,19 @@ public class BetaActivity extends Activity {
         pool.execute(() -> {
             boolean ok = CoverDisplay.resetRotation(this);
             ui.post(() -> {
-                toast(ok ? "外屏已恢复自动旋转" : "恢复失败");
+                toast(ok ? "Text" : "TextFailed");
                 refreshCoverState();
             });
         });
     }
 
-    // ================================================================== 指令操作
+    // ================================================================== [comment]
 
     private void bindQuickPanel() {
         tvAssistState = findViewById(R.id.tvAssistState);
         tvVolumeState = findViewById(R.id.tvVolumeState);
 
-        // 「侧键操作」：先选按键，下面只显示那一个按键的设置块
+        // 「[comment]」：[comment]，[comment]Settings[comment]
         keyTarget = QuickPrefs.sideKey(this);
         View keyAssist = findViewById(R.id.btnKeyAssist);
         if (keyAssist != null) {
@@ -1585,7 +1585,7 @@ public class BetaActivity extends Activity {
             copy.setOnClickListener(v -> copyActionToClipboard());
         }
 
-        // 自定义指令
+        // Custom[comment]
         listCustomCmds = findViewById(R.id.listCustomCmds);
         View allowRestricted = findViewById(R.id.btnAllowRestricted);
         if (allowRestricted != null) {
@@ -1603,9 +1603,9 @@ public class BetaActivity extends Activity {
         renderCustomCmds();
     }
 
-    // ------------------------------------------------------------ 侧键操作
+    // ------------------------------------------------------------ [comment]
 
-    /** 在「侧键操作」里换按键；换完只显示那一套设置 */
+    /** [comment]「[comment]」[comment]；[comment]Settings */
     private void selectKey(String target) {
         if (keyTarget.equals(target)) {
             return;
@@ -1616,7 +1616,7 @@ public class BetaActivity extends Activity {
         refreshQuickState();
     }
 
-    /** 当前选中的音量键对应的动作（「测试」按钮用）；选的是电源键时按上键算 */
+    /** [comment]（「[comment]」[comment]）；[comment]Yes[comment] */
     private String currentVolumeAction() {
         return QuickPrefs.SIDE_VOL_DOWN.equals(keyTarget)
                 ? QuickPrefs.volumeDownAction(this)
@@ -1624,13 +1624,13 @@ public class BetaActivity extends Activity {
     }
 
     /**
-     * 按当前选中的按键决定露出哪一块设置，并给三个 chip 上选中态。
+     * [comment]Settings，[comment] chip [comment]。
      *
-     * <p>两块设置一直都在布局里（id 沿用旧版），只是轮着显示 ——
-     * 这样 refreshQuickState 那套逻辑一个字都不用改。
+     * <p>[comment]Settings[comment]（id [comment]），[comment]Yes[comment] ——
+     * [comment] refreshQuickState [comment]。
      *
-     * <p>上键与下键<b>共用</b>同一个音量块：一次只配一个键（跟芯片的语义一致），
-     * 块里那两个按钮的文案跟着当前 chip 走。
+     * <p>[comment]<b>[comment]</b>[comment]：[comment]（[comment]），
+     * [comment] chip [comment]。
      */
     private void applyKeySelection() {
         boolean isAssist = QuickPrefs.SIDE_ASSIST.equals(keyTarget);
@@ -1643,15 +1643,15 @@ public class BetaActivity extends Activity {
         boolean down = QuickPrefs.SIDE_VOL_DOWN.equals(keyTarget);
         View pick = findViewById(R.id.btnVolumePick);
         if (pick instanceof TextView) {
-            ((TextView) pick).setText(down ? "选择下键动作" : "选择上键动作");
+            ((TextView) pick).setText(down ? "Text" : "Text");
         }
         View test = findViewById(R.id.btnVolumeTest);
         if (test instanceof TextView) {
-            ((TextView) test).setText(down ? "测试下键" : "测试上键");
+            ((TextView) test).setText(down ? "Text" : "Text");
         }
     }
 
-    /** 选中的 chip 用主按钮那套绿底，未选中的用选项卡未选中那套深灰 */
+    /** [comment] chip [comment]，[comment] */
     private void chipSelected(View v, boolean on) {
         if (v == null) {
             return;
@@ -1662,20 +1662,20 @@ public class BetaActivity extends Activity {
         }
     }
 
-    /** 刷新这两块卡片的状态文字 */
+    /** [comment] */
     private void refreshQuickState() {
         boolean a11y = QuickPrefs.isAccessibilityEnabled(this);
         if (tvVolumeState != null) {
             tvVolumeState.setText(
-                    "无障碍服务：" + (a11y ? "已开启" : "未开启（必须开启才能拦到音量键）")
-                            + "\n长按音量上键：" + QuickActions.label(this, QuickPrefs.volumeUpAction(this))
-                            + "\n长按音量下键：" + QuickActions.label(this, QuickPrefs.volumeDownAction(this))
+                    "NoneText：" + (a11y ? "TextEnable" : "TextEnable（TextEnableText）")
+                            + "\nText：" + QuickActions.label(this, QuickPrefs.volumeUpAction(this))
+                            + "\nText：" + QuickActions.label(this, QuickPrefs.volumeDownAction(this))
                             + (QuickPrefs.isVolumeKeyEnabled(this)
-                                    ? "" : "\n（总开关已关，两个键都不拦）"));
+                                    ? "" : "\n（Text，Text）"));
         }
         if (tvAssistState != null) {
-            tvAssistState.setText("动作：" + QuickActions.label(this, QuickPrefs.assistAction(this))
-                    + "\n当前数字助手：读取中…");
+            tvAssistState.setText("Text：" + QuickActions.label(this, QuickPrefs.assistAction(this))
+                    + "\nText：Text…");
         }
         if (tvExternalAction != null) {
             tvExternalAction.setText(QuickActions.ACTION_RUN
@@ -1683,14 +1683,14 @@ public class BetaActivity extends Activity {
                     + " cover_rotate | cover_rotate_reset | custom:<id>");
         }
 
-        // 当前助手是谁，需要走 shell 读
+        // [comment]Yes[comment]，[comment] shell [comment]
         if (ShellRunner.isReady()) {
             pool.execute(() -> {
                 final String cur = ShellRunner.run("settings get secure assistant").trim();
                 ui.post(() -> {
                     if (tvAssistState != null && !isFinishing()) {
-                        tvAssistState.setText("动作：" + QuickActions.label(this, QuickPrefs.assistAction(this))
-                                + "\n当前数字助手：" + (TextUtils.isEmpty(cur) || "null".equals(cur) ? "（未设置）" : cur));
+                        tvAssistState.setText("Text：" + QuickActions.label(this, QuickPrefs.assistAction(this))
+                                + "\nText：" + (TextUtils.isEmpty(cur) || "null".equals(cur) ? "（TextSettings）" : cur));
                     }
                 });
             });
@@ -1700,7 +1700,7 @@ public class BetaActivity extends Activity {
     private TextView tvExternalAction;
 
     /**
-     * 弹一个单选列表让用户挑动作。
+     * [comment]。
      *
      * @param target {@link QuickPrefs#SIDE_ASSIST} / {@link QuickPrefs#SIDE_VOL_UP}
      *               / {@link QuickPrefs#SIDE_VOL_DOWN}
@@ -1709,11 +1709,11 @@ public class BetaActivity extends Activity {
         final boolean forAssist = QuickPrefs.SIDE_ASSIST.equals(target);
         final boolean forDown = QuickPrefs.SIDE_VOL_DOWN.equals(target);
 
-        // 白名单 = 内置四条 + 自定义指令，所以要从 options 取、不能再用 ALL
+        // [comment] = [comment] + Custom[comment]，[comment] options [comment]、[comment] ALL
         final String[] base = QuickActions.options(this);
-        // 音量键多挂一项「无」= 这个键不绑动作，长按交回系统调音量。
-        // 电源键不给这一项：它靠系统"数字助手"位接入，选「无」并不能把助手位还回去，
-        // 那得去系统侧键设置里改 —— 给了反而误导。
+        // [comment]「None」= [comment]，[comment]。
+        // [comment]：[comment]"[comment]"[comment]，[comment]「None」[comment]，
+        // [comment]Settings[comment] —— [comment]。
         final String[] keys;
         if (forAssist) {
             keys = base;
@@ -1738,8 +1738,8 @@ public class BetaActivity extends Activity {
         }
 
         new AlertDialog.Builder(this)
-                .setTitle(forAssist ? "长按电源键时执行"
-                        : (forDown ? "长按音量下键时执行" : "长按音量上键时执行"))
+                .setTitle(forAssist ? "Text"
+                        : (forDown ? "Text" : "Text"))
                 .setSingleChoiceItems(labels, checked, (d, which) -> {
                     String key = keys[which];
                     if (forAssist) {
@@ -1756,35 +1756,35 @@ public class BetaActivity extends Activity {
     }
 
     /**
-     * 把本应用的快捷入口设成系统「数字助手」。
+     * [comment]「[comment]」。
      *
-     * <p>这是「长按电源键」唯一走得通的接法：三星侧键设置里长按的选项只有
-     * 「唤醒数字助手 / 电源菜单 / 无」，应用没有别的办法占用它。
+     * <p>[comment]Yes「[comment]」[comment]：[comment]Settings[comment]
+     * 「[comment] / [comment] / None」，[comment]。
      *
-     * <p>⚠️ 系统的助手位只有一个，设成本应用就会把原来的顶掉（这台机器上原本是
-     * 「阿田自用」），所以必须先弹窗把现状摆出来再确认。
+     * <p>⚠️ [comment]，[comment]（[comment]Yes
+     * 「[comment]」），[comment]。
      */
     private void confirmSetAssistant() {
         if (!ShellRunner.isReady()) {
-            toast("Shizuku 未就绪，请先在主界面授权");
+            toast("Shizuku Not Ready，Text");
             return;
         }
         final String target = getPackageName() + "/" + QuickActionActivity.class.getName();
         pool.execute(() -> {
             final String cur = ShellRunner.run("settings get secure assistant").trim();
             ui.post(() -> new AlertDialog.Builder(this)
-                    .setTitle("设为数字助手")
-                    .setMessage("当前数字助手：\n" + (TextUtils.isEmpty(cur) ? "（未设置）" : cur)
-                            + "\n\n将改为：\n" + target
-                            + "\n\n系统的助手位只有一个，原来的会被顶掉。"
-                            + "设置完成后再去「设置 → 高级功能 → 侧键」把长按设为「唤醒数字助手」，"
-                            + "长按电源键就会执行上面选的动作。")
+                    .setTitle("Text")
+                    .setMessage("Text：\n" + (TextUtils.isEmpty(cur) ? "（TextSettings）" : cur)
+                            + "\n\nText：\n" + target
+                            + "\n\nText，Text。"
+                            + "SettingsText「Settings → Text → Text」Text「Text」，"
+                            + "Text。")
                     .setNegativeButton(android.R.string.cancel, null)
-                    .setPositiveButton("设为助手", (d, w) -> pool.execute(() -> {
+                    .setPositiveButton("Text", (d, w) -> pool.execute(() -> {
                         ShellRunner.run("settings put secure assistant " + target);
                         final String after = ShellRunner.run("settings get secure assistant").trim();
                         ui.post(() -> {
-                            toast(target.equals(after) ? "已设为数字助手" : "设置未生效，结果：" + after);
+                            toast(target.equals(after) ? "Text" : "SettingsText，Text：" + after);
                             refreshQuickState();
                         });
                     }))
@@ -1793,19 +1793,19 @@ public class BetaActivity extends Activity {
     }
 
     /**
-     * 「开启无障碍服务」的入口。
+     * 「EnableNone[comment]」[comment]。
      *
-     * <p>⚠️ Android 13 起，targetSdk ≥ 33 且非商店安装的应用，系统会以「受限设置」拦下无障碍授权
-     * （提示「系统已拒绝向此应用授予权限」）。One UI 8 又把设置里的「允许限制性设置」入口砍了
-     * （应用信息页没有溢出菜单），UI 上无从解禁 —— 所以跳无障碍设置前先读一次
-     * {@code appops get … ACCESS_RESTRICTED_SETTINGS}，没允许就先弹窗执行允许指令，再跳。
+     * <p>⚠️ Android 13 [comment]，targetSdk ≥ 33 [comment]，[comment]「[comment]Settings」[comment]None[comment]
+     * （Notice「[comment]Deny[comment]」）。One UI 8 [comment]Settings[comment]「Allow[comment]Settings」[comment]
+     * （[comment]），UI [comment]None[comment] —— [comment]None[comment]Settings[comment]
+     * {@code appops get … ACCESS_RESTRICTED_SETTINGS}，[comment]Allow[comment]Allow[comment]，[comment]。
      */
     private void openAccessibilitySettings() {
         if (!ShellRunner.isReady()) {
-            toast("Shizuku 未就绪，请先在主界面授权");
+            toast("Shizuku Not Ready，Text");
             return;
         }
-        toast("正在检查限制性设置…");
+        toast("TextSettings…");
         pool.execute(() -> {
             final String st = ShellRunner.run(
                     "appops get " + getPackageName() + " ACCESS_RESTRICTED_SETTINGS").trim();
@@ -1820,50 +1820,50 @@ public class BetaActivity extends Activity {
         });
     }
 
-    /** 直接跳系统无障碍设置 */
+    /** [comment]None[comment]Settings */
     private void jumpA11y() {
         try {
             startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
-            // 名字直接取服务 label，保证跟系统列表里显示的一模一样，改名不用两头改
-            toast("在列表里找到「" + getString(R.string.a11y_service_label) + "」并开启");
+            // [comment] label，[comment]，[comment]
+            toast("Text「" + getString(R.string.a11y_service_label) + "」TextEnable");
         } catch (Throwable t) {
-            toast("打不开无障碍设置，请手动进入");
+            toast("TextNoneTextSettings，Text");
         }
     }
 
     /**
-     * 弹窗确认并执行「允许限制性设置」。
+     * [comment]「Allow[comment]Settings」。
      *
-     * @param jumpAfter 执行成功后是否接着跳无障碍设置
-     *                  （从「开启无障碍服务」进来是 true，从指令卡按钮进来是 false）
+     * @param jumpAfter [comment]Success[comment]YesNo[comment]None[comment]Settings
+     *                  （[comment]「EnableNone[comment]」[comment]Yes true，[comment]Yes false）
      */
     private void confirmAllowRestricted(final boolean jumpAfter) {
         if (!ShellRunner.isReady()) {
-            toast("Shizuku 未就绪，请先在主界面授权");
+            toast("Shizuku Not Ready，Text");
             return;
         }
         final String cmd = "appops set " + getPackageName() + " ACCESS_RESTRICTED_SETTINGS allow";
         new AlertDialog.Builder(this)
-                .setTitle("允许限制性设置")
-                .setMessage("本应用尚未被允许「限制性设置」，系统会因此拒绝授予无障碍权限。"
-                        + "\n\n将执行指令（以 shell 身份）：\n" + cmd
+                .setTitle("AllowTextSettings")
+                .setMessage("TextAllow「TextSettings」，TextDenyTextNoneText。"
+                        + "\n\nText（Text shell Text）：\n" + cmd
                         + "\n\n" + (jumpAfter
-                        ? "执行成功后会自动跳到无障碍设置。"
-                        : "执行成功后即可到无障碍设置里开启服务。"))
+                        ? "TextSuccessTextNoneTextSettings。"
+                        : "TextSuccessTextNoneTextSettingsTextEnableText。"))
                 .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton("执行", (d, w) -> pool.execute(() -> {
+                .setPositiveButton("Text", (d, w) -> pool.execute(() -> {
                     ShellRunner.run(cmd);
                     final String after = ShellRunner.run(
                             "appops get " + getPackageName() + " ACCESS_RESTRICTED_SETTINGS").trim();
                     final boolean ok = after.contains(": allow");
                     ui.post(() -> {
                         if (ok) {
-                            toast("已允许限制性设置");
+                            toast("TextAllowTextSettings");
                             if (jumpAfter) {
                                 jumpA11y();
                             }
                         } else {
-                            toast("执行未生效，当前状态：" + after);
+                            toast("Text，Text：" + after);
                         }
                     });
                 }))
@@ -1871,61 +1871,61 @@ public class BetaActivity extends Activity {
     }
 
     /**
-     * 一键拿「写入安全设置」权限（{@code WRITE_SECURE_SETTINGS}）。
+     * [comment]「[comment]Settings」[comment]（{@code WRITE_SECURE_SETTINGS}）。
      *
-     * <p>它是一条 development 级权限，普通安装拿不到，只能借 shell 身份 {@code pm grant} 授一次。
-     * 授过就一直有效，重启、覆盖安装都不用再授。
+     * <p>[comment]Yes[comment] development [comment]，[comment]，[comment] shell [comment] {@code pm grant} [comment]。
+     * [comment]，[comment]、[comment]。
      *
-     * <p>这只是让应用能写系统设置项（无线调试开关等），不会改手机现在的状态。
+     * <p>[comment]Yes[comment]Settings[comment]（None[comment]），[comment]。
      */
     private void doGrantSecure() {
         final String perm = android.Manifest.permission.WRITE_SECURE_SETTINGS;
         if (checkSelfPermission(perm) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
-            toast("已经授过了");
+            toast("Text");
             return;
         }
         if (!ShellRunner.isReady()) {
-            toast("需要 Shizuku 才能一键授权");
+            toast("Text Shizuku Text");
             return;
         }
         final String cmd = "pm grant " + getPackageName() + " " + perm;
-        toast("正在授权…");
+        toast("Text…");
         pool.execute(() -> {
             String out = ShellRunner.run(cmd, 12);
-            android.util.Log.i("BetaActivity", "授予安全设置权限 => " + out);
+            android.util.Log.i("BetaActivity", "TextSettingsText => " + out);
             try {
                 Thread.sleep(300);
             } catch (InterruptedException ignored) {
             }
             final boolean ok = checkSelfPermission(perm)
                     == android.content.pm.PackageManager.PERMISSION_GRANTED;
-            ui.post(() -> toast(ok ? "安全设置权限已授予"
-                    : ("授权没成" + (out.isEmpty() ? "" : "：" + out))));
+            ui.post(() -> toast(ok ? "TextSettingsText"
+                    : ("Text" + (out.isEmpty() ? "" : "：" + out))));
         });
     }
 
     private void runAction(final String key) {
-        // ★ 无线调试这条动作免 Shizuku —— 它存在的理由就是"Shizuku 起不来时打开它"，
-        //   卡在这里等于把死循环续上（见 QuickActions.run 里同一处判据）。
+        // ★ None[comment] Shizuku —— [comment]Yes"Shizuku [comment]"，
+        //   [comment]（[comment] QuickActions.run [comment]）。
         if (!ShellRunner.isReady() && !QuickActions.KEY_ADB_WIFI.equals(key)) {
-            toast("Shizuku 未就绪，请先在主界面授权");
+            toast("Shizuku Not Ready，Text");
             return;
         }
-        toast("执行中…");
+        toast("Text…");
         pool.execute(() -> {
             String err = QuickActions.run(this, key);
             ui.post(() -> {
                 toast(err == null
-                        ? (QuickActions.label(this, key) + " 已完成")
+                        ? (QuickActions.label(this, key) + " Text")
                         : (QuickActions.label(this, key) + "：" + err));
                 refreshCoverState();
             });
         });
     }
 
-    // ------------------------------------------------------------ 自定义指令
+    // ------------------------------------------------------------ Custom[comment]
 
-    /** 重画自定义指令列表 */
+    /** [comment]Custom[comment] */
     private void renderCustomCmds() {
         if (listCustomCmds == null) {
             return;
@@ -1934,7 +1934,7 @@ public class BetaActivity extends Activity {
         List<CustomCmds.Cmd> all = CustomCmds.list(this);
         if (all.isEmpty()) {
             TextView tv = new TextView(this);
-            tv.setText("还没有自定义指令，点上面「＋ 新增指令」加一条。");
+            tv.setText("TextCustomText，Text「＋ AddText」Text。");
             tv.setTextColor(0x8CFFFFFF);
             tv.setTextSize(13);
             tv.setPadding(0, dp(6), 0, 0);
@@ -1956,7 +1956,7 @@ public class BetaActivity extends Activity {
         lp.topMargin = dp(6);
         row.setLayoutParams(lp);
 
-        // 第一行：名字 + 右边那串 key（外部调用要用到它）
+        // [comment]：[comment] + [comment] key（[comment]）
         LinearLayout head = new LinearLayout(this);
         head.setOrientation(LinearLayout.HORIZONTAL);
         head.setGravity(Gravity.CENTER_VERTICAL);
@@ -1983,7 +1983,7 @@ public class BetaActivity extends Activity {
         cmd.setTypeface(Typeface.MONOSPACE);
         row.addView(cmd);
 
-        // 三颗按钮并排，等宽
+        // [comment]，[comment]
         LinearLayout btns = new LinearLayout(this);
         btns.setOrientation(LinearLayout.HORIZONTAL);
         LinearLayout.LayoutParams blp = new LinearLayout.LayoutParams(
@@ -1991,9 +1991,9 @@ public class BetaActivity extends Activity {
         blp.topMargin = dp(8);
         btns.setLayoutParams(blp);
 
-        TextView run = cmdBtn("执行", v -> runAction(CustomCmds.KEY_PREFIX + c.id));
-        TextView edit = cmdBtn("编辑", v -> showCmdEditor(c));
-        TextView del = cmdBtn("删除", v -> confirmDeleteCmd(c));
+        TextView run = cmdBtn("Text", v -> runAction(CustomCmds.KEY_PREFIX + c.id));
+        TextView edit = cmdBtn("Edit", v -> showCmdEditor(c));
+        TextView del = cmdBtn("Delete", v -> confirmDeleteCmd(c));
         ((LinearLayout.LayoutParams) run.getLayoutParams()).rightMargin = dp(8);
         ((LinearLayout.LayoutParams) edit.getLayoutParams()).rightMargin = dp(8);
         btns.addView(run);
@@ -2003,7 +2003,7 @@ public class BetaActivity extends Activity {
         return row;
     }
 
-    /** 列表行里的一颗小按钮（三颗等宽并排） */
+    /** [comment]（[comment]） */
     private TextView cmdBtn(String text, View.OnClickListener l) {
         TextView b = new TextView(this);
         b.setText(text);
@@ -2018,7 +2018,7 @@ public class BetaActivity extends Activity {
         return b;
     }
 
-    /** 新增（editing = null）或编辑一条自定义指令 */
+    /** Add（editing = null）[comment]Edit[comment]Custom[comment] */
     private void showCmdEditor(final CustomCmds.Cmd editing) {
         LinearLayout box = new LinearLayout(this);
         box.setOrientation(LinearLayout.VERTICAL);
@@ -2026,14 +2026,14 @@ public class BetaActivity extends Activity {
         box.setPadding(pad, dp(8), pad, 0);
 
         final EditText name = new EditText(this);
-        name.setHint("名称，例如 关掉蓝牙");
+        name.setHint("Text，Text Text");
         if (editing != null) {
             name.setText(editing.name);
         }
         box.addView(name);
 
         final EditText cmd = new EditText(this);
-        cmd.setHint("shell 命令，例如 svc bluetooth disable");
+        cmd.setHint("shell Text，Text svc bluetooth disable");
         cmd.setTypeface(Typeface.MONOSPACE);
         cmd.setLayoutParams(new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -2043,13 +2043,13 @@ public class BetaActivity extends Activity {
         box.addView(cmd);
 
         new AlertDialog.Builder(this)
-                .setTitle(editing == null ? "新增指令" : "编辑指令")
+                .setTitle(editing == null ? "AddText" : "EditText")
                 .setView(box)
                 .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton("保存", (d, w) -> {
+                .setPositiveButton("Save", (d, w) -> {
                     String c1 = cmd.getText().toString().trim();
                     if (c1.isEmpty()) {
-                        toast("命令不能为空");
+                        toast("Text");
                         return;
                     }
                     CustomCmds.Cmd item = (editing == null) ? new CustomCmds.Cmd() : editing;
@@ -2064,10 +2064,10 @@ public class BetaActivity extends Activity {
 
     private void confirmDeleteCmd(final CustomCmds.Cmd c) {
         new AlertDialog.Builder(this)
-                .setTitle("删除指令")
-                .setMessage("删除「" + c.name + "」？\n\n侧键上如果正挂着它，会变成「自定义指令（已删除）」。")
+                .setTitle("DeleteText")
+                .setMessage("Delete「" + c.name + "」？\n\nText，Text「CustomText（TextDelete）」。")
                 .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton("删除", (d, w) -> {
+                .setPositiveButton("Delete", (d, w) -> {
                     CustomCmds.remove(this, c.id);
                     renderCustomCmds();
                     refreshQuickState();
@@ -2080,10 +2080,10 @@ public class BetaActivity extends Activity {
             ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
             if (cm != null) {
                 cm.setPrimaryClip(ClipData.newPlainText("action", QuickActions.ACTION_RUN));
-                toast("已复制：" + QuickActions.ACTION_RUN);
+                toast("Text：" + QuickActions.ACTION_RUN);
             }
         } catch (Throwable t) {
-            toast("复制失败");
+            toast("TextFailed");
         }
     }
 }

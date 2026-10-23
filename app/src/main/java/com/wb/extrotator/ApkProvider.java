@@ -10,34 +10,34 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 /**
- * 把下载好的更新 APK 暴露成一个只读的 {@code content://} 地址，给系统安装器读。
+ * [comment]Update APK [comment] {@code content://} [comment]，[comment]。
  *
- * <p><b>为什么需要它</b>：没有 root / Shizuku 时，更新只能走系统安装器
- * （{@code ACTION_VIEW} 装 APK）。APK 躺在应用私有目录（{@code externalFilesDir}），
- * 而 {@code file://} 从 Android 7 起不许跨进程递 —— 所以要这么一层出口，
- * 和 {@link PhotoProvider} 是同一个理由。
+ * <p><b>[comment]</b>：[comment] root / Shizuku [comment]，Update[comment]
+ * （{@code ACTION_VIEW} [comment] APK）。APK [comment]（{@code externalFilesDir}），
+ * [comment] {@code file://} [comment] Android 7 [comment] —— [comment]，
+ * [comment] {@link PhotoProvider} Yes[comment]。
  *
- * <p><b>为什么不用 androidx 的 FileProvider</b>：本工程不带 androidx（见 build.gradle），
- * 而且这里比 PhotoProvider 还简单 —— 只读一个固定文件，连白名单都不用做
- * （会来读的只有系统包安装器，调用时还带一次性 URI 授权）。
+ * <p><b>[comment] androidx [comment] FileProvider</b>：[comment] androidx（[comment] build.gradle），
+ * [comment] PhotoProvider [comment] —— [comment]，[comment]
+ * （[comment]，[comment] URI [comment]）。
  *
- * <p>文件位置：{@code externalFilesDir/update.apk}，由 {@link AppUpdater#download}
- * 下载落地，两边必须一致。
+ * <p>[comment]：{@code externalFilesDir/update.apk}，[comment] {@link AppUpdater#download}
+ * [comment]，[comment]。
  */
 public class ApkProvider extends ContentProvider {
 
-    /** 清单里注册的 authority，两处必须一致 */
+    /** [comment] authority，[comment] */
     public static final String AUTHORITY = "com.wb.extrotator.apk";
 
-    /** 路径段，只是个名字，不参与寻址（就一个文件） */
+    /** [comment]，[comment]Yes[comment]，[comment]（[comment]） */
     private static final String NAME = "update.apk";
 
-    /** 递给系统安装器的地址 */
+    /** [comment] */
     public static Uri uri() {
         return Uri.parse("content://" + AUTHORITY + "/" + NAME);
     }
 
-    /** 下载落地处的那个文件 */
+    /** [comment] */
     private File apkFile() {
         return new File(getContext().getExternalFilesDir(null), AppUpdater.APK_NAME);
     }
@@ -69,16 +69,16 @@ public class ApkProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        throw new UnsupportedOperationException("只读");
+        throw new UnsupportedOperationException("Text");
     }
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        throw new UnsupportedOperationException("只读");
+        throw new UnsupportedOperationException("Text");
     }
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        throw new UnsupportedOperationException("只读");
+        throw new UnsupportedOperationException("Text");
     }
 }

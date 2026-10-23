@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  播放控制：「上一曲」。两条竖线 + 左指三角。
-  实心（fill）不是为了省事 —— 这几个按钮在外屏上都很小，描边会糊。
--->
+
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"

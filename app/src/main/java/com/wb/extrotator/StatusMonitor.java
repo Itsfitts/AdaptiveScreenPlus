@@ -23,47 +23,47 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 「状态展示柜」的数据源：每秒采一轮 CPU / 内存 / 温度 / 刷新率 / 电量。
- * ⚠ 读文件都走后台线程，{@link Cb} 回调已切回主线程。
+ * 「[comment]」[comment]：[comment] CPU / [comment] / [comment] / [comment] / [comment]。
+ * ⚠ [comment]，{@link Cb} [comment]。
  */
 public final class StatusMonitor {
 
     private static final String TAG = "ExtStatus";
 
-    /** 采样周期。占用率靠两次采样作差，再快没意义 */
+    /** [comment]。[comment]，[comment] */
     private static final long PERIOD_MS = 1000L;
 
-    /** 曲线保留多少个点（1 点 = 1 秒） */
+    /** [comment]（1 [comment] = 1 [comment]） */
     public static final int HIST = 60;
 
-    /** 有效温度区间（℃）。thermal 里普遍有 -273 这类占位值，落到区间外就当没读到 */
+    /** [comment]（℃）。thermal [comment] -273 [comment]，[comment] */
     private static final float TEMP_MIN = -20f, TEMP_MAX = 200f;
 
-    /** 一次采样拿到的全部数据；界面只读它，不再自己碰文件 */
+    /** [comment]；[comment]，[comment] */
     public static final class Snap {
-        /** CPU 总占用率 0~100；-1 = 还测不出来（第一轮只建基线） */
+        /** CPU [comment] 0~100；-1 = [comment]（[comment]） */
         public int cpuPct = -1;
         public int memPct = -1;
         public long memUsedMb = -1, memTotalMb = -1;
-        /** 所有 CPU 相关传感器里最高的那个；NaN = 没读到 */
+        /** [comment] CPU [comment]；NaN = [comment] */
         public float tempC = Float.NaN;
-        /** 主屏（内屏）当前刷新率；NaN = 没读到 */
+        /** [comment]（[comment]）[comment]；NaN = [comment] */
         public float refreshHz = Float.NaN;
-        /** 内屏物理分辨率，底栏用 */
+        /** [comment]，[comment] */
         public int panelW = 0, panelH = 0;
         public int battPct = -1;
         public boolean charging;
 
-        /** 每个簇（policy）的当前 / 最高频率（KHz）与核数；读不到就是空数组 */
+        /** [comment]（policy）[comment] / [comment]（KHz）[comment]；[comment]Yes[comment] */
         public int[] curKhz = new int[0];
         public int[] maxKhz = new int[0];
         public int[] nrCores = new int[0];
 
-        /** CPU 占用历史，末尾是最新；未填满时前面是 -1 */
+        /** CPU [comment]，[comment]Yes[comment]；[comment]Yes -1 */
         public int[] hist = new int[HIST];
     }
 
-    /** 采样回调，<b>已在主线程</b> */
+    /** [comment]，<b>[comment]</b> */
     public interface Cb {
         void onSample(Snap s);
     }
@@ -72,22 +72,22 @@ public final class StatusMonitor {
     private Activity host;
     private final Cb cb;
 
-    /** 占用历史，跨采样累积 */
+    /** [comment]，[comment] */
     private final int[] hist = new int[HIST];
 
     private ScheduledExecutorService exec;
 
-    // ---- 下面几项都是"探一次就记住"的路径缓存，省掉每秒几十次 listFiles ----
-    /** 每个核的空闲计时文件：idlePaths[cpu] = {state0/time, state1/time, ...} */
+    // ---- [comment]Yes"[comment]"[comment]，[comment] listFiles ----
+    /** [comment]：idlePaths[cpu] = {state0/time, state1/time, ...} */
     private String[][] idlePaths;
-    /** CPU 相关温度传感器的 temp 路径 */
+    /** CPU [comment] temp [comment] */
     private String[] tempPaths;
-    /** 各簇的 cpufreq 目录 */
+    /** [comment] cpufreq [comment] */
     private File[] policyDirs;
-    /** 各簇的最高频率（KHz），跟 policyDirs 一一对应 */
+    /** [comment]（KHz），[comment] policyDirs [comment] */
     private int[] policyMaxKhz;
 
-    // ---- CPU 占用的差分基线 ----
+    // ---- CPU [comment] ----
     private long lastIdleUs = -1, lastWallUs = -1;
     private List<Integer> lastCpus;
 
@@ -98,7 +98,7 @@ public final class StatusMonitor {
         java.util.Arrays.fill(hist, -1);
     }
 
-    /** 起采样线程（立刻采一轮，之后每 {@link #PERIOD_MS} 一轮） */
+    /** [comment]（[comment]，[comment] {@link #PERIOD_MS} [comment]） */
     public void start() {
         stop();
         exec = Executors.newSingleThreadScheduledExecutor(r -> {
@@ -106,11 +106,11 @@ public final class StatusMonitor {
             t.setDaemon(true);
             return t;
         });
-        // ⚠ 用 scheduleWithFixedDelay：单线程串行，卡顿时不会把任务堆起来
+        // ⚠ [comment] scheduleWithFixedDelay：[comment]，[comment]
         exec.scheduleWithFixedDelay(this::tick, 0L, PERIOD_MS, TimeUnit.MILLISECONDS);
     }
 
-    /** 停采样。页面离开前台就该停，这页是常驻的，不停就是一直在读文件 */
+    /** [comment]。[comment]，[comment]Yes[comment]，[comment]Yes[comment] */
     public void stop() {
         ScheduledExecutorService e = exec;
         exec = null;
@@ -119,13 +119,13 @@ public final class StatusMonitor {
         }
     }
 
-    /** 页面销毁时调一下，别让线程持有 Activity */
+    /** [comment]，[comment] Activity */
     public void release() {
         stop();
         host = null;
     }
 
-    // ------------------------------------------------------------------ 采样
+    // ------------------------------------------------------------------ [comment]
 
     private void tick() {
         Snap s = new Snap();
@@ -137,7 +137,7 @@ public final class StatusMonitor {
             sampleDisplay(s);
             sampleBattery(s);
         } catch (Throwable t) {
-            Log.w(TAG, "采样出错", t);
+            Log.w(TAG, "Text", t);
         }
         if (s.cpuPct >= 0) {
             System.arraycopy(hist, 1, hist, 0, HIST - 1);
@@ -156,7 +156,7 @@ public final class StatusMonitor {
         });
     }
 
-    /** 本轮 CPU 总占用率。只算 online 的核；核数变了或间隔太久就只重建基线，本轮不出数 */
+    /** [comment] CPU [comment]。[comment] online [comment]；[comment]，[comment] */
     private void sampleCpuUsage(Snap s) {
         List<Integer> cpus = onlineCpus();
         if (cpus.isEmpty()) {
@@ -180,7 +180,7 @@ public final class StatusMonitor {
         }
         long wall = SystemClock.elapsedRealtimeNanos() / 1000L;
 
-        // 间隔太离谱（>10 秒，说明中断过）就只当基线，别拿一段空白窗口算平均
+        // [comment]（>10 [comment]，[comment]）[comment]，[comment]
         boolean usable = lastIdleUs > 0 && lastWallUs > 0 && cpus.equals(lastCpus)
                 && wall > lastWallUs && (wall - lastWallUs) < 10_000_000L;
         if (usable) {
@@ -197,7 +197,7 @@ public final class StatusMonitor {
         lastCpus = cpus;
     }
 
-    /** 各簇频率 */
+    /** [comment] */
     private void sampleFreq(Snap s) {
         if (policyDirs == null) {
             policyDirs = policyDirs();
@@ -231,7 +231,7 @@ public final class StatusMonitor {
         s.nrCores = java.util.Arrays.copyOf(cores, keep);
     }
 
-    /** 温度：把所有 CPU 相关传感器里最高的那个报出来，比挑某一个 zone 更接近"烫不烫" */
+    /** [comment]：[comment] CPU [comment]，[comment] zone [comment]"[comment]" */
     private void sampleTemp(Snap s) {
         if (tempPaths == null) {
             tempPaths = buildTempPaths();
@@ -242,7 +242,7 @@ public final class StatusMonitor {
             if (milli == Long.MIN_VALUE) {
                 continue;
             }
-            float c = milli / 1000f;   // 单位是毫摄氏度
+            float c = milli / 1000f;   // TextYesText
             if (c < TEMP_MIN || c > TEMP_MAX) {
                 continue;
             }
@@ -308,9 +308,9 @@ public final class StatusMonitor {
         }
     }
 
-    // ------------------------------------------------------------------ 路径探测
+    // ------------------------------------------------------------------ [comment]
 
-    /** {@code /sys/devices/system/cpu/online} → 在线核号，形如 {@code 0-7} 或 {@code 0-2,4} */
+    /** {@code /sys/devices/system/cpu/online} → [comment]，[comment] {@code 0-7} [comment] {@code 0-2,4} */
     private static List<Integer> onlineCpus() {
         List<Integer> out = new ArrayList<>();
         String s = readLine("/sys/devices/system/cpu/online");
@@ -367,7 +367,7 @@ public final class StatusMonitor {
         return all;
     }
 
-    /** 挑出 CPU 相关的温度传感器。按名字含 cpu 筛；对不上的机型读不到，温度显示「—」 */
+    /** [comment] CPU [comment]。[comment] cpu [comment]；[comment]，[comment]「—」 */
     private static String[] buildTempPaths() {
         List<String> out = new ArrayList<>();
         File dir = new File("/sys/class/thermal");
@@ -408,7 +408,7 @@ public final class StatusMonitor {
         return out.toArray(new File[0]);
     }
 
-    /** 一个簇管几个核：读 {@code related_cpus}（形如 {@code 0-3}），读不到就报 1 */
+    /** [comment]：[comment] {@code related_cpus}（[comment] {@code 0-3}），[comment] 1 */
     private static int coreCountOf(File policyDir) {
         String s = readLine(new File(policyDir, "related_cpus").getAbsolutePath());
         if (s == null) {
@@ -432,7 +432,7 @@ public final class StatusMonitor {
         return n > 0 ? n : 1;
     }
 
-    // ------------------------------------------------------------------ 小工具
+    // ------------------------------------------------------------------ [comment]
 
     private static String readLine(String path) {
         try (BufferedReader r = new BufferedReader(new FileReader(path))) {

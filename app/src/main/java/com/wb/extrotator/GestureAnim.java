@@ -24,98 +24,98 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 /**
- * 内屏手势的<b>动画层</b>：手势走到哪，画面跟到哪。
+ * [comment]<b>[comment]</b>：[comment]，[comment]。
  *
- * <p>一块整屏大、<b>不吃触摸</b>的无障碍覆盖窗口，专门负责画。认手势和画动画是两件事，
- * 所以跟 {@link InnerGesture} 分开放：那边只管"这一划算不算"，这边只管"看起来像什么"。
+ * <p>[comment]、<b>[comment]</b>[comment]None[comment]，[comment]。[comment]Yes[comment]，
+ * [comment] {@link InnerGesture} [comment]：[comment]"[comment]"，[comment]"[comment]"。
  *
- * <p><b>底部上滑</b>按风格分两种画法：
+ * <p><b>[comment]</b>[comment]：
  * <ul>
- *   <li><b>原生风格</b> —— 抓一帧画面铺满整屏、随上滑越来越糊，底下再压一层暗度；
- *       做法与 {@link CoverBlur}（外屏手势条）完全一致。换掉原来那张"缩小的卡片"是因为：
- *       卡片要把整屏缩进一个小框里，横竖屏切换的一瞬间比例对不上就会被拉成一条，
- *       而且卡片框比屏幕小，边上还会漏一条没盖住。整屏 1:1 铺开就没有这两个问题。</li>
- *   <li><b>炫彩风格</b> —— 沿底边亮起<b>一条横向彩带</b>，跟侧滑是同一套画法（不糊画面）。
- *       照 MyGesture 那张 {@code bottom_light.png}：它的「边缘多彩光效」三条边共用一套
- *       贴边贴图，底边有自己的一张横条（整条屏宽 × 约 5% 屏高）。</li>
+ *   <li><b>[comment]</b> —— [comment]、[comment]，[comment]；
+ *       [comment] {@link CoverBlur}（[comment]）[comment]。[comment]"[comment]"Yes[comment]：
+ *       [comment]，[comment]，
+ *       [comment]，[comment]。[comment] 1:1 [comment]。</li>
+ *   <li><b>[comment]</b> —— [comment]<b>[comment]</b>，[comment]Yes[comment]（[comment]）。
+ *       [comment] MyGesture [comment] {@code bottom_light.png}：[comment]「[comment]」[comment]
+ *       [comment]，[comment]（[comment] × [comment] 5% [comment]）。</li>
  * </ul>
- * <p>底部"划多远算糊满"由 {@code InnerGesture} 按屏高比例折算好再喂进来（现在 = 屏高的 70%）。
- * 这跟外屏手势条的 40% 本来就不一样 —— 那边快、这边慢，是有意分开的。
+ * <p>[comment]"[comment]"[comment] {@code InnerGesture} [comment]（[comment] = [comment] 70%）。
+ * [comment] 40% [comment] —— [comment]、[comment]，Yes[comment]。
  *
- * <p><b>侧滑两档</b>（{@link ExtPrefs#gestureAnimStyle}）：
+ * <p><b>[comment]</b>（{@link ExtPrefs#gestureAnimStyle}）：
  * <ul>
- *   <li><b>原生风格</b>（{@link #STYLE_NATIVE}）—— 从被划的那条边推出一枚深色<b>圆</b>、
- *       圆心一个<b>指向屏幕内侧</b>的箭头。</li>
- *   <li><b>炫彩风格</b>（{@link #STYLE_GLOW}）—— 沿被划那条边叠出<b>一条渐变彩色光带</b>：
- *       贴边那一线最亮，往屏内 {@link #GLOW_DEPTH_DP} dp 之内收到没有，沿边两头也收到没有；
- *       整条按调色板顺次推移颜色，看着像一条 RGB 灯带。
- *       照的是 MyGesture 的<b>默认档「边缘多彩光效」</b>——它的真身是
- *       {@code left_light.png} 一张贴图被<b>拉伸成整条边高</b>，再用 {@link #TONES}
- *       里随机一个色 {@code setTint}，不透明度随划出距离涨。
- *       ⚠ 所以它<b>既不是同心圆环</b>（那是它的「水波」档、pro 的活，走另一个类），
- *       <b>也不是跟着手指走的一片柳叶弧</b>（我前两版抄错的就是这两种）。
- *       左右两边用 {@code left_light / right_light}，底边用 {@code bottom_light}
- *       ——<b>三条边同一套</b>，底边只是把长轴从竖的转成横的。</li>
+ *   <li><b>[comment]</b>（{@link #STYLE_NATIVE}）—— [comment]<b>[comment]</b>、
+ *       [comment]<b>[comment]</b>[comment]。</li>
+ *   <li><b>[comment]</b>（{@link #STYLE_GLOW}）—— [comment]<b>[comment]</b>：
+ *       [comment]，[comment] {@link #GLOW_DEPTH_DP} dp [comment]，[comment]；
+ *       [comment]，[comment] RGB [comment]。
+ *       [comment]Yes MyGesture [comment]<b>Default[comment]「[comment]」</b>——[comment]Yes
+ *       {@code left_light.png} [comment]<b>[comment]</b>，[comment] {@link #TONES}
+ *       [comment] {@code setTint}，[comment]。
+ *       ⚠ [comment]<b>[comment]Yes[comment]</b>（[comment]Yes[comment]「[comment]」[comment]、pro [comment]，[comment]），
+ *       <b>[comment]Yes[comment]</b>（[comment]Yes[comment]）。
+ *       [comment] {@code left_light / right_light}，[comment] {@code bottom_light}
+ *       ——<b>[comment]</b>，[comment]Yes[comment]。</li>
  * </ul>
  *
- * <p>⚠ <b>窗口必须给 gravity</b>：不给的话系统按"居中"摆放，{@code x / y} 会变成
- * <b>相对屏幕中心的偏移</b> —— 贴在左边的那条带会被摆到屏幕正中，右边那条因为被夹回
- * 边界才"看起来是对的"。v4.21b 栽过这个（RULES §114.2）。
+ * <p>⚠ <b>[comment] gravity</b>：[comment]"[comment]"[comment]，{@code x / y} [comment]
+ * <b>[comment]</b> —— [comment]，[comment]
+ * [comment]"[comment]Yes[comment]"。v4.21b [comment]（RULES §114.2）。
  *
- * <p>⚠ <b>加窗顺序 = 视觉层序</b>：同类窗口后加的在上，这一层必须由
- * {@link InnerGesture#install} 在三条捕获带<b>之后</b>加，才压在它们上面（它自己不吃触摸）。
+ * <p>⚠ <b>[comment] = [comment]</b>：[comment]，[comment]
+ * {@link InnerGesture#install} [comment]<b>[comment]</b>[comment]，[comment]（[comment]）。
  */
 public final class GestureAnim {
 
     private static final String TAG = "GestureAnim";
 
-    /** 手势种类：没有 / 左边返回 / 右边返回 / 底部上滑 */
+    /** [comment]：[comment] / [comment] / [comment] / [comment] */
     public static final int KIND_NONE = 0;
     public static final int KIND_BACK_L = 1;
     public static final int KIND_BACK_R = 2;
     public static final int KIND_HOME = 3;
 
-    /** 动画风格：0 = 原生（默认），1 = 炫彩 */
+    /** [comment]：0 = [comment]（Default），1 = [comment] */
     public static final int STYLE_NATIVE = 0;
     public static final int STYLE_GLOW = 1;
 
-    /** 原生侧滑：那枚圆的半径、离屏边的起步距离、随进度再往里推的距离（dp） */
+    /** [comment]：[comment]、[comment]、[comment]（dp） */
     private static final float NATIVE_R_DP = 17f;
     private static final float NATIVE_INSET_DP = 8f;
     private static final float NATIVE_PUSH_DP = 16f;
-    /** 原生侧滑：箭头杆的一半、箭头翅（dp；都随进度再长一点） */
+    /** [comment]：[comment]、[comment]（dp；[comment]） */
     private static final float NATIVE_ARM_DP = 5f;
     private static final float NATIVE_WING_DP = 4.5f;
 
     /**
-     * 炫彩：光带沿边占多长（边长的比例）—— MyGesture 那条贴图就是整条边。
-     * 侧滑按屏高算、底部按屏宽算（各自那条边有多长）。
+     * [comment]：[comment]（[comment]）—— MyGesture [comment]Yes[comment]。
+     * [comment]、[comment]（[comment]）。
      */
     private static final float GLOW_SPAN = 0.88f;
     /**
-     * 炫彩：光带往屏内伸多远（dp；按进度再长一点）—— 32 → 40 是「光晕再明显一些」调的第二轮。
+     * [comment]：[comment]（dp；[comment]）—— 32 → 40 Yes「[comment]」[comment]。
      */
     private static final float GLOW_DEPTH_DP = 40f;
-    /** 炫彩：光带沿边排成的团数（相邻两团叠着，排成一条连续的带） */
+    /** [comment]：[comment]（[comment]，[comment]） */
     private static final int GLOW_BLOBS = 9;
-    /** 炫彩：单团半径 = 边长的这个比例（比团间距大，才叠得上） */
+    /** [comment]：[comment] = [comment]（[comment]，[comment]） */
     private static final float GLOW_BLOB_R = 0.115f;
-    /** 炫彩：相邻两团隔调色板里的几格 —— 1 = 取相邻色，扫出来才像 RGB 渐变 */
+    /** [comment]：[comment] —— 1 = [comment]，[comment] RGB [comment] */
     private static final int GLOW_HUE_STEP = 1;
     /**
-     * 炫彩：单团的峰值不透明度。
+     * [comment]：[comment]。
      *
-     * <p>最初按 {@code left_light.png} 逐像素量的峰值 180/255（= 0.71）反推成 0.34/团。
-     * 真机上用户两轮都说不够明显：先调到 0.46，再调到 0.58 —— 九团叠起来比原版那张
-     * 贴图更亮更浓。这是<b>有意</b>加重的「光污染」，不是量错了。
-     * 再往上就得当心：九团 alpha 相加会把整条带糊成一片死白。
+     * <p>[comment] {@code left_light.png} [comment] 180/255（= 0.71）[comment] 0.34/[comment]。
+     * [comment]：[comment] 0.46，[comment] 0.58 —— [comment]
+     * [comment]。[comment]Yes<b>[comment]</b>[comment]「[comment]」，[comment]Yes[comment]。
+     * [comment]：[comment] alpha [comment]。
      */
     private static final float GLOW_GAIN = 0.58f;
 
     /**
-     * 炫彩的 16 色。照 MyGesture 的调色板抄的（{@code me.hisn.utils.k} 里的静态数组）：
-     * 红 → 粉 → 紫 → 靛 → 蓝 → 青 → 绿 → 黄 → 橙。它每次触发<b>随机取一个</b>，
-     * 所以看着"像 RGB 一样"变化。
+     * [comment] 16 [comment]。[comment] MyGesture [comment]（{@code me.hisn.utils.k} [comment]）：
+     * [comment] → [comment] → [comment] → [comment] → [comment] → [comment] → [comment] → [comment] → [comment]。[comment]<b>[comment]</b>，
+     * [comment]"[comment] RGB [comment]"[comment]。
      */
     private static final int[] TONES = {
             0xFFE51C23, 0xFFE91E63, 0xFF9C27B0, 0xFF673AB7,
@@ -124,17 +124,17 @@ public final class GestureAnim {
             0xFFFFEB3B, 0xFFFFC107, 0xFFFF9800, 0xFFFF5722,
     };
 
-    /** 底部上滑：模糊半径的起止（dp）、铺满全屏需要到的进度 */
+    /** [comment]：[comment]（dp）、[comment] */
     private static final float BLUR_MIN_DP = 7f;
     private static final float BLUR_MAX_DP = 26f;
-    /** 画面抓到之后，到多少进度就完全不透明（别一上来就闪） */
+    /** [comment]，[comment]（[comment]） */
     private static final float ALPHA_AT = 0.35f;
-    /** 有画面时压在上面的暗度 / 没画面时（安全界面截出黑）压得更重 */
+    /** [comment] / [comment]（[comment]）[comment] */
     private static final float SCRIM = 0.20f;
     private static final float SCRIM_NO_SHOT = 0.55f;
-    /** 半径变化不到这么多就不重设，省掉一堆无谓的重绘 */
+    /** [comment]，[comment]None[comment] */
     private static final float RAD_STEP = 2f;
-    /** 抓帧失败之后这么久不再试（系统对按屏截图有节流） */
+    /** [comment]Failed[comment]（[comment]） */
     private static final long RETRY_MS = 1500L;
 
     private static WindowManager wm;
@@ -143,19 +143,19 @@ public final class GestureAnim {
     private static float density = 3f;
     private static int sw;
     private static int sh;
-    /** 手指现在在哪（整屏坐标）。侧滑那团光晕跟着它走 */
+    /** [comment]（[comment]）。[comment] */
     private static float fingerX;
     private static float fingerY;
 
     private GestureAnim() {
     }
 
-    /** 有没有装上 */
+    /** [comment] */
     static boolean installed() {
         return root != null;
     }
 
-    /** 装上动画层。由 {@link InnerGesture#install} 在三条捕获带加完之后调（顺序要紧） */
+    /** [comment]。[comment] {@link InnerGesture#install} [comment]（[comment]） */
     static void install(Context displayCtx, WindowManager w, AccessibilityService s,
                         int wPx, int hPx, float dens) {
         if (root != null) {
@@ -173,29 +173,29 @@ public final class GestureAnim {
             WindowManager.LayoutParams p = new WindowManager.LayoutParams(
                     sw, sh,
                     WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
-                    // 不吃焦点、不吃触摸（它只负责画）；两个 LAYOUT 旗标是为了真的铺满整块屏
-                    //（少了 NO_LIMITS 会被系统条的 inset 顶下去一截）
+                    // [comment]、[comment]（[comment]）；[comment] LAYOUT [comment]Yes[comment]
+                    //（[comment] NO_LIMITS [comment] inset [comment]）
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                             | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
                             | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
                             | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
                             | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                     PixelFormat.TRANSLUCENT);
-            // ⚠ 一定要给 gravity：不给的话 x / y 是"相对屏幕中心"的偏移
+            // ⚠ [comment] gravity：[comment] x / y Yes"[comment]"[comment]
             p.gravity = Gravity.TOP | Gravity.START;
             p.x = 0;
             p.y = 0;
             w.addView(v, p);
             root = v;
-            Log.i(TAG, "动画层已装：" + sw + "x" + sh + "px");
+            Log.i(TAG, "Text：" + sw + "x" + sh + "px");
         } catch (Throwable t) {
-            Log.e(TAG, "装动画层失败", t);
+            Log.e(TAG, "TextFailed", t);
             wm = null;
             svc = null;
         }
     }
 
-    /** 摘掉。无障碍服务断开时必须调 —— 留着它就是一块永远不走的画布 */
+    /** [comment]。None[comment] —— [comment]Yes[comment] */
     static void remove() {
         AnimView v = root;
         WindowManager w = wm;
@@ -210,13 +210,13 @@ public final class GestureAnim {
             try {
                 w.removeViewImmediate(v);
             } catch (Throwable t) {
-                Log.w(TAG, "摘动画层失败", t);
+                Log.w(TAG, "TextFailed", t);
             }
         }
-        Log.i(TAG, "动画层已摘掉");
+        Log.i(TAG, "Text");
     }
 
-    /** 手势成立（越过门槛）时调一次。风格在这一刻读、颜色在这一刻挑，下一手才生效 */
+    /** [comment]（[comment]）[comment]。[comment]、[comment]，[comment] */
     static void begin(int kind) {
         AnimView v = root;
         if (v == null || kind == KIND_NONE) {
@@ -225,13 +225,13 @@ public final class GestureAnim {
         v.start(kind, styleNow());
     }
 
-    /** 手指现在在哪（整屏坐标）。侧滑那团光晕要贴着手指画，所以每个 MOVE 都喂一次 */
+    /** [comment]（[comment]）。[comment]，[comment] MOVE [comment] */
     static void at(float x, float y) {
         fingerX = x;
         fingerY = y;
     }
 
-    /** 手指走到哪：0 = 刚够格，1 = 走满 */
+    /** [comment]：0 = [comment]，1 = [comment] */
     static void progress(float p) {
         AnimView v = root;
         if (v != null) {
@@ -240,9 +240,9 @@ public final class GestureAnim {
     }
 
     /**
-     * 松手。
+     * [comment]。
      *
-     * @param fired 动作真发出去了没有 —— 发出去了就把进度补满再淡出，没发就原地淡掉
+     * @param fired [comment] —— [comment]，[comment]
      */
     static void end(boolean fired) {
         AnimView v = root;
@@ -251,7 +251,7 @@ public final class GestureAnim {
         }
     }
 
-    /** 不是我们的手势（或手势被系统收走）：立刻收干净，别在屏上留东西 */
+    /** [comment]Yes[comment]（[comment]）：[comment]，[comment] */
     static void cancel() {
         AnimView v = root;
         if (v != null) {
@@ -271,7 +271,7 @@ public final class GestureAnim {
         return v * density;
     }
 
-    /** 把 {@code v} 夹进 [lo, hi]；范围反了（屏太小）就取中间 */
+    /** [comment] {@code v} [comment] [lo, hi]；[comment]（[comment]）[comment] */
     private static float clamp(float v, float lo, float hi) {
         if (hi <= lo) {
             return (lo + hi) / 2f;
@@ -279,11 +279,11 @@ public final class GestureAnim {
         return v < lo ? lo : (v > hi ? hi : v);
     }
 
-    // ------------------------------------------------------------------ 画布
+    // ------------------------------------------------------------------ [comment]
 
     /**
-     * 那一整块画布：底下是抓回来那帧（只给底部上滑用，会被模糊），
-     * 上面压暗度，最上面是自绘的指示层。三个孩子都铺满，坐标就是整屏坐标。
+     * [comment]：[comment]Yes[comment]（[comment]，[comment]），
+     * [comment]，[comment]Yes[comment]。[comment]，[comment]Yes[comment]。
      */
     private static final class AnimView extends FrameLayout {
 
@@ -293,18 +293,18 @@ public final class GestureAnim {
 
         private int kind = KIND_NONE;
         private int style = STYLE_NATIVE;
-        /** 0..1：手指走到哪 */
+        /** 0..1：[comment] */
         private float p;
-        /** 这一次手势里还允不允许画（抓帧是异步的，回调可能晚于松手） */
+        /** [comment]Allow[comment]（[comment]Yes[comment]，[comment]） */
         private boolean visible;
-        /** 抓帧期间先别画自己，否则自己的画面会被抓进帧里 */
+        /** [comment]，No[comment] */
         private boolean hideForShot;
         private boolean asked;
         private long retryAfter;
-        /** 这一次光带的起始色号（手势开始时挑一次，整条带按它顺次往下推） */
+        /** [comment]（[comment]，[comment]） */
         private int toneIdx;
         private float lastRadius = -1f;
-        /** 底部上滑抓回来的那一帧（整屏，1:1 铺开） */
+        /** [comment]（[comment]，1:1 [comment]） */
         private Bitmap shot;
         private ValueAnimator anim;
 
@@ -340,8 +340,8 @@ public final class GestureAnim {
             recycleShot();
             blurIv.setImageDrawable(null);
             if (k == KIND_HOME && st != STYLE_GLOW) {
-                // 原生档的底部上滑要一张实景来糊 —— 趁手指还没走远先抓。
-                // ★ 炫彩档底部画的是横向彩带，不糊画面，所以既不抓帧、也不压暗度。
+                // [comment] —— [comment]。
+                // ★ [comment]Yes[comment]，[comment]，[comment]、[comment]。
                 grab();
             }
             apply();
@@ -427,16 +427,16 @@ public final class GestureAnim {
             }
         }
 
-        /** 底部这一手走不走"抓帧 + 整屏模糊"（只有原生档走；炫彩档画横向彩带） */
+        /** [comment]"[comment] + [comment]"（[comment]；[comment]） */
         private boolean blurHome() {
             return kind == KIND_HOME && style != STYLE_GLOW;
         }
 
-        /** 把这一手的状态刷到三个孩子身上 */
+        /** [comment] */
         private void apply() {
             final boolean show = visible && !hideForShot;
             if (!show || !blurHome()) {
-                // 侧滑、以及炫彩档的底部，都不用帧；改由指示层自己画
+                // [comment]、[comment]，[comment]；[comment]
                 blurIv.setAlpha(0f);
                 scrim.setAlpha(0f);
             }
@@ -457,7 +457,7 @@ public final class GestureAnim {
             ind.invalidate();
         }
 
-        /** 给画面上模糊。API 31 才有 RenderEffect，之前只压暗度 */
+        /** [comment]。API 31 [comment] RenderEffect，[comment] */
         private void setBlur(float radius) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
                 return;
@@ -466,17 +466,17 @@ public final class GestureAnim {
                 blurIv.setRenderEffect(RenderEffect.createBlurEffect(
                         radius, radius, Shader.TileMode.CLAMP));
             } catch (Throwable t) {
-                Log.w(TAG, "设模糊失败（不影响压暗度）", t);
+                Log.w(TAG, "TextFailed（Text）", t);
             }
         }
 
-        // -------------------------------------------------------------- 抓帧
+        // -------------------------------------------------------------- [comment]
 
         /**
-         * 抓当前画面。跟 {@link CoverBlur} 那套一模一样，只是这里只抓一帧。
+         * [comment]。[comment] {@link CoverBlur} [comment]，[comment]Yes[comment]。
          *
-         * <p>抓帧这一刻先把 {@code hideForShot} 立起来、把自己擦掉 —— 动画层是整屏的，
-         * 不擦就会把自己画的模糊面抓进帧里（越糊越糊）。
+         * <p>[comment] {@code hideForShot} [comment]、[comment] —— [comment]Yes[comment]，
+         * [comment]（[comment]）。
          */
         private void grab() {
             AccessibilityService s = svc;
@@ -504,7 +504,7 @@ public final class GestureAnim {
                                     }
                                     buf.close();
                                 } catch (Throwable t) {
-                                    Log.w(TAG, "把截到的帧转成 bitmap 失败", t);
+                                    Log.w(TAG, "Text bitmap Failed", t);
                                 }
                                 hideForShot = false;
                                 if (b == null || blank(b)) {
@@ -512,12 +512,12 @@ public final class GestureAnim {
                                         b.recycle();
                                     }
                                     retryAfter = System.currentTimeMillis() + RETRY_MS;
-                                    Log.w(TAG, "没拿到可用帧（安全界面会截出纯色），这一手只压暗度");
+                                    Log.w(TAG, "Text（Text），Text");
                                     apply();
                                     return;
                                 }
                                 if (!visible || kind != KIND_HOME) {
-                                    // 手已经松了 —— 帧就是废的，别留着
+                                    // [comment] —— [comment]Yes[comment]，[comment]
                                     b.recycle();
                                     apply();
                                     return;
@@ -525,8 +525,8 @@ public final class GestureAnim {
                                 recycleShot();
                                 shot = b;
                                 blurIv.setImageBitmap(b);
-                                Log.i(TAG, "底部拿到帧：" + b.getWidth() + "x" + b.getHeight()
-                                        + "（窗口 " + sw + "x" + sh + "）");
+                                Log.i(TAG, "Text：" + b.getWidth() + "x" + b.getHeight()
+                                        + "（Text " + sw + "x" + sh + "）");
                                 apply();
                             }
 
@@ -534,23 +534,23 @@ public final class GestureAnim {
                             public void onFailure(int errorCode) {
                                 hideForShot = false;
                                 retryAfter = System.currentTimeMillis() + RETRY_MS;
-                                Log.w(TAG, "截图失败 code=" + errorCode + "，这一手只压暗度");
+                                Log.w(TAG, "TextFailed code=" + errorCode + "，Text");
                                 apply();
                             }
                         });
             } catch (Throwable t) {
                 hideForShot = false;
                 retryAfter = System.currentTimeMillis() + RETRY_MS;
-                Log.w(TAG, "takeScreenshot 抛了（多半是服务配置里没声明 canTakeScreenshot）", t);
+                Log.w(TAG, "takeScreenshot Text（TextYesText canTakeScreenshot）", t);
                 apply();
             }
         }
 
         /**
-         * 抓回来是不是一张纯色图。
+         * [comment]Yes[comment]Yes[comment]。
          *
-         * <p>缩到 16x16 看亮度极差：被 {@code FLAG_SECURE} 挡住的窗口截出来是纯黑，
-         * 极差接近 0。真画面（哪怕壁纸很素）极差不会这么小。照 CoverBlur 的做法。
+         * <p>[comment] 16x16 [comment]：[comment] {@code FLAG_SECURE} [comment]Yes[comment]，
+         * [comment] 0。[comment]（[comment]）[comment]。[comment] CoverBlur [comment]。
          */
         private static boolean blank(Bitmap b) {
             Bitmap small = null;
@@ -581,9 +581,9 @@ public final class GestureAnim {
         }
     }
 
-    // ------------------------------------------------------------------ 侧滑的指示层
+    // ------------------------------------------------------------------ [comment]
 
-    /** 只画侧滑那点东西（底部的模糊在上面的 ImageView 里）。坐标是整屏坐标 */
+    /** [comment]（[comment] ImageView [comment]）。[comment]Yes[comment] */
     private static final class IndView extends View {
 
         private final AnimView owner;
@@ -604,15 +604,15 @@ public final class GestureAnim {
                 return;
             }
             if (a.style == STYLE_GLOW) {
-                // 炫彩档三条边都画彩带（含底部）
+                // [comment]（[comment]）
                 drawGlow(c, a);
             } else if (a.kind != KIND_HOME) {
-                // 原生档的底部走整屏模糊，这里不画
+                // [comment]，[comment]
                 drawNative(c, a);
             }
         }
 
-        /** 原生风格：边缘一枚圆 + 指向内侧的箭头 */
+        /** [comment]：[comment] + [comment] */
         private void drawNative(Canvas c, AnimView a) {
             final boolean left = a.kind == KIND_BACK_L;
             final float r = dpPx(NATIVE_R_DP);
@@ -620,7 +620,7 @@ public final class GestureAnim {
             final float cx = left ? inset + r : sw - inset - r;
             final float cy = sh / 2f;
 
-            // 深色圆底，越往里推越实
+            // [comment]，[comment]
             paint.reset();
             paint.setAntiAlias(true);
             paint.setShader(null);
@@ -628,7 +628,7 @@ public final class GestureAnim {
             paint.setColor(Color.argb((int) (255f * (0.34f + 0.46f * a.p)), 0, 0, 0));
             c.drawCircle(cx, cy, r, paint);
 
-            // 箭头指向<b>屏幕内侧</b>：左边缘划入朝右、右边缘划入朝左（不是指回边缘）
+            // [comment]<b>[comment]</b>：[comment]、[comment]（[comment]Yes[comment]）
             final float dir = left ? 1f : -1f;
             final float arm = dpPx(NATIVE_ARM_DP) + dpPx(3f) * a.p;
             final float wing = dpPx(NATIVE_WING_DP) + dpPx(2f) * a.p;
@@ -646,38 +646,38 @@ public final class GestureAnim {
         }
 
         /**
-         * 炫彩风格：沿边叠出<b>一条渐变彩色光带</b>。
+         * [comment]：[comment]<b>[comment]</b>。
          *
-         * <p>每一团都用 {@link #halo} 画椭圆径向渐变：长轴沿着边、短轴伸向屏内，
-         * 于是一团的剖面就是"贴着边最亮、往屏内 GLOW_DEPTH_DP 之内收到没有"。
-         * 再把它们沿边排成一串（相邻两团叠着），每团沿边方向的亮度按 sin 钟形收放
-         * —— 合起来就是"沿边两头收到没有、贴边那一线最亮"的一条带，
-         * 跟 MyGesture 那张 {@code left_light.png} 的剖面一致。
+         * <p>[comment] {@link #halo} [comment]：[comment]、[comment]，
+         * [comment]Yes[comment]Yes"[comment]、[comment] GLOW_DEPTH_DP [comment]"。
+         * [comment]（[comment]），[comment] sin [comment]
+         * —— [comment]Yes"[comment]、[comment]"[comment]，
+         * [comment] MyGesture [comment] {@code left_light.png} [comment]。
          *
-         * <p>颜色是<b>顺次推进</b>的：第 i 团取调色板里第 {@code 起始色号 + i} 个色，
-         * 一条带从头到尾扫过好几个色相 —— 这就是"像 RGB 一样"的观感。
+         * <p>[comment]Yes<b>[comment]</b>[comment]：[comment] i [comment] {@code [comment] + i} [comment]，
+         * [comment] —— [comment]Yes"[comment] RGB [comment]"[comment]。
          *
-         * <p><b>三条边共用这一套</b>，只是轴的朝向不同：侧滑那条边是竖的（沿边 = 纵轴、
-         * 入屏 = 横轴），底边那条是横的（沿边 = 横轴、入屏 = 纵轴）。{@link #halo} 收的是
-         * "X 半径 / Y 半径"两个数，所以底部只要把两个坐标对调、贴边那条线换成 {@code y = sh}
-         * 就成 —— 出来的是一条贴着屏幕底边、朝上伸 {@link #GLOW_DEPTH_DP} 的横向彩带。
+         * <p><b>[comment]</b>，[comment]Yes[comment]：[comment]Yes[comment]（[comment] = [comment]、
+         * [comment] = [comment]），[comment]Yes[comment]（[comment] = [comment]、[comment] = [comment]）。{@link #halo} [comment]Yes
+         * "X [comment] / Y [comment]"[comment]，[comment]、[comment] {@code y = sh}
+         * [comment] —— [comment]Yes[comment]、[comment] {@link #GLOW_DEPTH_DP} [comment]。
          */
         private void drawGlow(Canvas c, AnimView a) {
             final boolean bottom = a.kind == KIND_HOME;
-            // 被划的那条边有多长（侧滑 = 屏高，底部 = 屏宽）
+            // [comment]（[comment] = [comment]，[comment] = [comment]）
             final float edgeLen = bottom ? sw : sh;
             final float depth = dpPx(GLOW_DEPTH_DP) * (0.55f + 0.45f * a.p);
             final float span = edgeLen * GLOW_SPAN;
             final float r = edgeLen * GLOW_BLOB_R * (0.5f + 0.5f * a.p);
-            // 整条带跟着手指那一格挪，但要让整条都留在屏内（手划到边角时不缺一块）
+            // [comment]，[comment]（[comment]）
             final float half = span * 0.5f;
             final float mid = clamp(bottom ? fingerX : fingerY, half, edgeLen - half);
             final float from = mid - half;
-            // 贴边那一线：左边 x=0、右边 x=sw、底边 y=sh
+            // [comment]：[comment] x=0、[comment] x=sw、[comment] y=sh
             final float edge = bottom ? sh : (a.kind == KIND_BACK_L ? 0f : sw);
             for (int i = 0; i < GLOW_BLOBS; i++) {
                 final float t = (i + 0.5f) / GLOW_BLOBS;
-                // 沿边方向的钟形包络：两头收到 0、中间最亮（照贴图那条剖面）
+                // [comment]：[comment] 0、[comment]（[comment]）
                 final float w = (float) Math.sin(Math.PI * t);
                 final int hue = TONES[(a.toneIdx + i * GLOW_HUE_STEP) % TONES.length];
                 final float u = from + span * t;
@@ -690,7 +690,7 @@ public final class GestureAnim {
             }
         }
 
-        /** 一团光：圆心在 {@code (x, y)}，纵轴被压到 {@code reach / halfLen} 变成贴边椭圆 */
+        /** [comment]：[comment] {@code (x, y)}，[comment] {@code reach / halfLen} [comment] */
         private void halo(Canvas c, float x, float y, float halfLen, float reach,
                           int tone, float alpha) {
             if (halfLen < 2f || reach < 1f || alpha <= 0.01f) {

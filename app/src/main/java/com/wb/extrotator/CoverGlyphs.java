@@ -6,51 +6,51 @@ import android.graphics.Path;
 import android.graphics.RectF;
 
 /**
- * 侧边栏几套动画共用的一小撮画笔工具：一档指令（返回 / 后台 / 通知 / 桌面）的<b>名字</b>，
- * 以及那个手画的小图标。
+ * [comment]：[comment]（[comment] / [comment] / [comment] / [comment]）[comment]<b>[comment]</b>，
+ * [comment]。
  *
- * <p><b>为什么单独拎出来</b>：几套动画挂的是同一组指令，图标与叫法必须一模一样 ——
- * 各画各的，改一处忘一处，几套动画就会走形。以后新增第三套动画直接调这里。
+ * <p><b>[comment]</b>：[comment]Yes[comment]，[comment] ——
+ * [comment]，[comment]，[comment]。[comment]Add[comment]。
  *
- * <p>⚠ {@link CoverWheel} 里还留着自己的一份同源代码 —— 那一套的观感用户已经验收过，
- * 本版不碰它，等哪次真要动圆环时再一并换过来。
+ * <p>⚠ {@link CoverWheel} [comment] —— [comment]，
+ * [comment]，[comment]。
  */
 final class CoverGlyphs {
 
     private CoverGlyphs() {
     }
 
-    /** 这一档指令在屏上的叫法 */
+    /** [comment] */
     static String label(int act) {
         switch (act) {
             case ExtPrefs.RING_BACK:
-                return "返回";
+                return "Text";
             case ExtPrefs.RING_RECENTS:
-                return "后台";
+                return "Text";
             case ExtPrefs.RING_NOTIFY:
-                return "通知";
+                return "Text";
             case ExtPrefs.RING_HOME:
-                return "桌面";
+                return "Text";
             default:
-                return "空";
+                return "Text";
         }
     }
 
     /**
-     * 画一档指令的小图标。
+     * [comment]。
      *
-     * @param glyph 描边笔（STROKE + 圆头圆角）
-     * @param dot   实心笔：画通知下面那个小圆点用，函数里会把它改成 FILL
-     * @param path  借用的路径，进来会 reset
-     * @param rect  借用的矩形，进来会被改写
-     * @param dir   朝屏内的方向：+1 = 朝右，-1 = 朝左（决定返回箭头指哪边）
-     * @param s     图标边长（px）
+     * @param glyph [comment]（STROKE + [comment]）
+     * @param dot   [comment]：[comment]，[comment] FILL
+     * @param path  [comment]，[comment] reset
+     * @param rect  [comment]，[comment]
+     * @param dir   [comment]：+1 = [comment]，-1 = [comment]（[comment]）
+     * @param s     [comment]（px）
      */
     static void draw(Canvas cv, Paint glyph, Paint dot, Path path, RectF rect,
                      int act, float x, float y, float s, float dir) {
         switch (act) {
             case ExtPrefs.RING_BACK:
-                // 箭头朝着"划出去"的方向，一看就知道往哪划
+                // [comment]"[comment]"[comment]，[comment]
                 path.reset();
                 path.moveTo(x - dir * s * 0.5f, y - s * 0.55f);
                 path.lineTo(x + dir * s * 0.42f, y);
@@ -92,7 +92,7 @@ final class CoverGlyphs {
                 cv.drawRoundRect(rect, s * 0.14f, s * 0.14f, glyph);
                 break;
             default:
-                // 这一档没配指令：画个空心圈占位
+                // [comment]：[comment]
                 cv.drawCircle(x, y, s * 0.5f, glyph);
                 break;
         }
