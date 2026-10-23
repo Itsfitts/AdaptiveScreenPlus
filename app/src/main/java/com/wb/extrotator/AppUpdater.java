@@ -13,46 +13,46 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * 在线更新：查 GitHub Release → 下载 APK → 装。
+ * [comment]Update：[comment] GitHub Release → [comment] APK → [comment]。
  *
- * <p><b>为什么是 GitHub Release</b>：仓库本来就是 public 的（见 README），Release 里挂着
- * 每个版本的 APK 和更新说明，一个接口全有，不用自己搭服务器。
- * 版本号用 Release 的 tag（{@code v4.25}）跟当前 versionName 对齐 —— tag 就是发版时
- * 手打的那个号，跟 {@code versionName} 同源，不会对不上。
+ * <p><b>[comment]Yes GitHub Release</b>：[comment]Yes public [comment]（[comment] README），Release [comment]
+ * [comment] APK [comment]Update[comment]，[comment]，[comment]。
+ * [comment] Release [comment] tag（{@code v4.25}）[comment] versionName [comment] —— tag [comment]Yes[comment]
+ * [comment]，[comment] {@code versionName} [comment]，[comment]。
  *
- * <p><b>安装分两条路</b>（满足「一键」的取舍）：
+ * <p><b>[comment]</b>（[comment]「[comment]」[comment]）：
  * <ul>
- *   <li>root / Shizuku 任一就绪 → {@code pm install -r} 静默装，用户零操作；</li>
- *   <li>都没有 → 把 APK 经 {@link ApkProvider} 递给系统安装器，要点几下确认
- *       （Android 8 起系统强制，绕不过，除非有特权）。</li>
+ *   <li>root / Shizuku [comment] → {@code pm install -r} [comment]，[comment]；</li>
+ *   <li>[comment] → [comment] APK [comment] {@link ApkProvider} [comment]，[comment]
+ *       （Android 8 [comment]，[comment]，[comment]）。</li>
  * </ul>
  *
- * <p><b>注意</b>：GitHub API 未认证限流 60 次/小时（按 IP），单人手动点绰绰有余；
- * 带 {@code User-Agent} 是硬要求，不带会被 GitHub 直接 403。
+ * <p><b>[comment]</b>：GitHub API [comment] 60 [comment]/[comment]（[comment] IP），[comment]；
+ * [comment] {@code User-Agent} Yes[comment]，[comment] GitHub [comment] 403。
  */
 public final class AppUpdater {
 
     private static final String TAG = "AppUpdater";
 
-    /** latest release 元信息。tag / 说明 / APK 地址一次全拿到。 */
+    /** latest release [comment]。tag / [comment] / APK [comment]。 */
     private static final String API =
             "https://api.github.com/repos/PyMakesMeProud/AdaptiveScreenPlus/releases/latest";
 
-    /** 下载下来的 APK 统一叫这个名，ApkProvider 也按这个名字找文件 */
+    /** [comment] APK [comment]，ApkProvider [comment] */
     public static final String APK_NAME = "update.apk";
 
-    /** 下载进度回调；{@code pct} 为 -1 表示服务端没给 Content-Length，进度未知 */
+    /** [comment]；{@code pct} [comment] -1 [comment] Content-Length，[comment] */
     public interface ProgressCB {
         void onProgress(int pct);
     }
 
-    /** 一次检查的结果。 */
+    /** [comment]。 */
     public static final class Info {
-        /** 远端版本号（已去掉 v 前缀），如 "4.25" */
+        /** [comment]（[comment] v [comment]），[comment] "4.25" */
         public final String version;
-        /** Release 正文（更新说明），可能为空 */
+        /** Release [comment]（Update[comment]），[comment] */
         public final String notes;
-        /** APK 下载地址（Release 附件里第一个 .apk） */
+        /** APK [comment]（Release [comment] .apk） */
         public final String apkUrl;
 
         Info(String version, String notes, String apkUrl) {
@@ -66,11 +66,11 @@ public final class AppUpdater {
     }
 
     /**
-     * 检查有没有新版本。<b>阻塞</b>，放后台线程调。
+     * [comment]No new version。<b>[comment]</b>，[comment]。
      *
-     * @param current 当前 versionName，如 "4.24"
-     * @return 有新版本返回 {@link Info}；已是最新返回 {@code null}
-     * @throws Exception 网络或解析失败（调用方负责把 message 显示出来）
+     * @param current [comment] versionName，[comment] "4.24"
+     * @return [comment] {@link Info}；[comment]Yes[comment] {@code null}
+     * @throws Exception [comment]Failed（[comment] message [comment]）
      */
     public static Info check(String current) throws Exception {
         HttpURLConnection c = open(API);
@@ -86,10 +86,10 @@ public final class AppUpdater {
                 remote = remote.substring(1);
             }
             if (remote.isEmpty()) {
-                throw new Exception("Release 没有版本号");
+                throw new Exception("Release Text");
             }
 
-            // Release 附件里挑第一个 .apk —— 发版时只挂一个成品，见 scripts 的归档流程
+            // Release [comment] .apk —— [comment]，[comment] scripts [comment]
             String apkUrl = null;
             JSONArray assets = rel.optJSONArray("assets");
             if (assets != null) {
@@ -108,7 +108,7 @@ public final class AppUpdater {
                 }
             }
             if (apkUrl == null) {
-                throw new Exception("Release 里没有 APK");
+                throw new Exception("Release Text APK");
             }
 
             if (!isNewer(remote, current)) {
@@ -121,12 +121,12 @@ public final class AppUpdater {
     }
 
     /**
-     * 下载 APK。<b>阻塞</b>，放后台线程调。
+     * [comment] APK。<b>[comment]</b>，[comment]。
      *
-     * @param ctx      用来定位下载目录（{@code externalFilesDir}，无需存储权限）
-     * @param info     {@link #check} 的返回值
-     * @param progress 进度回调（跑在下载线程里，调用方自己切 UI 线程）；别在回调里做重活
-     * @return 下载完的文件，直接传给 {@link #silentInstall} 或系统安装器
+     * @param ctx      [comment]（{@code externalFilesDir}，None[comment]）
+     * @param info     {@link #check} [comment]
+     * @param progress [comment]（[comment]，[comment] UI [comment]）；[comment]
+     * @return [comment]，[comment] {@link #silentInstall} [comment]
      */
     public static File download(Context ctx, Info info, ProgressCB progress) throws Exception {
         File out = new File(ctx.getExternalFilesDir(null), APK_NAME);
@@ -165,7 +165,7 @@ public final class AppUpdater {
                 progress.onProgress(-1);
             }
             if (!tmp.renameTo(out)) {
-                throw new Exception("写文件失败");
+                throw new Exception("TextFailed");
             }
             return out;
         } finally {
@@ -174,12 +174,12 @@ public final class AppUpdater {
     }
 
     /**
-     * 静默安装（{@code pm install -r} 覆盖安装，保留数据）。
+     * [comment]（{@code pm install -r} [comment]，[comment]）。
      *
-     * <p>root / Shizuku 任一就绪才装得成；两者都没有返回 false，
-     * 调用方应改走系统安装器（见 {@link ApkProvider}）。
-     * 输出里出现 {@code Success} 才算成 —— {@code pm install} 失败时也是
-     * 退出码 0 但打一堆 FAILED_...，不能只看退出码。
+     * <p>root / Shizuku [comment]；[comment] false，
+     * [comment]（[comment] {@link ApkProvider}）。
+     * [comment] {@code Success} [comment] —— {@code pm install} Failed[comment]Yes
+     * [comment] 0 [comment] FAILED_...，[comment]。
      */
     public static boolean silentInstall(String apkPath) {
         if (!ShellRunner.isReady()) {
@@ -191,9 +191,9 @@ public final class AppUpdater {
     }
 
     /**
-     * 按点分数字逐段比版本号。
+     * [comment]。
      *
-     * @return remote 比 local 新返回 true；任一段解析不了按 0 算
+     * @return remote [comment] local [comment] true；[comment] 0 [comment]
      */
     public static boolean isNewer(String remote, String local) {
         String[] r = remote.split("\\.");
@@ -220,7 +220,7 @@ public final class AppUpdater {
     private static HttpURLConnection open(String urlStr) throws Exception {
         HttpURLConnection c = (HttpURLConnection) new URL(urlStr).openConnection();
         c.setRequestMethod("GET");
-        // GitHub 对没有 UA 的请求直接 403，这是硬要求
+        // GitHub [comment] UA [comment] 403，[comment]Yes[comment]
         c.setRequestProperty("User-Agent", "AdaptiveScreenPlus-Updater");
         c.setConnectTimeout(15000);
         c.setReadTimeout(30000);

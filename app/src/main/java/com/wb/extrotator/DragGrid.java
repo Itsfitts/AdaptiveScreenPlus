@@ -18,65 +18,65 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 /**
- * 一个能<b>长按拖拽排序</b>的 GridView。
+ * [comment]<b>[comment]</b>[comment] GridView。
  *
- * <p><b>为什么自己写，不用系统的拖放框架</b>：{@code startDragAndDrop()} 那套是跨应用拖数据的
- * （拖文件、拖文本），阴影是系统画的、大小固定、alpha 固定，松手还得回一个 DragEvent ——
- * 做图标排序等于绕一大圈还拿不回手感。这里就三件事，全都自己来：
- * <b>跟手</b> —— 长按之后把那一格画成位图，塞进外层 FrameLayout 当浮层，手指一动就改它的 margin
- * （位移 1:1，没有阻尼也没有延迟）；<b>让位</b> —— 拖到哪一格数据就当场挪过去，被挤开的格子用
- * 170ms 平移动画滑到自己新位置上；<b>落位</b> —— 松手时把最终位置回报给 {@link OrderListener}，
- * 由页面写盘。
+ * <p><b>[comment]，[comment]</b>：{@code startDragAndDrop()} [comment]Yes[comment]
+ * （[comment]、[comment]），[comment]Yes[comment]、[comment]、alpha [comment]，[comment] DragEvent ——
+ * [comment]。[comment]，[comment]：
+ * <b>[comment]</b> —— [comment]，[comment] FrameLayout [comment]，[comment] margin
+ * （[comment] 1:1，[comment]）；<b>[comment]</b> —— [comment]，[comment]
+ * 170ms [comment]；<b>[comment]</b> —— [comment] {@link OrderListener}，
+ * [comment]。
  *
- * <p><b>怎么用</b>：
+ * <p><b>[comment]</b>：
  * <pre>
  *   DragGrid g = findViewById(R.id.gvPick);
- *   g.setDragHost(findViewById(R.id.gridHost));   // ⚠ 必须是包住它的 FrameLayout
+ *   g.setDragHost(findViewById(R.id.gridHost));   // ⚠ [comment]Yes[comment] FrameLayout
  *   g.setOrderListener(this);
- *   g.setDropLimit(n);                            // 只允许在「已选」那一段里拖
+ *   g.setDropLimit(n);                            // [comment]Allow[comment]「[comment]」[comment]
  * </pre>
  *
- * <p>⚠ <b>两个必须配合的约定</b>：被拖走的那一格要「消失」，靠适配器实现 {@link HiddenSlot}
- * 按位置把 alpha 置 0 —— 不能用 {@code setVisibility(INVISIBLE)}，那会牵动 GridView 的布局；
- * 适配器的 {@code getView} 里要把 {@code translationX/Y} 清回 0（视图是回收复用的，
- * 不清就会带着上一轮的位移冒出来）。
+ * <p>⚠ <b>[comment]</b>：[comment]「[comment]」，[comment] {@link HiddenSlot}
+ * [comment] alpha [comment] 0 —— [comment] {@code setVisibility(INVISIBLE)}，[comment] GridView [comment]；
+ * [comment] {@code getView} [comment] {@code translationX/Y} [comment] 0（[comment]Yes[comment]，
+ * [comment]）。
  */
 public class DragGrid extends GridView {
 
-    /** 拖拽的回调。位置都是适配器里的 position。 */
+    /** [comment]。[comment]Yes[comment] position。 */
     public interface OrderListener {
         /**
-         * 拖动过程中经过了一格：数据该从 from 挪到 to 了。
-         * 实现里要做的就一件事 —— 改数据 + {@code notifyDataSetChanged()}。
+         * [comment]：[comment] from [comment] to [comment]。
+         * [comment] —— [comment] + {@code notifyDataSetChanged()}。
          */
         void onOrderMove(int from, int to);
 
-        /** 松手了，最终落在 to。写盘、刷新小组件之类在这里做。from == to 表示没挪动。 */
+        /** [comment]，[comment] to。[comment]、[comment]。from == to [comment]。 */
         void onOrderChanged(int from, int to);
 
-        /** 拖起来了 / 放下了。页面借这个换提示文案。 */
+        /** [comment] / [comment]。[comment]Notice[comment]。 */
         void onDragStateChanged(boolean dragging);
 
         /**
-         * 长按起了拖，但<b>手指没挪到别的格子</b>就松手了。
+         * [comment]，[comment]<b>[comment]</b>[comment]。
          *
-         * <p>页面拿它弹"长按菜单"（配置页弹的是收藏 / 卸载两个选项）。
-         * ⚠ 只有"按下去 → 长按判定成立 → 原地松手"才会来；
-         * 手指挪过格子（那是真在排序）或者被系统 CANCEL 掉，都不会来。
+         * <p>[comment]"[comment]"（[comment]Yes[comment] / [comment]）。
+         * ⚠ [comment]"[comment] → [comment] → [comment]"[comment]；
+         * [comment]（[comment]Yes[comment]）[comment] CANCEL [comment]，[comment]。
          */
         void onHoldReleased(int position);
     }
 
-    /** 适配器实现它，就能按位置把某一格藏起来（拖起来的那一格） */
+    /** [comment]，[comment]（[comment]） */
     public interface HiddenSlot {
         void setHiddenPosition(int position);
     }
 
-    /** 长按多久算"要拖"（毫秒）。比系统的 500ms 短一点，拖图标不该等那么久。 */
+    /** [comment]"[comment]"（[comment]）。[comment] 500ms [comment]，[comment]。 */
     private static final int HOLD_MS = 240;
-    /** 离上下边缘多少像素开始自动滚动 */
+    /** [comment] */
     private static final int EDGE_PX = 72;
-    /** 每次自动滚多少像素 / 隔多久滚一次 */
+    /** [comment] / [comment] */
     private static final int SCROLL_STEP = 10;
     private static final int SCROLL_EVERY_MS = 24;
 
@@ -84,14 +84,14 @@ public class DragGrid extends GridView {
     private ViewGroup dragHost;
 
     private boolean dragEnabled = true;
-    /** 只允许落在 [0, dropLimit) 这一段里 —— 配置页用它挡住"未勾选"那一段 */
+    /** [comment]Allow[comment] [0, dropLimit) [comment] —— [comment]"[comment]"[comment] */
     private int dropLimit = Integer.MAX_VALUE;
 
     private final Handler ui = new Handler(Looper.getMainLooper());
 
     private int holdPos = -1;
     private boolean dragging;
-    /** 起拖之后有没有挪到过别的格子 —— 没挪过才算"长按原地松手" */
+    /** [comment] —— [comment]"[comment]" */
     private boolean movedSinceHold;
     private int dragFrom = -1;
     private int dragTo = -1;
@@ -102,7 +102,7 @@ public class DragGrid extends GridView {
     private int touchSlop;
     private int scrollDir;
 
-    /** 这一帧还没摆的让位动画（同一帧里连挪两格时以后一个为准） */
+    /** [comment]（[comment]） */
     private boolean animPending;
     private int animFrom = -1;
     private int animTo = -1;
@@ -145,17 +145,17 @@ public class DragGrid extends GridView {
         touchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
     }
 
-    // ------------------------------------------------------------------ 配置
+    // ------------------------------------------------------------------ [comment]
 
     public void setOrderListener(OrderListener l) {
         this.listener = l;
     }
 
     /**
-     * 浮层要加在哪儿。
+     * [comment]。
      *
-     * <p>⚠ 必须是<b>包住这个 GridView 的 FrameLayout</b>：浮层用 leftMargin/topMargin 定位，
-     * 坐标靠 {@code GridView.getLeft() + child.getLeft()} 算，所以两者之间不能再夹别的容器。
+     * <p>⚠ [comment]Yes<b>[comment] GridView [comment] FrameLayout</b>：[comment] leftMargin/topMargin [comment]，
+     * [comment] {@code GridView.getLeft() + child.getLeft()} [comment]，[comment]。
      */
     public void setDragHost(ViewGroup host) {
         this.dragHost = host;
@@ -165,12 +165,12 @@ public class DragGrid extends GridView {
         this.dragEnabled = v;
     }
 
-    /** 允许落下的位置上限（不含）。配置页传"已选个数"，未勾选那一段就拖不进去。 */
+    /** Allow[comment]（[comment]）。[comment]"[comment]"，[comment]。 */
     public void setDropLimit(int limit) {
         this.dropLimit = limit <= 0 ? 0 : limit;
     }
 
-    // ------------------------------------------------------------------ 触摸
+    // ------------------------------------------------------------------ [comment]
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
@@ -201,7 +201,7 @@ public class DragGrid extends GridView {
                 if (holdPos >= 0
                         && (Math.abs(lastX - downX) > touchSlop
                         || Math.abs(lastY - downY) > touchSlop)) {
-                    // 手已经在滑了，说明是要滚列表，不是要拖图标
+                    // [comment]，[comment]Yes[comment]，[comment]Yes[comment]
                     cancelHold();
                 }
                 break;
@@ -215,7 +215,7 @@ public class DragGrid extends GridView {
                 break;
 
             case MotionEvent.ACTION_CANCEL:
-                // 被系统 / 父容器收走的那一下不算"原地松手"，不弹长按菜单
+                // [comment] / [comment]"[comment]"，[comment]
                 if (dragging) {
                     endDrag(false);
                     return true;
@@ -234,7 +234,7 @@ public class DragGrid extends GridView {
         ui.removeCallbacks(holdTrigger);
     }
 
-    // ------------------------------------------------------------------ 起拖
+    // ------------------------------------------------------------------ [comment]
 
     private void startDrag() {
         ui.removeCallbacks(holdTrigger);
@@ -270,7 +270,7 @@ public class DragGrid extends GridView {
         dragHost.addView(iv, lp);
         dragView = iv;
 
-        // 手指按住的那一点，在浮层里对应哪个位置 —— 这样图标不会"跳"到手指中心
+        // [comment]，[comment] —— [comment]"[comment]"[comment]
         grabDX = downX - child.getLeft();
         grabDY = downY - child.getTop();
 
@@ -286,10 +286,10 @@ public class DragGrid extends GridView {
         }
     }
 
-    // ------------------------------------------------------------------ 拖动中
+    // ------------------------------------------------------------------ [comment]
 
     private void hover(float x, float y) {
-        // 1) 浮层跟手
+        // 1) [comment]
         if (dragView != null && dragView.getLayoutParams() instanceof FrameLayout.LayoutParams) {
             FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) dragView.getLayoutParams();
             lp.leftMargin = Math.round(getLeft() + x - grabDX);
@@ -297,7 +297,7 @@ public class DragGrid extends GridView {
             dragView.setLayoutParams(lp);
         }
 
-        // 2) 该落在第几格
+        // 2) [comment]
         int pos = pointToPosition((int) x, (int) y);
         if (pos != INVALID_POSITION) {
             if (pos >= dropLimit) {
@@ -315,7 +315,7 @@ public class DragGrid extends GridView {
             }
         }
 
-        // 3) 贴边时自动滚，方便把图标拖出可视区
+        // 3) [comment]，[comment]
         int dir = 0;
         if (y < EDGE_PX + getPaddingTop()) {
             dir = -1;
@@ -331,7 +331,7 @@ public class DragGrid extends GridView {
         }
     }
 
-    /** 告诉适配器把哪一格藏起来，然后重画 */
+    /** [comment]，[comment] */
     private void hide(int pos) {
         if (getAdapter() instanceof HiddenSlot && getAdapter() instanceof BaseAdapter) {
             ((HiddenSlot) getAdapter()).setHiddenPosition(pos);
@@ -340,13 +340,13 @@ public class DragGrid extends GridView {
     }
 
     /**
-     * 让位动画。
+     * [comment]。
      *
-     * <p>数据这时候刚改完但还没重新布局，所以不能马上算坐标 ——
-     * 挂一个"画之前"的钩子，等这一帧布局落定再摆。
+     * <p>[comment]，[comment] ——
+     * [comment]"[comment]"[comment]，[comment]。
      *
-     * <p>位移量不用查旧坐标表：格子大小是均匀的，{@code position} 本身就能算出行列，
-     * 旧位置减新位置直接乘格子宽高就是该滑多远。这样连"从屏幕外滑进来"也天然算得对。
+     * <p>[comment]：[comment]Yes[comment]，{@code position} [comment]，
+     * [comment]Yes[comment]。[comment]"[comment]"[comment]。
      */
     private void animateShift(final int from, final int to) {
         animFrom = from;
@@ -411,7 +411,7 @@ public class DragGrid extends GridView {
         }
     }
 
-    // ------------------------------------------------------------------ 落位
+    // ------------------------------------------------------------------ [comment]
 
     private void endDrag(boolean released) {
         ui.removeCallbacks(scrollTick);
@@ -445,7 +445,7 @@ public class DragGrid extends GridView {
         }
     }
 
-    // ------------------------------------------------------------------ 杂项
+    // ------------------------------------------------------------------ [comment]
 
     private int dp(int v) {
         float d;
@@ -457,7 +457,7 @@ public class DragGrid extends GridView {
         return Math.round(v * d);
     }
 
-    /** 小工具：请求父容器别抢这次触摸。写成静态是为了把 API 差异挡在一处。 */
+    /** [comment]：[comment]。[comment]Yes[comment] API [comment]。 */
     private static final class ViewParentCompat {
         static void requestDisallow(android.view.ViewParent p) {
             try {

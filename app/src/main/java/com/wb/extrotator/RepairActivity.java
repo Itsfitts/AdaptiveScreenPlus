@@ -28,17 +28,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * 「修复界面」的名单页 —— 从 Beta 的「应用管理」进来。
+ * 「[comment]」[comment] —— [comment] Beta [comment]「[comment]」[comment]。
  *
- * <p>逐行列出本机所有能启动的应用，每行一个开关：开 = 该应用进了三星外屏那份「正常显示」名单
- * （外屏上以原生尺寸渲染，字体正常、弹窗落在屏内点得到），关 = 外屏上缩放显示。
- * 名单本身与原理见 {@link CoverRepair}。
+ * <p>[comment]，[comment]：[comment] = [comment]「[comment]」[comment]
+ * （[comment]，[comment]、[comment]），[comment] = [comment]。
+ * [comment] {@link CoverRepair}。
  *
- * <p>单开一页是为了用 ListView 正经回收：几百行的列表塞进 Beta 的 ScrollView 里既不能自己滚、
- * 又要一次量完所有行，滑起来卡。
+ * <p>[comment]Yes[comment] ListView [comment]：[comment] Beta [comment] ScrollView [comment]、
+ * [comment]，[comment]。
  *
- * <p>⚠ 写盘必须串行：每次开关都是「读整份名单 → 改一个 → 整份写回」，
- * 两条叠在一起会互相覆盖，所以统一丢进 {@link #pool}，并用 {@link #busy} 挡连点。
+ * <p>⚠ [comment]：[comment]Yes「[comment] → [comment] → [comment]」，
+ * [comment]，[comment] {@link #pool}，[comment] {@link #busy} [comment]。
  */
 public class RepairActivity extends Activity {
 
@@ -53,7 +53,7 @@ public class RepairActivity extends Activity {
     private TextView btnReset;
 
     private final List<AppRepo.Item> apps = new ArrayList<>();
-    /** 当前在名单里的包名 */
+    /** [comment] */
     private final Set<String> on = new HashSet<>();
 
     private RowAdapter adapter;
@@ -87,7 +87,7 @@ public class RepairActivity extends Activity {
         }
 
         if (!ShellRunner.isReady()) {
-            toast("Shizuku 未就绪，先回主界面授权");
+            toast("Shizuku Not Ready，Text");
         }
         reload();
     }
@@ -95,7 +95,7 @@ public class RepairActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        // 从别处（MultiStar / 阿田自用）改过名单再回来，看到的必须是刚读的那一份
+        // [comment]（MultiStar / [comment]）[comment]，[comment]Yes[comment]
         reload();
     }
 
@@ -106,11 +106,11 @@ public class RepairActivity extends Activity {
         super.onDestroy();
     }
 
-    // ==================================================================== 读
+    // ==================================================================== [comment]
 
     private void reload() {
         setBusy(true);
-        tvState.setText("读取中…");
+        tvState.setText("Text…");
         pool.execute(() -> {
             final List<AppRepo.Item> loaded = new ArrayList<>();
             for (AppRepo.Item it : AppRepo.load(getApplicationContext())) {
@@ -129,7 +129,7 @@ public class RepairActivity extends Activity {
                 adapter.notifyDataSetChanged();
                 setBusy(false);
                 if (!readable) {
-                    tvState.setText("读不回名单（Shizuku 掉线了？）—— 这次只能看，别改");
+                    tvState.setText("Text（Shizuku Text？）—— Text，Text");
                 } else {
                     updateState();
                 }
@@ -145,12 +145,12 @@ public class RepairActivity extends Activity {
             }
         }
         String snap = CoverRepair.hasSnapshot(this)
-                ? "已存改动前的快照，可以一键重置" : "还没改动过（首次改动会自动存快照）";
-        tvState.setText("名单 " + on.size() + " 个 · 本机可启动应用 " + apps.size()
-                + " 个（其中 " + hit + " 个已开启）\n" + snap);
+                ? "Text，TextReset" : "Text（Text）";
+        tvState.setText("Text " + on.size() + " Text · Text " + apps.size()
+                + " Text（Text " + hit + " TextEnable）\n" + snap);
     }
 
-    // ==================================================================== 写
+    // ==================================================================== [comment]
 
     private void toggle(AppRepo.Item it, boolean want) {
         if (busy) {
@@ -162,12 +162,12 @@ public class RepairActivity extends Activity {
             String msg = CoverRepair.apply(getApplicationContext(),
                     want ? Collections.singletonList(pkg) : Collections.<String>emptyList(),
                     want ? Collections.<String>emptyList() : Collections.singletonList(pkg));
-            Log.i(TAG, (want ? "开启 " : "关闭 ") + pkg + " → " + msg);
+            Log.i(TAG, (want ? "Enable " : "Disable ") + pkg + " → " + msg);
             ui.post(() -> {
                 setBusy(false);
                 if (msg.startsWith("ERR")) {
                     toast(msg);
-                    reload();          // 写失败就以盘上的为准，别让界面留着假状态
+                    reload();          // TextFailedText，Text
                 } else {
                     if (want) {
                         on.add(pkg);
@@ -180,21 +180,21 @@ public class RepairActivity extends Activity {
         });
     }
 
-    /** 一键修复 / 一键重置 */
+    /** [comment] / [comment]Reset */
     private void oneKey(final boolean fix) {
         if (busy) {
             return;
         }
         if (!fix && !CoverRepair.hasSnapshot(this)) {
-            toast("还没改动过，没有可还原的快照");
+            toast("Text，Text");
             return;
         }
         setBusy(true);
-        tvState.setText(fix ? "正在把已装应用全部打开…" : "正在还原…");
+        tvState.setText(fix ? "Text…" : "Text…");
         pool.execute(() -> {
             String msg = fix ? CoverRepair.applyAll(getApplicationContext())
                     : CoverRepair.restore(getApplicationContext());
-            Log.i(TAG, (fix ? "一键修复 → " : "一键重置 → ") + msg);
+            Log.i(TAG, (fix ? "Text → " : "TextReset → ") + msg);
             ui.post(() -> {
                 setBusy(false);
                 toast(msg);
@@ -208,19 +208,19 @@ public class RepairActivity extends Activity {
             return;
         }
         if (!CoverRepair.hasSnapshot(this)) {
-            toast("还没改动过，没有可还原的快照");
+            toast("Text，Text");
             return;
         }
         new AlertDialog.Builder(this)
-                .setTitle("一键重置")
-                .setMessage("把外屏名单还原到本应用第一次改动之前的那一份（改动前存下的快照）。\n\n"
-                        + "⚠ 这会连同你在 MultiStar 里后来做的改动一起覆盖掉。")
+                .setTitle("TextReset")
+                .setMessage("Text（Text）。\n\n"
+                        + "⚠ Text MultiStar Text。")
                 .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton("还原", (d, w) -> oneKey(false))
+                .setPositiveButton("Text", (d, w) -> oneKey(false))
                 .show();
     }
 
-    // ==================================================================== 界面
+    // ==================================================================== [comment]
 
     private void setBusy(boolean b) {
         busy = b;
@@ -234,7 +234,7 @@ public class RepairActivity extends Activity {
         }
     }
 
-    /** 一行 = 应用名 + 开关。自己拼，不占一个布局文件（跟启动器那套长按菜单同一个路子） */
+    /** [comment] = [comment] + [comment]。[comment]，[comment]（[comment]） */
     private final class RowAdapter extends BaseAdapter {
 
         @Override
@@ -285,7 +285,7 @@ public class RepairActivity extends Activity {
             }
             final AppRepo.Item it = apps.get(position);
             tv.setText(it.label);
-            // 先摘监听再设状态 —— 不然回收时会当成"用户拨了一下"，往盘上乱写
+            // [comment] —— [comment]"[comment]"，[comment]
             sw.setOnCheckedChangeListener(null);
             sw.setChecked(on.contains(it.pkg));
             sw.setOnCheckedChangeListener((b, checked) -> toggle(it, checked));
@@ -293,7 +293,7 @@ public class RepairActivity extends Activity {
         }
     }
 
-    /** 开关配色跟 Beta 页一致（系统默认那个开/关两态在白底上分不清） */
+    /** [comment] Beta [comment]（[comment]Default[comment]/[comment]） */
     private void tint(Switch sw) {
         try {
             ColorStateList thumb = getResources().getColorStateList(R.color.beta_switch_thumb);
@@ -319,7 +319,7 @@ public class RepairActivity extends Activity {
                 return;
             }
             new AlertDialog.Builder(this)
-                    .setTitle("修复界面")
+                    .setTitle("Text")
                     .setMessage(detailRes)
                     .setPositiveButton(android.R.string.ok, null)
                     .show();

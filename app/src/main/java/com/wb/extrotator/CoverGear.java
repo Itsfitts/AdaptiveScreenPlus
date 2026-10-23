@@ -23,92 +23,92 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 /**
- * 侧边栏「调速齿轮」（第二套动画）。
+ * [comment]「[comment]」（[comment]）。
  *
- * <p>往里划够距离之后，<b>手指按下那一点</b>（也就是感应带所在的位置）原地蹦出一个蓝色的齿轮，
- * 一直转着；齿轮周围朝屏内张开几块扇形（<b>几块由「面板内容」勾了几项决定，1 ~ 4</b>），
- * 由上到下依次是那几档指令（顺序同 {@link ExtPrefs#sidebarSlots(Context)}，跟圆环共用一份）。手指划进哪一块，那一块
- * 就亮起来、放大一点、轻轻震一下，<b>齿轮的转速也跟着换档</b> —— 从上往下越来越快；<b>松手才执行</b>，
- * 划回齿轮附近就当没选。
+ * <p>[comment]，<b>[comment]</b>（[comment]Yes[comment]）[comment]，
+ * [comment]；[comment]（<b>[comment]「[comment]」[comment]，1 ~ 4</b>），
+ * [comment]Yes[comment]（[comment] {@link ExtPrefs#sidebarSlots(Context)}，[comment]）。[comment]，[comment]
+ * [comment]、[comment]、[comment]，<b>[comment]</b> —— [comment]；<b>[comment]</b>，
+ * [comment]。
  *
- * <p><b>为什么用扇形而不是跟着手指画个指针</b>：圆心落在屏幕边上，三块扇形只朝屏内张开，
- * 判据只看<b>角度</b> —— 斜着划、上下划都算数，手不用去凑某个具体位置。
+ * <p><b>[comment]Yes[comment]</b>：[comment]，[comment]，
+ * [comment]<b>[comment]</b> —— [comment]、[comment]，[comment]。
  *
- * <p><b>转速</b>见 {@link #SPEED_BY_N}：慢档是慢慢转，快档是刷刷转，一眼能看出换档了。
+ * <p><b>[comment]</b>[comment] {@link #SPEED_BY_N}：[comment]Yes[comment]，[comment]Yes[comment]，[comment]。
  *
- * <p><b>三个技术点</b>（跟 {@link CoverWheel} 同一套）：
+ * <p><b>[comment]</b>（[comment] {@link CoverWheel} [comment]）：
  * <ol>
- *   <li>这一层是全屏但 {@code FLAG_NOT_TOUCHABLE} 的窗口：触摸始终由感应带那层收着，
- *       齿轮只负责画，拖动过程中不需要换触摸接收方；</li>
- *   <li>窗口尺寸与旗标跟感应带保持一致（同一个原生坐标空间），否则会踩到封面屏那 66px 偏移；</li>
- *   <li>{@code TYPE_ACCESSIBILITY_OVERLAY} 只能由无障碍服务上下文加。</li>
+ *   <li>[comment]Yes[comment] {@code FLAG_NOT_TOUCHABLE} [comment]：[comment]，
+ *       [comment]，[comment]；</li>
+ *   <li>[comment]（[comment]），No[comment] 66px [comment]；</li>
+ *   <li>{@code TYPE_ACCESSIBILITY_OVERLAY} [comment]None[comment]。</li>
  * </ol>
  */
 public final class CoverGear {
 
     private static final String TAG = "CoverGear";
 
-    // ------------------------------------------------------------------ 几何
+    // ------------------------------------------------------------------ [comment]
 
-    /** 扇形张开的总张角（度）：以「朝屏内」为 0°，上下各张开这么多 */
+    /** [comment]（[comment]）：[comment]「[comment]」[comment] 0°，[comment] */
     private static final float FAN_HALF = 72f;
     /**
-     * 扇形外沿半径：屏宽 / 屏高两个上限取小者（免得感应带在上下段时扇形冲出屏外）。
+     * [comment]：[comment] / [comment]（[comment]）。
      *
-     * <p>⚠ 用户嫌"三个扇形区域太小"，要求<b>每个区域的面积都扩大 1/2</b> ——
-     * 面积 ∝ 半径²，所以这里乘的是 √1.5（0.40 → 0.4899、0.36 → 0.4409）。
-     * 别按"半径 ×1.5"改，那样面积会变成 2.25 倍。
+     * <p>⚠ [comment]"[comment]"，[comment]<b>[comment] 1/2</b> ——
+     * [comment] ∝ [comment]²，[comment]Yes √1.5（0.40 → 0.4899、0.36 → 0.4409）。
+     * [comment]"[comment] ×1.5"[comment]，[comment] 2.25 [comment]。
      */
     private static final float RAT_R_W = 0.4899f;
     private static final float RAT_R_H = 0.4409f;
-    /** 手指离圆心不到这个半径（占扇形半径）就算"还没选" */
+    /** [comment]（[comment]）[comment]"[comment]" */
     private static final float RAT_DEAD = 0.19f;
-    /** 齿轮本体半径（占扇形半径） */
+    /** [comment]（[comment]） */
     private static final float RAT_GEAR = 0.28f;
-    /** 扇形内沿 = 齿轮半径 × 这个数，别让扇形盖住齿轮 */
+    /** [comment] = [comment] × [comment]，[comment] */
     private static final float SECTOR_INNER = 1.30f;
-    /** 判"换到哪一块"时，越过边界这么多度才认（不然压在分界线上会来回跳 + 连震） */
+    /** [comment]"[comment]"[comment]，[comment]（[comment] + [comment]） */
     private static final float HYST_DEG = 7f;
-    /** 轮齿数 */
+    /** [comment] */
     private static final int TEETH = 10;
 
-    // ------------------------------------------------------------------ 手感
+    // ------------------------------------------------------------------ [comment]
 
     /**
-     * 各档位数的转速（度 / 秒）：下标 = 第几块扇形（0 = 最上面那块），从上往下越来越快。
+     * [comment]（[comment] / [comment]）：[comment] = [comment]（0 = [comment]），[comment]。
      *
-     * <p>用户点名要的：「<b>从上往下的三个区域对应齿轮从慢到快三种不同的旋转速度</b>」。
-     * 慢档约 3.6 秒一圈，快档不到半秒一圈 —— 差得够开，一眼就知道换档了。
+     * <p>[comment]：「<b>[comment]</b>」。
+     * [comment] 3.6 [comment]，[comment] —— [comment]，[comment]。
      */
     private static final float[][] SPEED_BY_N = {
-            {300f},                        // 1 档：只有一档，快慢无所谓，给中间值
-            {100f, 800f},                  // 2 档
-            {100f, 300f, 800f},            // 3 档 ← 用户实测过的那组，别动
-            {100f, 300f, 550f, 800f},      // 4 档
+            {300f},                        // 1 Text：Text，TextNoneText，Text
+            {100f, 800f},                  // 2 Text
+            {100f, 300f, 800f},            // 3 Text ← Text，Text
+            {100f, 300f, 550f, 800f},      // 4 Text
     };
-    /** 选中那一块往外长多少 */
+    /** [comment] */
     private static final float SEL_GROW = 0.07f;
-    /** 放大 / 缩回的动画时长（ms） */
+    /** [comment] / [comment]（ms） */
     private static final long SEL_ANIM_MS = 170L;
-    /** 换块那一下的震动：短、轻 */
+    /** [comment]：[comment]、[comment] */
     private static final long BUZZ_MS = 12L;
     private static final int BUZZ_AMP = 110;
-    /** 两次震动之间至少隔这么久（ms）—— 分界线上抖一下也别连震 */
+    /** [comment]（ms）—— [comment] */
     private static final long BUZZ_GAP_MS = 60L;
     private static final long FADE_IN_MS = 90L;
     private static final long FADE_OUT_MS = 130L;
-    /** 两帧之间最多按这么久算（切后台回来别一下子转一大圈） */
+    /** [comment]（[comment]） */
     private static final float MAX_STEP_S = 0.2f;
 
-    // ------------------------------------------------------------------ 配色
+    // ------------------------------------------------------------------ [comment]
 
-    /** 齿轮本体：亮蓝，够显眼（用户点名"为了显眼要做成蓝色"） */
+    /** [comment]：[comment]，[comment]（[comment]"[comment]"） */
     private static final int C_GEAR = 0xFF4C9BFF;
     private static final int C_GEAR_DARK = 0xFF1B5FB4;
-    /** 齿轮外面那圈柔光，让它从任何底色上跳出来 */
+    /** [comment]，[comment] */
     private static final int C_GEAR_HALO = 0x4D4C9BFF;
     private static final int C_GEAR_HUB = 0x66000000;
-    /** 选中那块扇形的底色（六成不透明）与描边 */
+    /** [comment]（[comment]）[comment] */
     private static final int C_ACCENT_FILL = 0x99518FE6;
     private static final int C_ACCENT = 0xFF5E9CF0;
     private static final int C_ACCENT_GLOW = 0x4D5E9CF0;
@@ -122,16 +122,16 @@ public final class CoverGear {
 
     private static final Handler UI = new Handler(Looper.getMainLooper());
 
-    // ------------------------------------------------------------------ 环境（install 时由 CoverSidebar 交过来）
+    // ------------------------------------------------------------------ [comment]（install [comment] CoverSidebar [comment]）
 
     private static Context displayCtx;
     private static WindowManager wm;
     private static int screenW;
     private static float density = 2.125f;
-    /** 0 = 贴左边，1 = 贴右边（决定"往里"是哪个方向） */
+    /** 0 = [comment]，1 = [comment]（[comment]"[comment]"Yes[comment]） */
     private static int side = 1;
 
-    // ------------------------------------------------------------------ 状态
+    // ------------------------------------------------------------------ [comment]
 
     private static FrameLayout root;
     private static GearView view;
@@ -143,25 +143,25 @@ public final class CoverGear {
     private static float rInner;
     private static float rGear;
     private static float rDead;
-    /** 0 上 / 1 中 / 2 下；-1 = 还在齿轮附近（当作没选） */
+    /** 0 [comment] / 1 [comment] / 2 [comment]；-1 = [comment]（[comment]） */
     private static int sel = -1;
-    /** 上一次选中的是哪一块 —— 只用来做"刚离开那块缩回去"那半段动画 */
+    /** [comment]Yes[comment] —— [comment]"[comment]"[comment] */
     private static int prevSel = -1;
-    /** sel 变动的时刻（uptimeMillis），放大动画按它算进度 */
+    /** sel [comment]（uptimeMillis），[comment] */
     private static long selAt;
     private static long lastBuzzAt;
-    /** 齿轮当前角度（度）与上一帧的时刻，逐帧积分出来 */
+    /** [comment]（[comment]）[comment]，[comment] */
     private static float rotDeg;
     private static long lastTick;
     private static boolean shown;
-    /** 档位指令的缓存：画的时候每帧都要用，别在 onDraw 里读 prefs */
+    /** [comment]：[comment]，[comment] onDraw [comment] prefs */
     private static int[] slots = {ExtPrefs.RING_BACK, ExtPrefs.RING_RECENTS,
             ExtPrefs.RING_NOTIFY};
-    /** 每块扇形占多少度（= 总张角 / 档数）—— 档数一变就重算 */
+    /** [comment]（= [comment] / [comment]）—— [comment] */
     private static float sectorDeg = FAN_HALF * 2f / 3f;
-    /** 各档分界线的角度（从 -FAN_HALF 起算，共 档数-1 条）—— 同上 */
+    /** [comment]（[comment] -FAN_HALF [comment]，[comment] [comment]-1 [comment]）—— [comment] */
     private static float[] bounds = {-24f, 24f};
-    /** 当档的转速表 —— 同上 */
+    /** [comment] —— [comment] */
     private static float[] speed = {100f, 300f, 800f};
 
     private CoverGear() {
@@ -178,11 +178,11 @@ public final class CoverGear {
         rGear = rFan * RAT_GEAR;
         rInner = rGear * SECTOR_INNER;
         rDead = rFan * RAT_DEAD;
-        // 窗口在这里就建好（隐形常驻），别等划动时才加 —— 理由同 CoverWheel.ensure()
+        // [comment]（[comment]），[comment] —— [comment] CoverWheel.ensure()
         ensure();
     }
 
-    /** 按档数换一套扇形张角、分界线与转速表。⚠ 档数一变就得重算，别在 onDraw 里算 */
+    /** [comment]、[comment]。⚠ [comment]，[comment] onDraw [comment] */
     private static void setSlotCount(int n) {
         if (n < 1) {
             n = 1;
@@ -198,7 +198,7 @@ public final class CoverGear {
         speed = SPEED_BY_N[n - 1];
     }
 
-    /** 日志里那一串转速 */
+    /** [comment] */
     private static String speedText() {
         StringBuilder b = new StringBuilder();
         for (float v : speed) {
@@ -215,12 +215,12 @@ public final class CoverGear {
     }
 
     /**
-     * 把窗口建好，隐形放着。
+     * [comment]，[comment]。
      *
-     * <p>⚠ 必须在 install 时就建，不能等划动时才 {@code addView}：手指已经落在感应带上、
-     * 这一串触摸已经被感应带收走之后再加窗口，系统会不会重新派发（发 ACTION_CANCEL 掐掉
-     * 这一串）没有把握。这一层是 {@code FLAG_NOT_TOUCHABLE}，按理不影响触摸目标，
-     * 但「齿轮能不能跟着手指换档」是这整套的关键路径，不赌这个。
+     * <p>⚠ [comment] install [comment]，[comment] {@code addView}：[comment]、
+     * [comment]，[comment]（[comment] ACTION_CANCEL [comment]
+     * [comment]）[comment]。[comment]Yes {@code FLAG_NOT_TOUCHABLE}，[comment]，
+     * [comment]「[comment]」Yes[comment]，[comment]。
      */
     private static void ensure() {
         if (root != null || displayCtx == null || wm == null) {
@@ -233,7 +233,7 @@ public final class CoverGear {
             r.addView(v, new FrameLayout.LayoutParams(
                     FrameLayout.LayoutParams.MATCH_PARENT,
                     FrameLayout.LayoutParams.MATCH_PARENT));
-            // 全屏但**不吃触摸**：触摸这一串事件始终留在感应带那层手里
+            // [comment]**[comment]**：[comment]
             WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
                     FrameLayout.LayoutParams.MATCH_PARENT,
                     FrameLayout.LayoutParams.MATCH_PARENT,
@@ -247,16 +247,16 @@ public final class CoverGear {
             wm.addView(r, lp);
             root = r;
             view = v;
-            Log.i(TAG, "齿轮窗口就位（隐形常驻）：屏宽 " + screenW + "px，扇形半径 " + (int) rFan
-                    + "px 齿轮 " + (int) rGear + "px 齿 " + TEETH + " 个");
+            Log.i(TAG, "Text（Text）：Text " + screenW + "px，Text " + (int) rFan
+                    + "px Text " + (int) rGear + "px Text " + TEETH + " Text");
         } catch (Throwable t) {
-            Log.e(TAG, "建齿轮窗口失败", t);
+            Log.e(TAG, "TextFailed", t);
             root = null;
             view = null;
         }
     }
 
-    /** 手指按下：把圆心定在那一点上（纯点一下不该冒出齿轮） */
+    /** [comment]：[comment]（[comment]） */
     static void prepare(float x, float y) {
         if (displayCtx != null) {
             int[] got = ExtPrefs.sidebarSlots(displayCtx);
@@ -275,11 +275,11 @@ public final class CoverGear {
         shown = false;
     }
 
-    /** 划够距离了：把现成的窗口点亮（窗口是 install 时就建好的） */
+    /** [comment]：[comment]（[comment]Yes install [comment]） */
     static void show(float x, float y) {
         ensure();
         if (root == null || slots.length == 0) {
-            return;      // 「面板内容」一项都没勾：不出来
+            return;      // 「Text」Text：Text
         }
         shown = true;
         rotDeg = 0f;
@@ -290,12 +290,12 @@ public final class CoverGear {
         move(x, y);
         root.animate().cancel();
         root.animate().alpha(1f).setDuration(FADE_IN_MS).start();
-        Log.i(TAG, "齿轮亮了：圆心 " + (int) cx + "," + (int) cy
-                + "，扇形半径 " + (int) rFan + "px，" + slots.length + " 档转速 "
-                + speedText() + " 度每秒");
+        Log.i(TAG, "Text：Text " + (int) cx + "," + (int) cy
+                + "，Text " + (int) rFan + "px，" + slots.length + " Text "
+                + speedText() + " Text");
     }
 
-    /** 手指动了：更新选中（松手前一直可以改主意） */
+    /** [comment]：Update[comment]（[comment]） */
     static void move(float x, float y) {
         lastX = x;
         lastY = y;
@@ -304,21 +304,21 @@ public final class CoverGear {
             prevSel = sel;
             sel = now;
             selAt = SystemClock.uptimeMillis();
-            // 划进某一块（含从齿轮附近第一次划进）才震；划回去是"取消"，不震
+            // [comment]（[comment]）[comment]；[comment]Yes"Cancel"，[comment]
             if (now >= 0) {
                 buzz();
             }
-            Log.i(TAG, "选中第 " + now + " 块扇形（离圆心 " + (int) radius(x, y)
-                    + "px，角度 " + (int) angleOf(x, y) + "°）=> 转速 "
+            Log.i(TAG, "Text " + now + " Text（Text " + (int) radius(x, y)
+                    + "px，Text " + (int) angleOf(x, y) + "°）=> Text "
                     + (int) (now >= 0 && now < speed.length ? speed[now] : speed[0])
-                    + " 度每秒");
+                    + " Text");
         }
         if (view != null) {
             view.invalidate();
         }
     }
 
-    /** 松手：落在哪一档（返回 {@link ExtPrefs#RING_NONE} 表示没选） */
+    /** [comment]：[comment]（[comment] {@link ExtPrefs#RING_NONE} [comment]） */
     static int pick() {
         if (root == null || !shown) {
             return ExtPrefs.RING_NONE;
@@ -330,7 +330,7 @@ public final class CoverGear {
         return now >= slots.length ? ExtPrefs.RING_NONE : slots[now];
     }
 
-    /** 淡掉。⚠ 只淡不拆 —— 窗口留着隐形放着，下次划出来是现成的 */
+    /** [comment]。⚠ [comment] —— [comment]，[comment]Yes[comment] */
     static void hide() {
         final FrameLayout r = root;
         final GearView v = view;
@@ -350,10 +350,10 @@ public final class CoverGear {
                     })
                     .start();
         });
-        Log.i(TAG, "齿轮收起");
+        Log.i(TAG, "Text");
     }
 
-    /** 侧边栏整个拆掉时调（立刻拆，不等动画） */
+    /** [comment]（[comment]，[comment]） */
     static void release() {
         FrameLayout r = root;
         root = null;
@@ -365,14 +365,14 @@ public final class CoverGear {
             try {
                 wm.removeViewImmediate(r);
             } catch (Throwable t) {
-                Log.w(TAG, "拆齿轮窗口失败", t);
+                Log.w(TAG, "TextFailed", t);
             }
         }
         displayCtx = null;
         wm = null;
     }
 
-    /** 换块那一下轻轻震一下（短到 12ms：这是"手感"不是"通知"） */
+    /** [comment]（[comment] 12ms：[comment]Yes"[comment]"[comment]Yes"[comment]"） */
     private static void buzz() {
         Context c = displayCtx;
         if (c == null) {
@@ -380,7 +380,7 @@ public final class CoverGear {
         }
         long now = SystemClock.uptimeMillis();
         if (now - lastBuzzAt < BUZZ_GAP_MS) {
-            return;      // 分界线上抖了一下，别连震
+            return;      // Text，Text
         }
         lastBuzzAt = now;
         try {
@@ -398,17 +398,17 @@ public final class CoverGear {
             int amp = v.hasAmplitudeControl() ? BUZZ_AMP : VibrationEffect.DEFAULT_AMPLITUDE;
             v.vibrate(VibrationEffect.createOneShot(BUZZ_MS, amp));
         } catch (Throwable t) {
-            Log.w(TAG, "震动失败（不影响选择）", t);
+            Log.w(TAG, "TextFailed（Text）", t);
         }
     }
 
-    // ------------------------------------------------------------------ 几何
+    // ------------------------------------------------------------------ [comment]
 
     /**
-     * 手指落在第几块扇形：0 = 最上面那块，往下递增；-1 = 还在齿轮附近（当作没选）。
+     * [comment]：0 = [comment]，[comment]；-1 = [comment]（[comment]）。
      *
-     * <p>⚠ 已经有选中的那一块时，判据按<b>当前那一块的分界线</b>算，两侧各留一条
-     * {@link #HYST_DEG} 的回滞带 —— 不然手指压在分界线上抖一下就会来回换块。
+     * <p>⚠ [comment]，[comment]<b>[comment]</b>[comment]，[comment]
+     * {@link #HYST_DEG} [comment] —— [comment]。
      */
     private static int sectorAt(float x, float y) {
         int n = slots.length;
@@ -430,7 +430,7 @@ public final class CoverGear {
         if (sel < 0 || raw == sel) {
             return raw;
         }
-        // 换块要真的越过当前那一块的分界线 HYST_DEG 这么多才算（回滞）
+        // [comment] HYST_DEG [comment]（[comment]）
         if (raw > sel) {
             return a > bounds[sel] + HYST_DEG ? raw : sel;
         }
@@ -444,20 +444,20 @@ public final class CoverGear {
     }
 
     /**
-     * 手指相对"朝屏内"那张开的角（度）：0 = 正对着屏内，负 = 偏上，正 = 偏下。
+     * [comment]"[comment]"[comment]（[comment]）：0 = [comment]，[comment] = [comment]，[comment] = [comment]。
      */
     private static float angleOf(float x, float y) {
-        float dx = side == 1 ? cx - x : x - cx;      // 往屏内为正
-        float dy = y - cy;                            // 屏幕向下为正
+        float dx = side == 1 ? cx - x : x - cx;      // Text
+        float dy = y - cy;                            // Text
         return (float) Math.toDegrees(Math.atan2(dy, dx));
     }
 
-    /** 画的时候统一用"朝屏内 = +x"的局部角：+ 朝右的带子直接就是它，朝左的要翻过来 */
+    /** [comment]"[comment] = +x"[comment]：+ [comment]Yes[comment]，[comment] */
     private static float canvasDeg(float a) {
         return side == 1 ? 180f - a : a;
     }
 
-    // ------------------------------------------------------------------ 画
+    // ------------------------------------------------------------------ [comment]
 
     private static final class GearView extends View {
 
@@ -490,7 +490,7 @@ public final class CoverGear {
                 return;
             }
 
-            // ① 齿轮往前转。转速按选中的那一块换档（上慢下快）
+            // ① [comment]。[comment]（[comment]）
             long now = SystemClock.uptimeMillis();
             float dt = (now - lastTick) / 1000f;
             lastTick = now;
@@ -503,7 +503,7 @@ public final class CoverGear {
             rotDeg = (rotDeg + dt * speedNow()) % 360f;
             postInvalidateOnAnimation();
 
-            // 选中切换那一下的进度 0..1（缓出）
+            // [comment] 0..1（[comment]）
             float t = 1f;
             if (sel >= 0 || prevSel >= 0) {
                 long d = now - selAt;
@@ -512,10 +512,10 @@ public final class CoverGear {
             float ease = 1f - (1f - t) * (1f - t);
             boolean shrinking = prevSel >= 0 && prevSel != sel && t < 1f;
 
-            // ② 圆心附近压一层很淡的暗，字压在图标上也读得清
+            // ② [comment]，[comment]
             cv.drawCircle(cx, cy, rFan * 1.1f, scrim);
 
-            // ③ 各块扇形。有选中时没选中的压淡，选中的最后画、压在别的上面
+            // ③ [comment]。[comment]，[comment]、[comment]
             int idle = sel >= 0 ? C_FILL_DIM : C_FILL;
             for (int i = 0; i < slots.length; i++) {
                 if (i == sel || (shrinking && i == prevSel)) {
@@ -529,14 +529,14 @@ public final class CoverGear {
             if (sel >= 0) {
                 float grow = 1f + SEL_GROW * ease;
                 sector(cv, sel, C_ACCENT_FILL, C_ACCENT, grow);
-                // 选中那块的弧线再罩一层柔光
+                // [comment]
                 arcStroke(cv, sel, C_ACCENT_GLOW, 6.5f * density, grow);
             }
 
-            // ④ 齿轮本体（转着的）
+            // ④ [comment]（[comment]）
             drawGear(cv);
 
-            // ⑤ 各档的字与图，摆在各自扇形的中径上
+            // ⑤ [comment]，[comment]
             float dir = side == 1 ? -1f : 1f;
             for (int i = 0; i < slots.length; i++) {
                 int act = slots[i];
@@ -560,12 +560,12 @@ public final class CoverGear {
             }
         }
 
-        /** 当前该转多快（度 / 秒） */
+        /** [comment]（[comment] / [comment]） */
         private static float speedNow() {
             return (sel >= 0 && sel < speed.length) ? speed[sel] : speed[0];
         }
 
-        /** 画第 i 块扇形（i：0 上 / 1 中 / 2 下）；grow 是它当前的放大倍数 */
+        /** [comment] i [comment]（i：0 [comment] / 1 [comment] / 2 [comment]）；grow Yes[comment] */
         private void sector(Canvas cv, int i, int fillColor, int edgeColor, float grow) {
             float a0 = -FAN_HALF + sectorDeg * i;
             float in = rInner * grow;
@@ -588,7 +588,7 @@ public final class CoverGear {
             cv.drawPath(path, edge);
         }
 
-        /** 只描第 i 块扇形那两条弧（用来给选中的那块罩柔光） */
+        /** [comment] i [comment]（[comment]） */
         private void arcStroke(Canvas cv, int i, int color, float width, float grow) {
             float a0 = -FAN_HALF + sectorDeg * i;
             float in = rInner * grow;
@@ -605,16 +605,16 @@ public final class CoverGear {
         }
 
         /**
-         * 齿轮本体：一圈轮齿 + 本体圆盘 + 中心孔，整体转到 {@link #rotDeg}。
+         * [comment]：[comment] + [comment] + [comment]，[comment] {@link #rotDeg}。
          *
-         * <p>轮齿用圆角矩形绕一圈摆出来（比抠一条多边形路径稳，也不会在低分辨率下毛边）。
+         * <p>[comment]（[comment]，[comment]）。
          */
         private void drawGear(Canvas cv) {
             float r = rGear;
             float tw = r * 0.30f;
             float th = r * 0.42f;
 
-            // 外面那圈柔光：让它从任何底色上都跳出来
+            // [comment]：[comment]
             fill.setStyle(Paint.Style.FILL);
             fill.setShader(null);
             fill.setColor(C_GEAR_HALO);
@@ -634,12 +634,12 @@ public final class CoverGear {
                 cv.drawRoundRect(rect, tw * 0.30f, tw * 0.30f, edge);
                 cv.restore();
             }
-            // 本体圆盘
+            // [comment]
             fill.setColor(C_GEAR);
             cv.drawCircle(cx, cy, r, fill);
             cv.drawCircle(cx, cy, r, edge);
 
-            // 中心孔：压暗一圈，看着就是个孔
+            // [comment]：[comment]，[comment]Yes[comment]
             fill.setColor(C_GEAR_HUB);
             cv.drawCircle(cx, cy, r * 0.38f, fill);
             edge.setColor(C_GEAR);

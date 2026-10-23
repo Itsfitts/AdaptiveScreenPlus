@@ -14,24 +14,24 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * 「外屏启动器」自己的设置。
+ * 「[comment]」[comment]Settings。
  *
- * <p>单独一个 SharedPreferences 文件（跟 {@link QuickPrefs} 一个路子）：这块功能将来要摘掉时
- * 删一个文件就干净，不用去主设置里翻哪些 key 是它的。
+ * <p>[comment] SharedPreferences [comment]（[comment] {@link QuickPrefs} [comment]）：[comment]
+ * [comment]，[comment]Settings[comment] key Yes[comment]。
  *
- * <p>存五类东西：勾了哪些应用与什么顺序（分号分隔的包名串）、外观（列数 / 图标大小 / 形状 /
- * 行距 / 背景浓度 / 显不显示名字）、收藏夹、启动次数（给「按常用」排序用，点一次加一）。
- * 不存图标和名字 —— 每次从 {@link AppRepo} 现读，应用改名 / 换图标 / 卸载后就不会留下过期缓存。
+ * <p>[comment]：[comment]（[comment]）、[comment]（[comment] / [comment] / [comment] /
+ * [comment] / [comment] / [comment]）、[comment]、[comment]（[comment]「[comment]」[comment]，[comment]）。
+ * [comment] —— [comment] {@link AppRepo} [comment]，[comment] / [comment] / [comment]。
  *
- * <p><b>顺序有两份，各管各的</b>：本类的 {@code launcher_apps} 是<b>本启动器</b>的顺序
- * （小组件与配置页都认它，即 {@link #SORT_MANUAL}），{@link HomePrefs#KEY_APPS} 是<b>副屏桌面</b>
- * 的顺序。两份互不干扰，只有用户手动执行配置页那个「把当前顺序写入副屏桌面」时才同步一次。
- * ⚠ 别在 {@link #setApps} 末尾挂自动同步 —— 那等于手动顺序一改就把副屏桌面覆盖掉，两份就分不出来了。
+ * <p><b>[comment]，[comment]</b>：[comment] {@code launcher_apps} Yes<b>[comment]</b>[comment]
+ * （[comment]，[comment] {@link #SORT_MANUAL}），{@link HomePrefs#KEY_APPS} Yes<b>[comment]</b>
+ * [comment]。[comment]，[comment]「[comment]」[comment]。
+ * ⚠ [comment] {@link #setApps} [comment] —— [comment]，[comment]。
  *
- * <p>{@link #SORT_HOME} 是「直接读副屏桌面那份来排」，跟着副屏桌面走，不跟手动顺序走。
+ * <p>{@link #SORT_HOME} Yes「[comment]」，[comment]，[comment]。
  *
- * <p>外观档位都写在这里当<b>单一出处</b>：配置页外观条、小组件、缩位图那段读的是同一批常量；
- * 各写一套的话加一档要改三处，漏一处就是「这边五档那边四档」。
+ * <p>[comment]<b>[comment]</b>：[comment]、[comment]、[comment]Yes[comment]；
+ * [comment]，[comment]Yes「[comment]」。
  */
 public final class LauncherPrefs {
 
@@ -49,29 +49,29 @@ public final class LauncherPrefs {
     private static final String KEY_FAV = "launcher_fav";
     private static final String KEY_FAV_ONLY = "launcher_fav_only";
 
-    /** 包名里不会出现分号，选它当分隔符 */
+    /** [comment]，[comment] */
     private static final String SEP = ";";
 
-    // ------------------------------------------------------------ 排序方式
+    // ------------------------------------------------------------ [comment]
 
-    /** 手动：按用户在配置页里排出来的顺序（可以拖） */
+    /** [comment]：[comment]（[comment]） */
     public static final String SORT_MANUAL = "manual";
-    /** 名称：按中文拼音升序 */
+    /** [comment]：[comment] */
     public static final String SORT_NAME = "name";
-    /** 常用：按启动次数降序，没点过的排在后面并保持原顺序 */
+    /** [comment]：[comment]，[comment] */
     public static final String SORT_USAGE = "usage";
-    /** 副屏桌面顺序：直接跟着 {@link HomePrefs} 那份排（没设过就退回名称序） */
+    /** [comment]：[comment] {@link HomePrefs} [comment]（[comment]） */
     public static final String SORT_HOME = "home";
 
     /**
-     * 排序方式的全部候选 —— <b>单一出处</b>。
+     * [comment] —— <b>[comment]</b>。
      *
-     * <p>配置页的排序弹窗、小组件的 ⇅ 图标、工具条上那行"排序：xxx"全都读这一份，
-     * 所以两边不可能出现"这边三种、那边四种"的不对等。
+     * <p>[comment]、[comment] ⇅ [comment]、[comment]"[comment]：xxx"[comment]，
+     * [comment]"[comment]、[comment]"[comment]。
      */
     public static final String[] SORT_ALL = {SORT_MANUAL, SORT_NAME, SORT_USAGE, SORT_HOME};
 
-    // ------------------------------------------------------------ 外观档位
+    // ------------------------------------------------------------ [comment]
 
     public static final int SIZE_SMALL = 0;
     public static final int SIZE_MID = 1;
@@ -82,46 +82,46 @@ public final class LauncherPrefs {
     public static final int GAP_LOOSE = 2;
 
     /**
-     * 列数候选。每个都对应一份布局文件（见 {@link CoverLauncherProvider#layoutFor}）——
-     * {@code GridView.setNumColumns} 没有 {@code @RemotableViewMethod} 注解，小组件里<b>不能</b>
-     * 运行时改列数，只能换布局。
+     * [comment]。[comment]（[comment] {@link CoverLauncherProvider#layoutFor}）——
+     * {@code GridView.setNumColumns} [comment] {@code @RemotableViewMethod} [comment]，[comment]<b>[comment]</b>
+     * [comment]，[comment]。
      *
-     * <p>不再往上加：外屏就那么宽，8 列时每格不到 45dp，图标和名字都得挤没了。
+     * <p>[comment]：[comment]，8 [comment] 45dp，[comment]。
      */
     public static final int[] COLUMN_CHOICES = {4, 5, 6, 7};
 
     public static final int COLUMNS_MIN = 4;
     public static final int COLUMNS_MAX = 7;
 
-    /** 原样：应用自己给什么形状就画什么 */
+    /** [comment]：[comment] */
     public static final int SHAPE_APP = 0;
-    /** 圆角方形 */
+    /** [comment] */
     public static final int SHAPE_ROUND = 1;
-    /** 圆形（默认档，见 {@link #iconShape}） */
+    /** [comment]（Default[comment]，[comment] {@link #iconShape}） */
     public static final int SHAPE_CIRCLE = 2;
 
     public static final int[] SHAPE_ALL = {SHAPE_APP, SHAPE_ROUND, SHAPE_CIRCLE};
 
     /**
-     * 圆角方形档的圆角半径 = 图标边长 × 这个比例。
+     * [comment] = [comment] × [comment]。
      *
-     * <p>24% 是照着三星启动器的观感调的。两处共用：
-     * 小组件缩位图（{@link CoverLauncherService#toBitmap}）和配置页的格子。
+     * <p>24% Yes[comment]。[comment]：
+     * [comment]（{@link CoverLauncherService#toBitmap}）[comment]。
      */
     public static final float SHAPE_RADIUS_RATIO = 0.24f;
 
     /**
-     * 小组件底板的不透明度候选（%），越大越实。
+     * [comment]（%），[comment]。
      *
-     * <p>写百分比而不是「淡 / 中 / 浓」：说「透明度高」到底指更透还是更实，问十个人能给两种答案，
-     * 一个数字说出来没有歧义。
+     * <p>[comment]Yes「[comment] / [comment] / [comment]」：[comment]「[comment]」[comment]Yes[comment]，[comment]，
+     * [comment]。
      *
-     * <p>每档对应一份 shape drawable（见 {@link #bgDrawable}）。改档位要连 drawable
-     * 一起改，两边对不上就是一块纯色或者一个空档。
+     * <p>[comment] shape drawable（[comment] {@link #bgDrawable}）。[comment] drawable
+     * [comment]，[comment]Yes[comment]。
      */
     public static final int[] ALPHA_CHOICES = {0, 10, 30, 50};
 
-    /** 默认 30% —— 底板要让位给封面屏自己的背景，太实就把壁纸盖住了 */
+    /** Default 30% —— [comment]，[comment] */
     public static final int ALPHA_DEFAULT = 30;
 
     private LauncherPrefs() {
@@ -131,9 +131,9 @@ public final class LauncherPrefs {
         return c.getApplicationContext().getSharedPreferences(FILE, Context.MODE_PRIVATE);
     }
 
-    // ------------------------------------------------------------ 勾选列表
+    // ------------------------------------------------------------ [comment]
 
-    /** 勾选的应用包名，有序 —— 顺序就是"手动排序"下的显示顺序 */
+    /** [comment]，[comment] —— [comment]Yes"[comment]"[comment] */
     public static List<String> apps(Context c) {
         String raw = sp(c).getString(KEY_APPS, "");
         List<String> out = new ArrayList<>();
@@ -168,11 +168,11 @@ public final class LauncherPrefs {
         sp(c).edit().putString(KEY_APPS, sb.toString()).apply();
 
         /*
-         * ⚠ 这里<b>不要</b>去动 {@link HomePrefs}（v3.2 定）。
+         * ⚠ [comment]<b>[comment]</b>[comment] {@link HomePrefs}（v3.2 [comment]）。
          *
-         * 副屏桌面那份顺序是独立的一份，只在用户手动执行
-         * 「把当前顺序写入副屏桌面」时同步一次。写在这里就意味着"手动顺序一改，
-         * 副屏桌面被顺带覆盖"，两边的顺序就再也分不出来了。
+         * [comment]Yes[comment]，[comment]
+         * 「[comment]」[comment]。[comment]"[comment]，
+         * [comment]"，[comment]。
          */
     }
 
@@ -181,11 +181,11 @@ public final class LauncherPrefs {
     }
 
     /**
-     * 勾上 / 取消，返回操作之后是否处于勾选态。
+     * [comment] / Cancel，[comment]YesNo[comment]。
      *
-     * <p>⚠ 勾上的时候是 <b>插到队首</b>，不是追加到末尾 —— 这是用户定的规矩：
-     * 配置页的列表里"没勾的都在末尾"，一旦勾上，它就该从末尾跳到最前面去，
-     * 而不是接着末尾排队（那样在几十个应用里根本找不到它）。
+     * <p>⚠ [comment]Yes <b>[comment]</b>，[comment]Yes[comment] —— [comment]Yes[comment]：
+     * [comment]"[comment]"，[comment]，[comment]，
+     * [comment]Yes[comment]（[comment]）。
      */
     public static boolean toggle(Context c, String pkg) {
         if (pkg == null || pkg.trim().isEmpty()) {
@@ -204,12 +204,12 @@ public final class LauncherPrefs {
         return now;
     }
 
-    /** 配置过没有（一个都没勾 = 没配过，外屏上显示引导文案） */
+    /** [comment]（[comment] = [comment]，[comment]） */
     public static boolean isConfigured(Context c) {
         return !apps(c).isEmpty();
     }
 
-    // ------------------------------------------------------------ 排序
+    // ------------------------------------------------------------ [comment]
 
     public static String sort(Context c) {
         String v = sp(c).getString(KEY_SORT, SORT_MANUAL);
@@ -225,7 +225,7 @@ public final class LauncherPrefs {
         sp(c).edit().putString(KEY_SORT, mode == null ? SORT_MANUAL : mode).apply();
     }
 
-    /** 排序方式的中文名。配置页的选择器、小组件的工具条、Toast 全用它。 */
+    /** [comment]。[comment]、[comment]、Toast [comment]。 */
     public static String sortLabel(Context c, String mode) {
         if (SORT_NAME.equals(mode)) {
             return c.getString(R.string.launcher_sort_name);
@@ -244,15 +244,15 @@ public final class LauncherPrefs {
     }
 
     /**
-     * 按当前排序方式排列一批应用（就地改顺序）。
+     * [comment]（[comment]）。
      *
      * <ul>
-     *   <li>{@link #SORT_MANUAL} —— 按 {@link #apps} 里的索引（数组里没有的排最后）；</li>
-     *   <li>{@link #SORT_NAME} —— 中文拼音升序（同 {@link AppRepo#load}，用 Collator）；</li>
-     *   <li>{@link #SORT_USAGE} —— 启动次数从多到少，没点过的算 0；靠 {@code Collections.sort}
-     *       的稳定性保持原有相对顺序；</li>
-     *   <li>{@link #SORT_HOME} —— 按 {@link HomePrefs#apps} 里的索引；副屏桌面没设过顺序时返回
-     *       空表 ⇒ 全部同分 ⇒ 保持传进来的顺序（= 名称序）。</li>
+     *   <li>{@link #SORT_MANUAL} —— [comment] {@link #apps} [comment]（[comment]）；</li>
+     *   <li>{@link #SORT_NAME} —— [comment]（[comment] {@link AppRepo#load}，[comment] Collator）；</li>
+     *   <li>{@link #SORT_USAGE} —— [comment]，[comment] 0；[comment] {@code Collections.sort}
+     *       [comment]；</li>
+     *   <li>{@link #SORT_HOME} —— [comment] {@link HomePrefs#apps} [comment]；[comment]
+     *       [comment] ⇒ [comment] ⇒ [comment]（= [comment]）。</li>
      * </ul>
      */
     public static void sortItems(Context c, List<AppRepo.Item> items) {
@@ -275,7 +275,7 @@ public final class LauncherPrefs {
                 Collections.sort(items, (a, b) -> Integer.compare(at(idx, a.pkg), at(idx, b.pkg)));
             }
         } catch (Throwable ignored) {
-            // 排序失败不算致命：保持原顺序往下走
+            // [comment]Failed[comment]：[comment]
         }
     }
 
@@ -289,7 +289,7 @@ public final class LauncherPrefs {
         return m;
     }
 
-    /** 不在表里的给个大数 —— 稳定排序会把它留在原地（通常是末尾） */
+    /** [comment] —— [comment]（[comment]Yes[comment]） */
     private static int at(Map<String, Integer> m, String pkg) {
         Integer i = m.get(pkg);
         return i == null ? Integer.MAX_VALUE : i;
@@ -300,9 +300,9 @@ public final class LauncherPrefs {
         return n == null ? 0 : n;
     }
 
-    // ------------------------------------------------------------ 启动次数
+    // ------------------------------------------------------------ [comment]
 
-    /** 点过几次，「按常用」排序的依据 */
+    /** [comment]，「[comment]」[comment] */
     public static Map<String, Integer> usage(Context c) {
         Map<String, Integer> m = new HashMap<>();
         String raw = sp(c).getString(KEY_USAGE, "");
@@ -323,8 +323,8 @@ public final class LauncherPrefs {
     }
 
     /**
-     * 记一次启动。由 {@link LauncherTapReceiver} 在真正投屏成功之后调。
-     * 这点数据不写盘也不会坏（只是排序不准），所以用 apply() 异步落盘。
+     * [comment]。[comment] {@link LauncherTapReceiver} [comment]Success[comment]。
+     * [comment]（[comment]Yes[comment]），[comment] apply() [comment]。
      */
     public static void bump(Context c, String pkg) {
         if (pkg == null || pkg.trim().isEmpty()) {
@@ -342,14 +342,14 @@ public final class LauncherPrefs {
         sp(c).edit().putString(KEY_USAGE, sb.toString()).apply();
     }
 
-    // ------------------------------------------------------------ 收藏夹
+    // ------------------------------------------------------------ [comment]
 
     /**
-     * 收藏夹里的包名，有序（收藏的先后）。
+     * [comment]，[comment]（[comment]）。
      *
-     * <p>跟 {@link #apps} 是<b>两份</b>：收藏只是给应用打个记号，不动启动器那份
-     * "勾了哪些、怎么排"。唯一的例外在 {@link #toggleFav} —— 收藏时顺手把它加进启动器
-     * （不在启动器里的应用，筛"只看收藏"也筛不出来）。
+     * <p>[comment] {@link #apps} Yes<b>[comment]</b>：[comment]Yes[comment]，[comment]
+     * "[comment]、[comment]"。[comment] {@link #toggleFav} —— [comment]
+     * （[comment]，[comment]"[comment]"[comment]）。
      */
     public static List<String> favs(Context c) {
         String raw = sp(c).getString(KEY_FAV, "");
@@ -390,10 +390,10 @@ public final class LauncherPrefs {
     }
 
     /**
-     * 收藏 / 取消收藏，返回操作之后还在不在收藏夹里。
+     * [comment] / Cancel[comment]，[comment]。
      *
-     * <p>收藏时<b>顺带加进启动器</b>（插队首，跟 {@link #toggle} 一个规矩）；
-     * 取消收藏<b>不动</b>启动器那份 —— 去掉记号不等于把它从启动器踢出去。
+     * <p>[comment]<b>[comment]</b>（[comment]，[comment] {@link #toggle} [comment]）；
+     * Cancel[comment]<b>[comment]</b>[comment] —— [comment]。
      */
     public static boolean toggleFav(Context c, String pkg) {
         if (pkg == null || pkg.trim().isEmpty()) {
@@ -418,8 +418,8 @@ public final class LauncherPrefs {
     }
 
     /**
-     * 「只看收藏」。配置页与小组件<b>共用这一个开关</b> —— 在哪儿拨的，另一边立刻是这个样子。
-     * 默认关（= 全部应用）。
+     * 「[comment]」。[comment]<b>[comment]</b> —— [comment]，[comment]Yes[comment]。
+     * Default[comment]（= [comment]）。
      */
     public static boolean favOnly(Context c) {
         return sp(c).getBoolean(KEY_FAV_ONLY, false);
@@ -429,7 +429,7 @@ public final class LauncherPrefs {
         sp(c).edit().putBoolean(KEY_FAV_ONLY, v).apply();
     }
 
-    /** 卸掉一个应用之后清记录用：两份名单里都拿掉它 */
+    /** [comment]：[comment] */
     public static void forget(Context c, String pkg) {
         if (pkg == null) {
             return;
@@ -444,9 +444,9 @@ public final class LauncherPrefs {
         }
     }
 
-    // ------------------------------------------------------------ 外观
+    // ------------------------------------------------------------ [comment]
 
-    /** 外屏上要不要显示应用名。图标小、格子密时关掉更清爽。 */
+    /** [comment]。[comment]、[comment]。 */
     public static boolean showLabel(Context c) {
         return sp(c).getBoolean(KEY_SHOW_LABEL, true);
     }
@@ -455,7 +455,7 @@ public final class LauncherPrefs {
         sp(c).edit().putBoolean(KEY_SHOW_LABEL, v).apply();
     }
 
-    /** 一排放几个 */
+    /** [comment] */
     public static int columns(Context c) {
         int n = sp(c).getInt(KEY_COLUMNS, 4);
         return Math.max(COLUMNS_MIN, Math.min(COLUMNS_MAX, n));
@@ -474,7 +474,7 @@ public final class LauncherPrefs {
         sp(c).edit().putInt(KEY_ICON, Math.max(0, Math.min(2, v))).apply();
     }
 
-    /** 图标相对基准尺寸的缩放比（小组件那边按它缩位图，配置页按它改 LayoutParams） */
+    /** [comment]（[comment]，[comment] LayoutParams） */
     public static float iconScale(Context c) {
         switch (iconSize(c)) {
             case SIZE_SMALL:
@@ -487,12 +487,12 @@ public final class LauncherPrefs {
     }
 
     /**
-     * 图标形状。默认<b>圆形</b>。
+     * [comment]。Default<b>[comment]</b>。
      *
-     * <p>为什么默认就动手裁：外屏上这些图标本来就形状不齐（有的应用给方形，
-     * 有的给圆角，有的给圆形），混在一屏里看着乱。圆形是唯一能真正"统一"的形状 ——
-     * 它能把任何比它小的形状整个包住；反过来裁圆角时，本来画成圆的图标还是圆的。
-     * 想要各归各的就切到「原样」。
+     * <p>[comment]Default[comment]：[comment]（[comment]，
+     * [comment]，[comment]），[comment]。[comment]Yes[comment]"[comment]"[comment] ——
+     * [comment]；[comment]，[comment]Yes[comment]。
+     * [comment]「[comment]」。
      */
     public static int iconShape(Context c) {
         int v = sp(c).getInt(KEY_SHAPE, SHAPE_CIRCLE);
@@ -514,14 +514,14 @@ public final class LauncherPrefs {
     }
 
     /**
-     * 行距换算成每一格上下各留多少 dp。
+     * [comment] dp。
      *
-     * <p>GridView 的 {@code verticalSpacing} 在 RemoteViews 里改不了（没有
-     * {@code @RemotableViewMethod}），所以行距是靠给每格的根节点撑上下内边距实现的
-     * —— 见 {@code CoverLauncherService.AppFactory.getViewAt}。
+     * <p>GridView [comment] {@code verticalSpacing} [comment] RemoteViews [comment]（[comment]
+     * {@code @RemotableViewMethod}），[comment]Yes[comment]
+     * —— [comment] {@code CoverLauncherService.AppFactory.getViewAt}。
      *
-     * <p>⚠ 这三个数是 <b>dp</b>，由 AppFactory 用<b>本进程</b>的 density 折成 px（不是外屏的），
-     * 所以实际像素 ≈ 数值 × 3.0。
+     * <p>⚠ [comment]Yes <b>dp</b>，[comment] AppFactory [comment]<b>[comment]</b>[comment] density [comment] px（[comment]Yes[comment]），
+     * [comment] ≈ [comment] × 3.0。
      */
     public static int rowPadDp(Context c) {
         switch (rowGap(c)) {
@@ -534,7 +534,7 @@ public final class LauncherPrefs {
         }
     }
 
-    /** 底板不透明度（%）。不在候选表里的值（比如手改过 pref）一律当默认档。 */
+    /** [comment]（%）。[comment]（[comment] pref）[comment]Default[comment]。 */
     public static int bgAlpha(Context c) {
         int v = sp(c).getInt(KEY_ALPHA, ALPHA_DEFAULT);
         for (int a : ALPHA_CHOICES) {
@@ -556,11 +556,11 @@ public final class LauncherPrefs {
     }
 
     /**
-     * 当前档位对应的底板 drawable。
+     * [comment] drawable。
      *
-     * <p>换资源而不是改 alpha 的原因：RemoteViews 只放行内置的那几个方法，改颜色
-     * （setColorFilter）和反射调 setter 都不行；换资源走的 {@code setImageViewResource}
-     * 是内置的，稳。见 {@link CoverLauncherProvider#build}。
+     * <p>[comment]Yes[comment] alpha [comment]：RemoteViews [comment]，[comment]
+     * （setColorFilter）[comment] setter [comment]；[comment] {@code setImageViewResource}
+     * Yes[comment]，[comment]。[comment] {@link CoverLauncherProvider#build}。
      */
     public static int bgDrawable(Context c) {
         switch (bgAlpha(c)) {

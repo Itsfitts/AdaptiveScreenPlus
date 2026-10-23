@@ -12,30 +12,30 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 「副屏桌面」（{@link SecondaryHomeActivity}）自己的设置。
+ * 「[comment]」（{@link SecondaryHomeActivity}）[comment]Settings。
  *
- * <p>与 {@link LauncherPrefs} 的关系：两份顺序各存各的文件，用途也不一样 ——
- * {@code extrot_launcher / launcher_apps} 是外屏启动器（小组件 + 配置页）用户手动排的那份，
- * {@code extrot_home / home_apps} 就是「副屏桌面顺序」。两份<b>互不干扰</b>，唯一的搬运方式是
- * 用户在配置页手动执行「把当前顺序写入副屏桌面」—— 搬<b>一次</b>，之后各走各的。
+ * <p>[comment] {@link LauncherPrefs} [comment]：[comment]，[comment] ——
+ * {@code extrot_launcher / launcher_apps} Yes[comment]（[comment] + [comment]）[comment]，
+ * {@code extrot_home / home_apps} [comment]Yes「[comment]」。[comment]<b>[comment]</b>，[comment]Yes
+ * [comment]「[comment]」—— [comment]<b>[comment]</b>，[comment]。
  *
- * <p>⚠ 唯一写这份表的地方就是 {@link #setApps}。别在 {@link LauncherPrefs#setApps} 里挂自动
- * 同步，那等于把这份表变成手动顺序的副本，两边就分不出来了。
+ * <p>⚠ [comment]Yes {@link #setApps}。[comment] {@link LauncherPrefs#setApps} [comment]
+ * [comment]，[comment]，[comment]。
  *
- * <p>{@link LauncherPrefs#SORT_HOME}「副屏桌面顺序」直接读这份表来排，它跟着副屏桌面走。
+ * <p>{@link LauncherPrefs#SORT_HOME}「[comment]」[comment]，[comment]。
  *
- * <p>没设过顺序时是什么行为：{@link #apps} 返回空表 ⇒ {@link #sort} 里所有条目同分 ⇒
- * 保持传进来的顺序，也就是 {@link AppRepo#load} 的中文名称序，即「没配过 = 按名称排」。
+ * <p>[comment]Yes[comment]：{@link #apps} [comment] ⇒ {@link #sort} [comment] ⇒
+ * [comment]，[comment]Yes {@link AppRepo#load} [comment]，[comment]「[comment] = [comment]」。
  *
- * <p>⚠ 顺序只是「排前面」而不是「只显示这些」—— 副屏桌面照旧列出所有应用，表里的排在最前，
- * 其余按名称跟在后面。
+ * <p>⚠ [comment]Yes「[comment]」[comment]Yes「[comment]」—— [comment]，[comment]，
+ * [comment]。
  */
 public final class HomePrefs {
 
     private static final String FILE = "extrot_home";
     static final String KEY_APPS = "home_apps";
 
-    /** 包名里不会出现分号，跟 {@link LauncherPrefs} 用同一个分隔符 */
+    /** [comment]，[comment] {@link LauncherPrefs} [comment] */
     private static final String SEP = ";";
 
     private HomePrefs() {
@@ -45,7 +45,7 @@ public final class HomePrefs {
         return c.getApplicationContext().getSharedPreferences(FILE, Context.MODE_PRIVATE);
     }
 
-    /** 副屏桌面的自定义顺序（有序、去重）；空表 = 还没设过 */
+    /** [comment]Custom[comment]（[comment]、[comment]）；[comment] = [comment] */
     public static List<String> apps(Context c) {
         String raw = sp(c).getString(KEY_APPS, "");
         List<String> out = new ArrayList<>();
@@ -85,8 +85,8 @@ public final class HomePrefs {
     }
 
     /**
-     * 按自定义顺序排列（就地）—— 表里的排前面、按表里的先后；
-     * 表外的跟在后面，保持传进来的顺序（名称序）。
+     * [comment]Custom[comment]（[comment]）—— [comment]、[comment]；
+     * [comment]，[comment]（[comment]）。
      */
     public static void sort(Context c, List<AppRepo.Item> items) {
         if (items == null || items.size() < 2) {

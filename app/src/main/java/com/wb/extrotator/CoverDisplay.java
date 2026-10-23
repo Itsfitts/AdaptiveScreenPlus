@@ -9,27 +9,27 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 「封面屏」（折叠机手机背面那块小屏，Galaxy Z Flip 上 displayId=1）的强制覆盖操作。
+ * 「[comment]」（[comment]，Galaxy Z Flip [comment] displayId=1）[comment]。
  *
- * <p>与 {@link DisplayProfile} 那条线完全无关 —— 那个是「接便携屏时套用档案」，这里是把封面屏的
- * 参数按用户手动输入强行改掉，纯 Beta 功能。
+ * <p>[comment] {@link DisplayProfile} [comment]None[comment] —— [comment]Yes「[comment]」，[comment]Yes[comment]
+ * [comment]，[comment] Beta [comment]。
  *
- * <p><b>命令是实测出来的，参数顺序不能改</b>：
+ * <p><b>[comment]Yes[comment]，[comment]</b>：
  * <pre>
- *   wm size &lt;W&gt;x&lt;H&gt; -d &lt;id&gt;        ✅ 生效（base/cur 都变）
- *   wm size -d &lt;id&gt; &lt;W&gt;x&lt;H&gt;        ❌ 静默无效（读回来还是 Physical size）
- *   wm density &lt;dpi&gt; -d &lt;id&gt;       ✅ 生效（出现 Override density）
- *   wm size reset -d &lt;id&gt;          ✅ 恢复
- *   wm density reset -d &lt;id&gt;       ✅ 恢复
- *   wm fixed-to-user-rotation -d &lt;id&gt; enabled   ← 旋转前必须先开这条，否则 lock 不落地
+ *   wm size &lt;W&gt;x&lt;H&gt; -d &lt;id&gt;        ✅ [comment]（base/cur [comment]）
+ *   wm size -d &lt;id&gt; &lt;W&gt;x&lt;H&gt;        ❌ [comment]None[comment]（[comment]Yes Physical size）
+ *   wm density &lt;dpi&gt; -d &lt;id&gt;       ✅ [comment]（[comment] Override density）
+ *   wm size reset -d &lt;id&gt;          ✅ [comment]
+ *   wm density reset -d &lt;id&gt;       ✅ [comment]
+ *   wm fixed-to-user-rotation -d &lt;id&gt; enabled   ← [comment]，No[comment] lock [comment]
  *   cmd window user-rotation -d &lt;id&gt; lock &lt;0..3&gt;
- *   cmd window user-rotation -d &lt;id&gt; free        ← 交还传感器
+ *   cmd window user-rotation -d &lt;id&gt; free        ← [comment]
  * </pre>
  *
- * <p>⚠ 走的是 {@code cmd window user-rotation}，<b>不是</b> {@code wm user-rotation} —— 后者对
- * 非默认屏不生效。
+ * <p>⚠ [comment]Yes {@code cmd window user-rotation}，<b>[comment]Yes</b> {@code wm user-rotation} —— [comment]
+ * [comment]Default[comment]。
  *
- * <p>本类所有方法都会真的走 binder，<b>必须在后台线程调用</b>。
+ * <p>[comment] binder，<b>[comment]</b>。
  */
 public final class CoverDisplay {
 
@@ -38,13 +38,13 @@ public final class CoverDisplay {
     private static final Pattern P_SIZE = Pattern.compile("(\\d+)\\s*x\\s*(\\d+)");
     private static final Pattern P_LOCK = Pattern.compile("lock\\s+(\\d)");
 
-    /** 旋转被钉住时的角度值（0..3），自由旋转返回 -1 */
+    /** [comment]（0..3），[comment] -1 */
     public static final int ROT_FREE = -1;
 
     private CoverDisplay() {
     }
 
-    /** 封面屏的 display id；找不到（普通直板机）返回 -1 */
+    /** [comment] display id；[comment]（[comment]）[comment] -1 */
     public static int id(Context ctx) {
         try {
             DisplayManager dm = (DisplayManager) ctx.getApplicationContext()
@@ -56,16 +56,16 @@ public final class CoverDisplay {
         }
     }
 
-    /** Shizuku 就绪 + 拿得到封面屏，才算能用 */
+    /** Shizuku [comment] + [comment]，[comment] */
     public static boolean available(Context ctx) {
         return ShellRunner.isReady() && id(ctx) > 0;
     }
 
-    // ------------------------------------------------------------------ 读
+    // ------------------------------------------------------------------ [comment]
 
     /**
-     * 封面屏此刻的一整组参数（物理值、覆盖值、旋转），供界面显示。
-     * <b>阻塞</b>（三条 shell 命令）
+     * [comment]（[comment]、[comment]、[comment]），[comment]。
+     * <b>[comment]</b>（[comment] shell [comment]）
      */
     public static State read(Context ctx) {
         State s = new State();
@@ -89,8 +89,8 @@ public final class CoverDisplay {
     }
 
     /**
-     * 封面屏当前被钉在哪个角度：0..3 是被 lock 住的值；
-     * {@link #ROT_FREE} 表示自由（跟传感器走）。
+     * [comment]：0..3 Yes[comment] lock [comment]；
+     * {@link #ROT_FREE} [comment]（[comment]）。
      */
     public static int currentRotation(Context ctx, int did) {
         try {
@@ -106,7 +106,7 @@ public final class CoverDisplay {
             }
         } catch (Throwable ignored) {
         }
-        // 兜底：直接问屏。⚠️ 屏灭时这个值会停在旧值，只当参考。
+        // [comment]：[comment]。⚠️ [comment]，[comment]。
         try {
             DisplayManager dm = (DisplayManager) ctx.getApplicationContext()
                     .getSystemService(Context.DISPLAY_SERVICE);
@@ -117,26 +117,26 @@ public final class CoverDisplay {
         }
     }
 
-    // ------------------------------------------------------------------ 改分辨率 / DPI
+    // ------------------------------------------------------------------ [comment] / DPI
 
     /**
-     * 强制覆盖封面屏的分辨率与 DPI。<b>阻塞</b>。
+     * [comment] DPI。<b>[comment]</b>。
      *
-     * @param dpi 传 0 表示不动 DPI（只改分辨率）
-     * @return null 表示成功，否则是给用户看的错误说明
+     * @param dpi [comment] 0 [comment] DPI（[comment]）
+     * @return null [comment]Success，No[comment]Yes[comment]Error[comment]
      */
     public static String applySize(Context ctx, int w, int h, int dpi) {
         int did = id(ctx);
         if (did <= 0) {
-            return "找不到封面屏";
+            return "Text";
         }
         if (!ShellRunner.isReady()) {
-            return "Shizuku 未就绪";
+            return "Shizuku Not Ready";
         }
         if (w < 200 || h < 200) {
-            return "分辨率太小（宽高都需 ≥ 200）";
+            return "Text（Text ≥ 200）";
         }
-        // 参数顺序是实测结论：size 在前、-d id 在后才会生效
+        // [comment]Yes[comment]：size [comment]、-d id [comment]
         ShellRunner.run("wm size " + w + "x" + h + " -d " + did);
         if (dpi > 0) {
             ShellRunner.run("wm density " + dpi + " -d " + did);
@@ -145,17 +145,17 @@ public final class CoverDisplay {
     }
 
     /**
-     * 把封面屏的分辨率 / DPI 恢复成面板原生值。<b>阻塞</b>。
+     * [comment] / DPI [comment]。<b>[comment]</b>。
      *
-     * @param withDpi 是否连 DPI 一起恢复
+     * @param withDpi YesNo[comment] DPI [comment]
      */
     public static String resetSize(Context ctx, boolean withDpi) {
         int did = id(ctx);
         if (did <= 0) {
-            return "找不到封面屏";
+            return "Text";
         }
         if (!ShellRunner.isReady()) {
-            return "Shizuku 未就绪";
+            return "Shizuku Not Ready";
         }
         ShellRunner.run("wm size reset -d " + did);
         if (withDpi) {
@@ -164,17 +164,17 @@ public final class CoverDisplay {
         return null;
     }
 
-    // ------------------------------------------------------------------ 旋转
+    // ------------------------------------------------------------------ [comment]
 
     /**
-     * 把封面屏顺时针转 90°（0→1→2→3→0）。
+     * [comment] 90°（0→1→2→3→0）。
      *
-     * <p>每次调用都先开一遍 {@code fixed-to-user-rotation}：它是"允许外部钉住这块屏"的
-     * 开关，系统没有对外提供读取接口，幂等地写一遍最省事。
+     * <p>[comment] {@code fixed-to-user-rotation}：[comment]Yes"Allow[comment]"[comment]
+     * [comment]，[comment]，[comment]。
      *
-     * <b>阻塞</b>
+     * <b>[comment]</b>
      *
-     * @return 新的角度值（0..3）；-1 表示失败
+     * @return [comment]（0..3）；-1 [comment]Failed
      */
     public static int rotate(Context ctx) {
         int did = id(ctx);
@@ -182,17 +182,17 @@ public final class CoverDisplay {
             return -1;
         }
         int cur = currentRotation(ctx, did);
-        // 还没锁过（free，读回 -1）时第一刀**直接给 90°**，别给 0°：
-        // 0° 就是封面屏本来的姿态，按下去画面纹丝不动，用户会以为按钮坏了。
-        // （这条是从「阿田自用」的命令里对出来的，它 free 分支给的就是 1。）
+        // [comment]（free，[comment] -1）[comment]**[comment] 90°**，[comment] 0°：
+        // 0° [comment]Yes[comment]，[comment]，[comment]。
+        // （[comment]Yes[comment]「[comment]」[comment]，[comment] free [comment]Yes 1。）
         int next = (cur < 0 ? 1 : (cur + 1) % 4);
         ShellRunner.run("wm fixed-to-user-rotation -d " + did + " enabled");
         ShellRunner.run("cmd window user-rotation -d " + did + " lock " + next);
-        Log.i(TAG, "封面屏旋转 " + cur + " -> " + next);
+        Log.i(TAG, "Text " + cur + " -> " + next);
         return next;
     }
 
-    /** 交还传感器，封面屏恢复自动旋转。<b>阻塞</b> */
+    /** [comment]，[comment]。<b>[comment]</b> */
     public static boolean resetRotation(Context ctx) {
         int did = id(ctx);
         if (did <= 0 || !ShellRunner.isReady()) {
@@ -202,26 +202,26 @@ public final class CoverDisplay {
         return true;
     }
 
-    // ------------------------------------------------------------------ 刘海（挖孔）避让
+    // ------------------------------------------------------------------ [comment]（[comment]）[comment]
 
-    /** 封面屏的原生姿态：面板倒装，所以"用户正着看"就是 180° */
+    /** [comment]：[comment]，[comment]"[comment]"[comment]Yes 180° */
     public static final int ROT_NATIVE = 2;
 
     /**
-     * 让封面屏的内容避开左上角的挖孔（刘海）。<b>阻塞</b>（约 0.3 秒）。
+     * [comment]（[comment]）。<b>[comment]</b>（[comment] 0.3 [comment]）。
      *
-     * <p>两个条件必须<b>同时</b>成立，缺一不可：折叠状态 = {@link DualScreen#TENT}
-     * （{@code CLOSED} 下不避让，实测过）；封面屏被钉在 180°（{@link #ROT_NATIVE}）——
-     * 0° / 90° / 270° 都不避让。
+     * <p>[comment]<b>[comment]</b>[comment]，[comment]：[comment] = {@link DualScreen#TENT}
+     * （{@code CLOSED} [comment]，[comment]）；[comment] 180°（{@link #ROT_NATIVE}）——
+     * 0° / 90° / 270° [comment]。
      *
-     * <p>生效时窗口重算把 {@code mAppBounds.top} 从 0 改成 66（= 挖孔带高度），也就是内容
-     * <b>真的被排版躲开</b>；不是在上面盖一条黑边（那个方案已被用户否掉）。
+     * <p>[comment] {@code mAppBounds.top} [comment] 0 [comment] 66（= [comment]），[comment]Yes[comment]
+     * <b>[comment]</b>；[comment]Yes[comment]（[comment]No[comment]）。
      *
-     * <p>⚠️ 两条都是<b>覆盖</b>，会一直保持到下次「切换折叠 / 展开」或重启手机。想撤销要连着一起撤
-     * （{@code device_state state reset} + lock 收回）—— 单独 reset 状态的话避让会当场消失
-     * （窗口重算回 top=0）。
+     * <p>⚠️ [comment]Yes<b>[comment]</b>，[comment]「[comment] / [comment]」[comment]。[comment]
+     * （{@code device_state state reset} + lock [comment]）—— [comment] reset [comment]
+     * （[comment] top=0）。
      *
-     * @return true = 两条都已下发
+     * @return true = [comment]
      */
     public static boolean avoidCutout(Context ctx) {
         int did = id(ctx);
@@ -229,12 +229,12 @@ public final class CoverDisplay {
             return false;
         }
         DualScreen.setState(DualScreen.TENT);
-        // 状态那一刀要让窗口先跟上，紧随其后的 lock 才会被算在 TENT 上
+        // [comment]，[comment] lock [comment] TENT [comment]
         sleep(250);
-        // 顺序不能反：先允许钉住，再钉角度，否则 lock 不落地
+        // [comment]：[comment]Allow[comment]，[comment]，No[comment] lock [comment]
         ShellRunner.run("wm fixed-to-user-rotation -d " + did + " enabled");
         ShellRunner.run("cmd window user-rotation -d " + did + " lock " + ROT_NATIVE);
-        Log.i(TAG, "封面屏刘海避让已下发：TENT + lock " + ROT_NATIVE);
+        Log.i(TAG, "Text：TENT + lock " + ROT_NATIVE);
         return true;
     }
 
@@ -246,9 +246,9 @@ public final class CoverDisplay {
         }
     }
 
-    // ------------------------------------------------------------------ 小工具
+    // ------------------------------------------------------------------ [comment]
 
-    /** 取出 "Physical size: 748x720" 这类行里的冒号后面那段 */
+    /** [comment] "Physical size: 748x720" [comment] */
     private static String section(String out, String key) {
         if (out == null) {
             return null;
@@ -281,7 +281,7 @@ public final class CoverDisplay {
         }
     }
 
-    /** 角度值 → 度数文字 */
+    /** [comment] → [comment] */
     public static String degreeText(int rot) {
         switch (rot) {
             case 0:
@@ -293,22 +293,22 @@ public final class CoverDisplay {
             case 3:
                 return "270°";
             default:
-                return "自动";
+                return "Text";
         }
     }
 
-    /** 封面屏参数快照 */
+    /** [comment] */
     public static final class State {
         public int displayId = -1;
-        /** 面板原生分辨率，例如 748x720 */
+        /** [comment]，[comment] 748x720 */
         public String physSize;
-        /** 被覆盖后的分辨率；没有覆盖时为 null */
+        /** [comment]；[comment] null */
         public String overrideSize;
-        /** 面板原生 DPI */
+        /** [comment] DPI */
         public int physDpi;
-        /** 被覆盖后的 DPI；0 = 没有覆盖 */
+        /** [comment] DPI；0 = [comment] */
         public int overrideDpi;
-        /** 0..3 = 被钉住的角度；{@link #ROT_FREE} = 自由 */
+        /** 0..3 = [comment]；{@link #ROT_FREE} = [comment] */
         public int rotation = ROT_FREE;
 
         public boolean hasSizeOverride() {
@@ -319,7 +319,7 @@ public final class CoverDisplay {
             return overrideDpi > 0;
         }
 
-        /** 有没有被改过（分辨率或 DPI 任一） */
+        /** [comment]（[comment] DPI [comment]） */
         public boolean overridden() {
             return hasSizeOverride() || hasDpiOverride();
         }

@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  界面总原则（v2.3 起）：
-  正文只用「操作名」，解释性文字一律不常驻 —— 全部收进操作名右侧那个「ⓘ」里，
-  点一下才弹出来。原因是这个界面塞了 4 个选项卡、十几个开关，说明文字一铺开
-  就长到看不完，反而没人看。
+  Text（v2.3 Text）：
+  Text「Text」，Text —— TextRight EdgeText「ⓘ」Text，
+  Text。Text 4 Text、Text，Text
+  Text，Text。
 
-  所以在本文件里：
-  · 每个需要解释的开关 / 按钮 / 分节标题，右侧都跟一个 style="@style/InfoIcon" 的 ⓘ；
-  · id 一律是 i + 目标控件名（如 iSwLockPhone），由 MainActivity.bindInfo() 统一挂点击；
-  · 原来那些 alpha="0.62" 的灰色说明段、以及标签里的括号注记，都不要了。
+  Text：
+  · Text / Text / Text，Right EdgeText style="@style/InfoIcon" Text ⓘ；
+  · id Text i + Text（Text iSwLockPhone），Text MainActivity.bindInfo() Text；
+  · Text alpha="0.62" Text、Text，Text。
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <!-- ==================== 标题 ==================== -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -26,10 +26,10 @@
         android:paddingBottom="10dp">
 
         <!--
-          第一行：应用名 + 右上角的「Beta 功能」入口。
-          v2.18.1 之前版本胶囊也挤在这一行，但应用名换成「Z flip便携屏扩展」之后
-          三样东西排不下，于是把胶囊挪到第二行右端。
-          Beta 入口固定在右上角、与下面那排选项卡无关 —— 它进的是另一个界面。
+          Text：ApplyText + Text「Beta Text」Text。
+          v2.18.1 Text，TextApplyText「Z flipText」Text
+          Text，Text。
+          Beta Text、Text —— Text。
         -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -59,13 +59,13 @@
                 android:paddingTop="5dp"
                 android:paddingEnd="12dp"
                 android:paddingBottom="5dp"
-                android:text="Beta实验室"
+                android:text="Beta Lab"
                 android:textColor="#FFFFFFFF"
                 android:textSize="13sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- 第二行：英文名 + 版本号 / 更新日志入口（版本号由 MainActivity 读 PackageInfo 填进来） -->
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -101,7 +101,7 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!-- ==================== 选项卡 ==================== -->
+
     <RadioGroup
         android:id="@+id/rgTabs"
         android:layout_width="match_parent"
@@ -114,25 +114,25 @@
         <RadioButton
             android:id="@+id/tabState"
             style="@style/TabItem"
-            android:text="授权与状态" />
+            android:text="Authorization & Status" />
 
         <RadioButton
             android:id="@+id/tabAuto"
             style="@style/TabItem"
             android:layout_marginStart="6dp"
-            android:text="自动旋转" />
+            android:text="Auto Rotation" />
 
         <RadioButton
             android:id="@+id/tabRes"
             style="@style/TabItem"
             android:layout_marginStart="6dp"
-            android:text="内屏管理" />
+            android:text="Inner Screen Management" />
 
         <RadioButton
             android:id="@+id/tabDual"
             style="@style/TabItem"
             android:layout_marginStart="6dp"
-            android:text="双屏" />
+            android:text="Dual Screen" />
     </RadioGroup>
 
     <View
@@ -156,7 +156,7 @@
             android:paddingBottom="24dp">
 
             <!-- ============================================================
-                 选项卡 · 自动旋转
+                 Text · Auto Rotation
                  ============================================================ -->
             <LinearLayout
                 android:id="@+id/panelAuto"
@@ -165,25 +165,25 @@
                 android:orientation="vertical">
 
                 <!-- ============================================================
-                     保存参数设置（v2.5 起 · v2.6 提到本页最顶端 · v2.7 改成一行两项）
+                     Save Parameter Settings（v2.5 Text · v2.6 Text · v2.7 Text）
 
-                     为什么提到最上面：这一块本身就是"状态信息"—— 当前接的是哪块屏、
-                     它存过什么、此刻又是什么。一进这一页先看到"我在哪块屏上、
-                     这套参数到底存没存"，比先看一堆开关有用。
+                     Text：Text"Text"—— Text、
+                     Text、Text。Text"Text、
+                     Text"，Text。
 
-                     形状：**一行两项**，每项都有 `已保存` / `当前` 两列 ——
-                     两列不一样就是"改了但还没存"。v2.6 那版一行一项、整整十行，
-                     竖着占掉大半屏；现在 3 行看完。
-                     行数与内容都由代码给（MainActivity.profileItems），
-                     行的长相在 item_profile_row.xml。
+                     Text：**Text**，Text `Text` / `Text` Text ——
+                     Text"Text"。v2.6 Text、Text，
+                     Text；Text 3 Text。
+                     Text（MainActivity.profileItems），
+                     Text item_profile_row.xml。
 
-                     分辨率与 DPI 不占行：它们跟在 tvProfileHead 那行摘要后面
-                     （"设置分辨率 1080×1920（已保存）"）—— 面板像素数本来就印在
-                     同一行上，另起两行纯属浪费高度，还会和「自动分辨率」那个开关
-                     看着重复。
+                     Resolution & DPI Text：Text tvProfileHead Text
+                     （"TextResolution 1080×1920（Text）"）—— Text
+                     Text，TextHeightText，Text「TextResolution」Text
+                     Text。
 
-                     匹配用的是屏幕身份（uniqueId / 名字+面板尺寸），不是 displayId ——
-                     id 重插一次就会变。displayId 只用来显示。
+                     Text（uniqueId / Text+Text），Text displayId ——
+                     id Text。displayId Text。
                      ============================================================ -->
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -193,7 +193,7 @@
 
                     <TextView
                         style="@style/SectionTitle"
-                        android:text="保存参数设置" />
+                        android:text="Save Parameter Settings" />
 
                     <TextView
                         android:id="@+id/iProfile"
@@ -224,14 +224,14 @@
                         android:orientation="vertical" />
                 </LinearLayout>
 
-                <!-- 三个按钮刻意做小：它们是次要操作（存 / 清一块屏的参数、画面歪了修一下），
-                     不必各占半屏。高度写在"行"上、子项 match_parent ——
-                     并排几个 Button 各写高度时，第二个起会被忽略，见 pair_btn_* 那段注释。
-                     minHeight/minWidth 归零是因为 Button 默认有 48dp/88dp 的下限，
-                     不归零就压不到 36dp、也缩不到 wrap_content。
+                <!-- Text：Text（Text / Text、Text），
+                     Text。HeightText"Text"Text、Text match_parent ——
+                     Text Button TextHeightText，Text，Text pair_btn_* Text。
+                     minHeight/minWidth Text Button Text 48dp/88dp Text，
+                     Text 36dp、Text wrap_content。
 
-                     「修复画面」原来在页面最底下单独占一整行，摆到这儿是因为
-                     这一排本来就占不满，而它仨都属于"针对当前这块屏做点什么"。 -->
+                     「Repair Display」Text，Text
+                     Text，Text"Text"。 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="36dp"
@@ -247,7 +247,7 @@
                         android:minWidth="0dp"
                         android:paddingStart="14dp"
                         android:paddingEnd="14dp"
-                        android:text="保存设置"
+                        android:text="Save Settings"
                         android:textAllCaps="false"
                         android:textSize="12sp" />
 
@@ -261,7 +261,7 @@
                         android:minWidth="0dp"
                         android:paddingStart="14dp"
                         android:paddingEnd="14dp"
-                        android:text="清除记录"
+                        android:text="Clear Record"
                         android:textAllCaps="false"
                         android:textSize="12sp" />
 
@@ -275,7 +275,7 @@
                         android:minWidth="0dp"
                         android:paddingStart="14dp"
                         android:paddingEnd="14dp"
-                        android:text="修复画面"
+                        android:text="Repair Display"
                         android:textAllCaps="false"
                         android:textSize="12sp" />
 
@@ -303,7 +303,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="启用自动方向同步"
+                        android:text="EnableText"
                         android:textSize="16sp" />
 
                     <TextView
@@ -311,12 +311,12 @@
                         style="@style/InfoIcon" />
                 </LinearLayout>
 
-                <!-- 手机自己的方向（v4.12：原来是个「关闭手机自动旋转，锁定横向」的开关，
-                     现在摊成三档 —— 横屏锁定 / 竖屏锁定 / 自动旋转。值仍然是
-                     （lockPhone, phoneRotation）两个字段，跟「保存参数设置」那格的
-                     「自动旋转」行同源，改哪边另一边都会跟着变）。
-                     v4.13：它和上面的同步开关是要配合着用的（同步开着才会拿这里锁的方向去算落点），
-                     所以不再单开词条，紧贴在开关下面；「同步模式」那一整块已删。 -->
+                <!-- Text（v4.12：Text「TextAuto Rotation，Text」Text，
+                     Text —— Text / Text / Auto Rotation。Text
+                     （lockPhone, phoneRotation）Text，Text「Save Parameter Settings」Text
+                     「Auto Rotation」Text，Text）。
+                     v4.13：Text（Text），
+                     Text，Text；「Text」Text。 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -327,7 +327,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="屏幕方向"
+                        android:text="Screen Orientation"
                         android:textSize="15sp" />
 
                     <TextView
@@ -345,9 +345,9 @@
                         android:layout_height="wrap_content"
                         android:minWidth="130dp" />
                 </LinearLayout>
-                <!-- 便携屏跟随的落点角度（v4.12：从「同步模式」区挪到同步开关这一块，两项并成一排）。
-                     v4.13「同步模式」整块删掉后，它就成了同步打开时唯一的外屏落点设置。
-                     位置在「屏幕方向」下面 —— 开关 → 手机锁哪 → 外屏落哪，顺着因果排。 -->
+                <!-- Text（v4.12：Text「Text」Text，Text）。
+                     v4.13「Text」Text，Text。
+                     Text「Screen Orientation」Text —— Text → Text → Text，Text。 -->
                 <LinearLayout
                     android:id="@+id/rowAngles"
                     android:layout_width="match_parent"
@@ -366,7 +366,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="竖屏锁到"
+                            android:text="Portrait locked to"
                             android:textSize="13sp" />
 
                         <Spinner
@@ -387,7 +387,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="横屏锁到"
+                            android:text="Landscape locked to"
                             android:textSize="13sp" />
 
                         <Spinner
@@ -413,7 +413,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="同时强制忽略应用自己申请的方向"
+                        android:text="Force ignore app requested orientation"
                         android:textSize="13sp" />
 
                     <TextView
@@ -436,7 +436,7 @@
 
                     <TextView
                         style="@style/SectionTitle"
-                        android:text="手动校准" />
+                        android:text="Manual Calibration" />
 
                     <TextView
                         android:id="@+id/iCalib"
@@ -490,7 +490,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="恢复系统自动旋转"
+                    android:text="TextAuto Rotation"
                     android:textSize="13sp" />
 
                 <View
@@ -512,7 +512,7 @@
             </LinearLayout>
 
             <!-- ============================================================
-                 选项卡 · 内屏分辨率
+                 Text · TextResolution
                  ============================================================ -->
             <LinearLayout
                 android:id="@+id/panelRes"
@@ -534,13 +534,13 @@
                         android:layout_weight="1"
                         android:paddingTop="12dp"
                         android:paddingBottom="12dp"
-                        android:text="内屏分辨率接管：已关闭"
+                        android:text="Inner Screen Resolution Override: Off"
                         android:textSize="15sp" />
                 </LinearLayout>
 
-                <!-- 内屏状态。以前被塞在「接管时机」分节的末尾，跟那一节的开关毫无关系，
-                     现在提到最上面、紧跟在接管按钮下面 —— 一进这一页就能看到内屏现在是什么状态。
-                     样式与「授权与状态」页的实时状态、双屏页的副屏状态保持一致（浅色底 + 等宽字）。 -->
+                <!-- Text。Text「Takeover Timing」Text，Text，
+                     Text、Text —— Text。
+                     Text「Authorization & Status」TextReal-time Status、Dual ScreenTextCover Screen StatusText（Text + TextWidthText）。 -->
                 <TextView
                     android:id="@+id/tvResState"
                     android:layout_width="match_parent"
@@ -561,15 +561,15 @@
 
                     <TextView
                         style="@style/SectionTitle"
-                        android:text="分辨率与 DPI" />
+                        android:text="Resolution & DPI" />
 
                     <TextView
                         android:id="@+id/iResFields"
                         style="@style/InfoIcon" />
                 </LinearLayout>
 
-                <!-- v4.13：分辨率与 DPI 并成一行（用户提的：三项都很短，分两行纯属浪费）。
-                     输入框从 88dp 收到 66dp，一行刚好塞下「分辨率 宽 × 高　　DPI 值」。 -->
+                <!-- v4.13：Resolution & DPI Text（Text：Text，Text）。
+                     Text 88dp Text 66dp，Text「Resolution Width × Height　　DPI Text」。 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -580,7 +580,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="分辨率"
+                        android:text="Resolution"
                         android:textSize="14sp" />
 
                     <EditText
@@ -651,7 +651,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="分辨率自动加载"
+                        android:text="ResolutionText"
                         android:textSize="15sp" />
 
                     <TextView
@@ -664,10 +664,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:text="读取便携屏分辨率并填入"
+                    android:text="TextResolutionText"
                     android:textSize="13sp" />
 
-                <!-- 刷新率接管：档位候选运行时填，见 MainActivity.setupRefreshRate -->
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
@@ -683,7 +683,7 @@
 
                     <TextView
                         style="@style/SectionTitle"
-                        android:text="刷新率" />
+                        android:text="Refresh Rate" />
 
                     <TextView
                         android:id="@+id/iRefreshRate"
@@ -700,7 +700,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="最高"
+                        android:text="TextHeight"
                         android:textSize="14sp" />
 
                     <Spinner
@@ -714,7 +714,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="最低"
+                        android:text="Min"
                         android:textSize="14sp" />
 
                     <Spinner
@@ -746,7 +746,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="应用"
+                        android:text="Apply"
                         android:textSize="14sp" />
 
                     <Button
@@ -755,7 +755,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
                         android:layout_weight="1"
-                        android:text="交回系统"
+                        android:text="Restore System"
                         android:textSize="14sp" />
                 </LinearLayout>
 
@@ -774,7 +774,7 @@
 
                     <TextView
                         style="@style/SectionTitle"
-                        android:text="接管时机" />
+                        android:text="Takeover Timing" />
 
                     <TextView
                         android:id="@+id/iResTiming"
@@ -786,7 +786,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="插入便携屏时弹窗询问是否启用"
+                    android:text="TextEnable"
                     android:textSize="15sp" />
 
                 <Switch
@@ -794,7 +794,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:text="拔出便携屏后自动还原原生分辨率"
+                    android:text="TextRestore NativeResolution"
                     android:textSize="15sp" />
 
                 <LinearLayout
@@ -808,7 +808,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="立即应用"
+                        android:text="TextApply"
                         android:textSize="13sp" />
 
                     <Button
@@ -817,7 +817,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
                         android:layout_weight="1"
-                        android:text="还原原生"
+                        android:text="Restore Native"
                         android:textSize="13sp" />
                 </LinearLayout>
 
@@ -832,7 +832,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="授予弹窗权限"
+                        android:text="Grant Overlay Permission"
                         android:textSize="13sp" />
 
                     <Button
@@ -841,13 +841,13 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
                         android:layout_weight="1"
-                        android:text="测试弹窗"
+                        android:text="TestText"
                         android:textSize="13sp" />
                 </LinearLayout>
             </LinearLayout>
 
             <!-- ============================================================
-                 选项卡 · 授权与状态
+                 Text · Authorization & Status
                  ============================================================ -->
             <LinearLayout
                 android:id="@+id/panelState"
@@ -876,7 +876,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:text="Shizuku：检测中…"
+                    android:text="Shizuku: Checking…"
                     android:textSize="14sp" />
 
                 <LinearLayout
@@ -890,7 +890,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="授权 / 重新检测" />
+                        android:text="Grant / Re-detect" />
 
                     <Button
                         android:id="@+id/btnShizuku"
@@ -898,7 +898,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_weight="1"
-                        android:text="打开 Shizuku"
+                        android:text="Open Shizuku"
                         android:textAllCaps="false" />
                 </LinearLayout>
 
@@ -923,7 +923,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:text="Root：检测中…"
+                    android:text="Root: Checking…"
                     android:textSize="14sp" />
 
                 <Button
@@ -931,7 +931,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Root 授权 / 重新检测"
+                    android:text="Root Grant / Re-detect"
                     android:textAllCaps="false" />
 
                 <View
@@ -943,17 +943,17 @@
                 <TextView
                     style="@style/SectionTitle"
                     android:layout_marginTop="14dp"
-                    android:text="快捷操作" />
+                    android:text="Quick Actions" />
 
-                <!-- v4.13：这一行并成一行（用户提的：分两行太空）。
-                     v4.17 重排（用户："这一段的排版堪称灾难"）：
-                       第一排 = 自适应旋转 + 打开无线调试，第二排 = 启动双屏模式 + 一键投屏。
-                       无线调试不再"左边写名字、右边一颗按钮"地分两边，直接做成按钮。
+                <!-- v4.13：Text（Text：Text）。
+                     v4.17 Text（Text："Text"）：
+                       Text = Adaptive Rotation + Open Wireless Debugging，Text = TextDual ScreenText + One-key Cast。
+                       Text"Text、Text"Text，Text。
 
-                     为什么无线调试不做成开关：它写的是系统那个键，开起来之后没有必须关掉的场合
-                     （Shizuku 要靠它活着），当前开没开在系统开发者选项里随时能看。
-                     还有一条：它中间会临时武装无障碍代点去点掉系统的确认框，
-                     做成开关会让人以为可以随手来回拨，而每一次"打开"都可能要展开一次内屏。
+                     Text：Text，Text
+                     （Shizuku Text），Text。
+                     Text：Text，
+                     Text，Text"Text"Text。
                 -->
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -969,7 +969,7 @@
                         android:layout_weight="1"
                         android:paddingTop="4dp"
                         android:paddingBottom="4dp"
-                        android:text="自适应旋转"
+                        android:text="Adaptive Rotation"
                         android:textSize="15sp" />
 
                     <TextView
@@ -986,7 +986,7 @@
                         android:paddingTop="4dp"
                         android:paddingEnd="10dp"
                         android:paddingBottom="4dp"
-                        android:text="打开无线调试"
+                        android:text="Open Wireless Debugging"
                         android:textAllCaps="false"
                         android:textSize="13sp" />
 
@@ -995,9 +995,9 @@
                         style="@style/InfoIcon" />
                 </LinearLayout>
 
-                <!-- 外屏自动旋转（v4.23）。跟上面那个「自适应旋转」是两件事：
-                     那个管内屏那边的方向同步，这个管封面屏 —— 手机横竖一变，
-                     封面屏自己的画面跟着转（外屏原生不跟着手机转）。 -->
+                <!-- Cover Auto Rotation（v4.23）。Text「Adaptive Rotation」Text：
+                     Text，Text —— Text，
+                     Text（Text）。 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -1012,7 +1012,7 @@
                         android:layout_weight="1"
                         android:paddingTop="4dp"
                         android:paddingBottom="4dp"
-                        android:text="外屏自动旋转"
+                        android:text="Cover Auto Rotation"
                         android:textSize="15sp" />
 
                     <TextView
@@ -1036,7 +1036,7 @@
                         android:paddingTop="4dp"
                         android:paddingEnd="10dp"
                         android:paddingBottom="4dp"
-                        android:text="启动双屏模式"
+                        android:text="TextDual ScreenText"
                         android:textAllCaps="false"
                         android:textSize="13sp" />
 
@@ -1050,7 +1050,7 @@
                         android:paddingTop="4dp"
                         android:paddingEnd="10dp"
                         android:paddingBottom="4dp"
-                        android:text="一键投屏"
+                        android:text="One-key Cast"
                         android:textAllCaps="false"
                         android:textSize="13sp" />
 
@@ -1066,9 +1066,9 @@
                     android:layout_marginTop="16dp"
                     android:background="#22000000" />
 
-                <!-- v4.12：从「内屏管理」页整段搬来（id 一个没改，行为跟以前一模一样）。
-                     v4.13：「开机后进入」原来是「快捷设置」单独一个词条，现在并进这一块的
-                     状态行右边（用户提的）。实际下发的还是那套 cmd device_state，只是时机挪到开机后。 -->
+                <!-- v4.12：Text「Inner Screen Management」Text（id Text，Text）。
+                     v4.13：「Text」Text「Text」Text，Text
+                     Text（Text）。Text cmd device_state，Text。 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -1078,15 +1078,15 @@
 
                     <TextView
                         style="@style/SectionTitle"
-                        android:text="折叠模式" />
+                        android:text="Fold Mode" />
 
                     <TextView
                         android:id="@+id/iFold"
                         style="@style/InfoIcon" />
 
-                    <!-- v4.16：右半边。这个下拉原来光秃秃挂在状态行末尾，
-                         用户看不出它是干什么的；现在给它一个跟「折叠模式」对仗的
-                         标题，ⓘ 紧挨着挂在标题上。 -->
+                    <!-- v4.16：Text。Text，
+                         Text；Text「Fold Mode」Text
+                         Text，ⓘ Text。 -->
                     <View
                         android:layout_width="0dp"
                         android:layout_height="1dp"
@@ -1094,7 +1094,7 @@
 
                     <TextView
                         style="@style/SectionTitle"
-                        android:text="开机选项" />
+                        android:text="Boot Options" />
 
                     <TextView
                         android:id="@+id/iBootMode"
@@ -1115,7 +1115,7 @@
                         android:layout_weight="1"
                         android:alpha="0.7"
                         android:fontFamily="monospace"
-                        android:text="折叠状态：读取中…"
+                        android:text="Text：Loading…"
                         android:textSize="12sp" />
 
                     <Spinner
@@ -1138,7 +1138,7 @@
                         android:layout_weight="1"
                         android:paddingTop="8dp"
                         android:paddingBottom="8dp"
-                        android:text="折叠/展开模式切换"
+                        android:text="Fold/Unfold Mode Switch"
                         android:textSize="14sp" />
 
                     <Button
@@ -1149,7 +1149,7 @@
                         android:layout_weight="1"
                         android:paddingTop="8dp"
                         android:paddingBottom="8dp"
-                        android:text="恢复自动"
+                        android:text="Restore Auto"
                         android:textAllCaps="false"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -1169,7 +1169,7 @@
 
                     <TextView
                         style="@style/SectionTitle"
-                        android:text="实时状态" />
+                        android:text="Real-time Status" />
 
                     <TextView
                         android:id="@+id/iRealtime"
@@ -1189,7 +1189,7 @@
             </LinearLayout>
 
             <!-- ============================================================
-                 选项卡 · 双屏（封面屏 / 便携屏）
+                 Text · Dual Screen（Text / Text）
                  ============================================================ -->
             <LinearLayout
                 android:id="@+id/panelDual"
@@ -1199,14 +1199,14 @@
                 android:visibility="gone">
 
                 <!--
-                  v4.14 重排（用户逐条给的）：
-                    ① 「启动双屏模式」提到最前 —— 一进这一页先看到主操作；
-                    ② 「双屏模式」与「副屏管理」两个小标题撤掉。前者的说明搬到
-                       「副屏状态」行右边的「关于双屏模式」入口上（同一个弹窗），
-                       后者那条说明挂到「副屏状态」旁边的 ⓘ 上 —— 副屏的详情
-                       跟副屏状态挨着看才顺手；
-                    ③ 「快捷小组件」按钮连同它的 ⓘ 一起撤掉（小组件本身还在，
-                       从系统的组件列表里照样能钉）。
+                  v4.14 Text（Text）：
+                    ① 「TextDual ScreenText」Text —— Text；
+                    ② 「Dual ScreenText」Text「Text」Text。Text
+                       「Cover Screen Status」Text「TextDual ScreenText」Text（Text），
+                       Text「Cover Screen Status」Text ⓘ Text —— Text
+                       TextCover Screen StatusText；
+                    ③ 「Text」Text ⓘ Text（Text，
+                       Text）。
                 -->
                 <Button
                     android:id="@+id/btnDualOneKey"
@@ -1215,7 +1215,7 @@
                     android:background="#FF2E7D32"
                     android:paddingTop="16dp"
                     android:paddingBottom="16dp"
-                    android:text="启动双屏模式"
+                    android:text="TextDual ScreenText"
                     android:textAllCaps="false"
                     android:textColor="#FFFFFFFF"
                     android:textSize="16sp" />
@@ -1229,13 +1229,13 @@
 
                     <TextView
                         style="@style/SectionTitle"
-                        android:text="副屏状态" />
+                        android:text="Cover Screen Status" />
 
                     <TextView
                         android:id="@+id/iSubPanel"
                         style="@style/InfoIcon" />
 
-                    <!-- 原来「双屏模式」那个 ⓘ 的正文搬到这儿：文字入口放在行尾 -->
+
                     <TextView
                         android:id="@+id/tvAboutDual"
                         android:layout_width="0dp"
@@ -1260,7 +1260,7 @@
                     android:background="#0F000000"
                     android:fontFamily="monospace"
                     android:padding="10dp"
-                    android:text="读取中…"
+                    android:text="Loading…"
                     android:textSize="12sp" />
 
                 <View
@@ -1269,9 +1269,9 @@
                     android:layout_marginTop="16dp"
                     android:background="#22000000" />
 
-                <!-- 副屏管理（v4.11 从 Beta 实验室搬来；v4.14 撤掉它自己的小标题）。
-                     v4.17：这里原来躺着两条挨着的分隔线、中间只有这段注释 —— 删掉下面那条，
-                     一条足够分开「副屏状态」与「副屏管理」两个区域（用户："两个分隔符"）。 -->
+                <!-- Text（v4.11 Text Beta LabText；v4.14 Text）。
+                     v4.17：Text、Text —— Text，
+                     Text「Cover Screen Status」Text「Text」Text（Text："Text"）。 -->
 
                 <TextView
                     android:id="@+id/tvSubState"
@@ -1281,7 +1281,7 @@
                     android:background="#0F000000"
                     android:fontFamily="monospace"
                     android:padding="10dp"
-                    android:text="读取中…"
+                    android:text="Loading…"
                     android:textSize="12sp" />
 
                 <Button
@@ -1289,7 +1289,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="打开副屏桌面"
+                    android:text="Open Secondary Launcher"
                     android:textAllCaps="false"
                     android:textSize="14sp" />
 
@@ -1302,19 +1302,19 @@
 
                     <TextView
                         style="@style/SectionTitle"
-                        android:text="副屏桌面上的伪应用" />
+                        android:text="TextApply" />
 
                     <TextView
                         android:id="@+id/iPseudo"
                         style="@style/InfoIcon" />
                 </LinearLayout>
 
-                <!-- v4.17：伪应用开关改成按钮式（用户："不要一个开关占一排"，
-                     而且要"按钮的颜色做成伪应用图标颜色"）。
-                     底色的唯一来源是 MainActivity.bindPseudoToggle 里那份色值，跟
-                     drawable/ic_pseudo_*.xml 的 fillColor 一一对应，改图标就要同步改那边。
-                     v4.18 遥控板整个删掉、键盘早已下线；v472 加了「副屏播放器」，
-                     四个排成两行 —— 一排四个的话「副屏播放器」五个字在每个格子里放不下。 -->
+                <!-- v4.17：TextApplyText（Text："Text"，
+                     Text"TextApplyText"）。
+                     Text MainActivity.bindPseudoToggle Text，Text
+                     drawable/ic_pseudo_*.xml Text fillColor Text，Text。
+                     v4.18 Text、Text；v472 Text「Text」，
+                     Text —— Text「Text」Text。 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -1370,7 +1370,7 @@
 
                     <TextView
                         style="@style/SectionTitle"
-                        android:text="DeX 模式" />
+                        android:text="DeX Mode" />
 
                     <TextView
                         android:id="@+id/iDex"
@@ -1382,7 +1382,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="启动 DeX 模式"
+                    android:text="Text DeX Mode"
                     android:textAllCaps="false"
                     android:textSize="15sp" />
 
@@ -1394,7 +1394,7 @@
                     android:background="#0F000000"
                     android:fontFamily="monospace"
                     android:padding="10dp"
-                    android:text="还没试过。插上便携屏之后点上面的按钮。"
+                    android:text="Not tested yet. Plug in portable display and tap button above."
                     android:textSize="12sp" />
             </LinearLayout>
 

@@ -10,7 +10,7 @@
 .externalNativeBuild/
 .cxx/
 
-# ---- 编译产物 ----
+# ---- Build Artifacts ----
 *.apk
 *.aab
 *.ap_
@@ -18,13 +18,13 @@
 *.class
 output.json
 
-# ---- 签名与密钥（本仓库不含任何签名文件）----
+# ---- Signatures & Keys (This repository contains no key files) ----
 *.jks
 *.keystore
 *.p12
 keystore.properties
 
-# ---- 编辑器 ----
+# ---- Editors ----
 *.swp
 *~
 .vscode/

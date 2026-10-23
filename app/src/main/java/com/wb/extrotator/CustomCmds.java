@@ -10,29 +10,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 「自定义指令」—— 用户自己写的一条 shell 命令。
+ * 「Custom[comment]」—— [comment] shell [comment]。
  *
- * <p>同一条数据有三处要看它：Beta 页的列表（增删改）、{@link QuickActions} 的动作白名单
- * （能被选成侧键动作）、执行时的查表。存在 {@link QuickPrefs} 那个 SharedPreferences 文件里，
- * 将来整块 Beta 功能一起摘掉时删一个文件就干净。
+ * <p>[comment]：Beta [comment]（[comment]）、{@link QuickActions} [comment]
+ * （[comment]）、[comment]。[comment] {@link QuickPrefs} [comment] SharedPreferences [comment]，
+ * [comment] Beta [comment]。
  *
- * <p>格式是 JSON 数组（用 Android 自带 org.json），每项三个字段：id / name / cmd。
- * 动作 key 形如 {@code custom:<id>}，与内置动作共用一套命名空间，见 {@link #KEY_PREFIX}。
+ * <p>[comment]Yes JSON [comment]（[comment] Android [comment] org.json），[comment]：id / name / cmd。
+ * [comment] key [comment] {@code custom:<id>}，[comment]，[comment] {@link #KEY_PREFIX}。
  */
 public final class CustomCmds {
 
-    /** 自定义指令的动作 key 前缀 */
+    /** Custom[comment] key [comment] */
     public static final String KEY_PREFIX = "custom:";
 
     private static final String FILE = "extrot_quick";
     private static final String KEY_LIST = "custom_cmds";
-    /** 名字太长会把列表行撑爆，落库前先截一刀 */
+    /** [comment]，[comment] */
     private static final int MAX_NAME = 24;
 
     private CustomCmds() {
     }
 
-    /** 一条自定义指令 */
+    /** [comment]Custom[comment] */
     public static final class Cmd {
         public String id = "";
         public String name = "";
@@ -43,7 +43,7 @@ public final class CustomCmds {
         return c.getApplicationContext().getSharedPreferences(FILE, Context.MODE_PRIVATE);
     }
 
-    /** 全部指令，按添加顺序 */
+    /** [comment]，[comment] */
     public static List<Cmd> list(Context c) {
         List<Cmd> out = new ArrayList<>();
         String raw = sp(c).getString(KEY_LIST, "");
@@ -66,12 +66,12 @@ public final class CustomCmds {
                 }
             }
         } catch (Throwable t) {
-            // 存坏了就当没有 —— 不让一个坏字符串把整页拖垮
+            // [comment] —— [comment]
         }
         return out;
     }
 
-    /** 按 id 找一条；没有返回 null */
+    /** [comment] id [comment]；[comment] null */
     public static Cmd find(Context c, String id) {
         if (id == null) {
             return null;
@@ -84,7 +84,7 @@ public final class CustomCmds {
         return null;
     }
 
-    /** 新增或更新（id 为空 = 新增，自动分配一个） */
+    /** Add[comment]Update（id [comment] = Add，[comment]） */
     public static void put(Context c, Cmd item) {
         if (item == null || item.cmd == null || item.cmd.trim().isEmpty()) {
             return;
@@ -96,7 +96,7 @@ public final class CustomCmds {
         item.cmd = item.cmd.trim();
         item.name = clip(item.name);
         if (item.name.isEmpty()) {
-            // 名字留空就拿命令顶上，列表里总得有个东西可认
+            // [comment]，[comment]
             item.name = item.cmd.length() > MAX_NAME ? item.cmd.substring(0, MAX_NAME) : item.cmd;
         }
         boolean replaced = false;
@@ -113,7 +113,7 @@ public final class CustomCmds {
         save(c, all);
     }
 
-    /** 删一条 */
+    /** [comment] */
     public static void remove(Context c, String id) {
         List<Cmd> all = list(c);
         for (int i = 0; i < all.size(); i++) {

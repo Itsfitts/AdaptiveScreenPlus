@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  Beta 页的次按钮（描边、透明底）。
-  用在「恢复默认」「复位」这类**撤销性**动作上：不希望它和主按钮一样抢眼，
-  避免误点把用户自己设的东西清掉。
--->
+
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <solid android:color="#0DFFFFFF" />

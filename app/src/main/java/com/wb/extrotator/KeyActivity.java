@@ -11,17 +11,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 /**
- * 副屏键盘 —— 在封面屏上打字，字推进外接屏那个应用的光标处。
+ * [comment] —— [comment]，[comment]。
  *
- * <p>做成「输入框 + 发送」而不是自制键盘，是因为中文送不进去：{@code input text} 只敲得出
- * 虚拟键盘上的 ASCII 字符，应用侧无法把中文直接注入别的应用的输入框。两条路都做了：
+ * <p>[comment]「[comment] + [comment]」[comment]Yes[comment]，Yes[comment]：{@code input text} [comment]
+ * [comment] ASCII [comment]，[comment]None[comment]。[comment]：
  * <ul>
- *   <li>直接键入（{@code input text}）—— 纯英文 / 数字最快；</li>
- *   <li>剪贴板 + 粘贴键（发一次 {@code KEYCODE_PASTE}）—— 中文、emoji、长文本走这条。</li>
+ *   <li>[comment]（{@code input text}）—— [comment] / [comment]；</li>
+ *   <li>[comment] + [comment]（[comment] {@code KEYCODE_PASTE}）—— [comment]、emoji、[comment]。</li>
  * </ul>
  *
- * <p>⚠ 前提：外接屏那边光标已经落在输入框里。注入的按键只走「当前有焦点的窗口」，
- * 没焦点的输入框收不到 —— 先在那边点一下输入框。
+ * <p>⚠ [comment]：[comment]。[comment]「[comment]」，
+ * [comment] —— [comment]。
  */
 public class KeyActivity extends Activity {
 
@@ -49,14 +49,14 @@ public class KeyActivity extends Activity {
         findViewById(R.id.btnKeyClose).setOnClickListener(v -> finish());
 
         findViewById(R.id.btnKeySend).setOnClickListener(v -> doSend());
-        findViewById(R.id.btnKeyEnter).setOnClickListener(v -> sendKey("KEYCODE_ENTER", "回车"));
-        findViewById(R.id.btnKeyDel).setOnClickListener(v -> sendKey("KEYCODE_DEL", "退格"));
-        findViewById(R.id.btnKeySpace).setOnClickListener(v -> sendKey("KEYCODE_SPACE", "空格"));
+        findViewById(R.id.btnKeyEnter).setOnClickListener(v -> sendKey("KEYCODE_ENTER", "Text"));
+        findViewById(R.id.btnKeyDel).setOnClickListener(v -> sendKey("KEYCODE_DEL", "Text"));
+        findViewById(R.id.btnKeySpace).setOnClickListener(v -> sendKey("KEYCODE_SPACE", "Text"));
         findViewById(R.id.btnKeyTab).setOnClickListener(v -> sendKey("KEYCODE_TAB", "Tab"));
         findViewById(R.id.btnKeyEsc).setOnClickListener(v -> sendKey("KEYCODE_ESCAPE", "Esc"));
         findViewById(R.id.btnKeyClear).setOnClickListener(v -> {
             etText.setText("");
-            lastAction = "已清空输入框";
+            lastAction = "Text";
             refreshState();
         });
         btnMode.setOnClickListener(v -> {
@@ -79,19 +79,19 @@ public class KeyActivity extends Activity {
         });
     }
 
-    // ------------------------------------------------------------------ 发送
+    // ------------------------------------------------------------------ [comment]
 
     /**
-     * 发送输入框里的内容。
+     * [comment]。
      *
-     * <p>方式三档（按钮上能看见当前是哪档）：自动 / 直接键入 / 剪贴板。
-     * 自动的判据就是"有没有非 ASCII 字符" —— 有中文就走剪贴板，
-     * 纯英文数字就直接敲（少动一次剪贴板，也少一次系统"已复制"的提示）。
+     * <p>[comment]（[comment]Yes[comment]）：[comment] / [comment] / [comment]。
+     * [comment]Yes"[comment] ASCII [comment]" —— [comment]，
+     * [comment]（[comment]，[comment]"[comment]"[comment]Notice）。
      */
     private void doSend() {
         String text = etText.getText() == null ? "" : etText.getText().toString();
         if (text.isEmpty()) {
-            ExtUi.toast(this, "先打点字");
+            ExtUi.toast(this, "Text");
             return;
         }
         if (dev == null) {
@@ -105,10 +105,10 @@ public class KeyActivity extends Activity {
         if (mode == ExtPrefs.KB_CLIP) {
             putClipboard(text);
             ExtScreen.paste(dev.id, text);
-            lastAction = "已用剪贴板粘贴 " + text.length() + " 字";
+            lastAction = "Text " + text.length() + " Text";
         } else {
             ExtScreen.typeText(dev.id, text);
-            lastAction = "已键入 " + text.length() + " 字";
+            lastAction = "Text " + text.length() + " Text";
         }
         etText.setText("");
         refreshState();
@@ -118,13 +118,13 @@ public class KeyActivity extends Activity {
         try {
             ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
             if (cm != null) {
-                cm.setPrimaryClip(ClipData.newPlainText("Z flip便携屏扩展", text));
+                cm.setPrimaryClip(ClipData.newPlainText("Z flipText", text));
             }
         } catch (Throwable ignored) {
         }
     }
 
-    /** 全是 ASCII 才走"直接键入"；有一个中文就走剪贴板 */
+    /** [comment]Yes ASCII [comment]"[comment]"；[comment] */
     private static boolean isAscii(String s) {
         for (int i = 0; i < s.length(); i++) {
             if (s.charAt(i) > 127) {
@@ -140,7 +140,7 @@ public class KeyActivity extends Activity {
             return;
         }
         ExtScreen.key(dev.id, keyCode);
-        lastAction = "已发 " + label;
+        lastAction = "Text " + label;
         refreshState();
     }
 
@@ -160,7 +160,7 @@ public class KeyActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        // 这一页在用的时候，别让本应用的旋转 / 分辨率那套来动显示设置（见 ExtControlMode）
+        // [comment]，[comment] / [comment]Settings（[comment] ExtControlMode）
         ExtControlMode.on();
     }
 

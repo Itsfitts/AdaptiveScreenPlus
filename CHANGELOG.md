@@ -1,8 +1,8 @@
-# 更新记录
+# Changelog
 
-本文件由应用内「版本与更新」页的日志自动导出，与该页面显示的内容一致（新版本在最上面）。
+This file is automatically exported from the "Version & Updates" page in the app and matches the content displayed on that page (newest version at the top).
 
-| 版本 | 日期 |
+| Version | Date |
 | --- | --- |
 | [v4.26](#v426) | 2026-10-19 |
 | [v4.25](#v425) | 2026-10-19 |
@@ -62,343 +62,343 @@
 
 *2026-10-19*
 
-- 优化了注释与界面提示的文字描述
+- Optimized code comments and user interface copy text descriptions
 
 ## v4.25
 
 *2026-10-19*
 
-- 更新说明页新增「检查更新」，可一键下载并安装新版本
-- 首页新增 root 授权（支持 KernelSU / APatch）；DeX 启动改由 root 重启 SurfaceFlinger 触发
+- Added "Check for Updates" to the release notes page for one-click downloading and installing new versions
+- Added root authorization on the home page (supports KernelSU / APatch); DeX launch now triggered by root restarting SurfaceFlinger
 
 ## v4.24
 
 *2026-10-18*
 
-- 内屏手势：修复误触与触发不灵，底部新增手势亮条
-- Beta 实验室：新增内屏手势游戏模式
+- Inner screen gestures: fixed accidental touches and responsiveness issues, added a gesture indicator light bar at the bottom
+- Beta Lab: added game mode for inner screen gestures
 
 ## v4.23
 
 *2026-09-26*
 
-- 外屏通知面板：排版与对齐有调整，快捷开关可以自己挑并新增三个动作；外屏自动旋转方向修正
-- 新增外屏组件「自定义操作」「手机状态」、副桌面伪应用「副屏播放器」，以及首次打开的功能导览
+- Cover screen notification panel: adjusted layout and alignment, customizable quick toggles with three new actions; fixed outer screen auto-rotation direction
+- Added cover widgets "Custom Action" and "Phone Status", secondary desktop pseudo-app "Cover Media Player", and initial feature onboarding guide
 
 ## v4.22
 
 *2026-09-26*
 
-- 外屏通知面板重做：铺满全屏，左栏常用应用、顶部快捷开关都可以自己挑，按钮与图标有调整
-- 新增「外屏自动旋转」（Beta 实验室 · 外屏管理、快捷操作、老虎机小组件）；修：老虎机摇奖时没有滚动动画
+- Redesigned cover screen notification panel: full-screen layout, customizable left-column favorite apps and top quick toggles, adjusted buttons and icons
+- Added "Cover Auto Rotation" (Beta Lab · Cover Management, Quick Actions, Slot Machine Widget); Fix: missing scroll animation during slot machine spin
 
 ## v4.21
 
 *2026-09-26*
 
-- 外屏启动器、回主界面与返回不再依赖 Shizuku，「指令操作」新增「授予安全设置权限」
-- 新增「老虎机」小组件（摇奖图案为应用图标）；外屏「双屏快捷面板」的按钮有调整
+- Cover launcher, home, and back gestures no longer rely on Shizuku; added "Grant Secure Settings Permission" to "Command Operations"
+- Added "Slot Machine" widget (lottery icons are installed app icons); adjusted buttons on cover screen "Dual Screen Quick Panel"
 
 ## v4.20
 
 *2026-09-26*
 
-- 外屏侧边栏：「面板内容」可以调顺序，动画新增「抽奖轮盘」
+- Cover screen sidebar: reorderable "Panel Content", added "Roulette" animation style
 
 ## v4.19
 
 *2026-09-23*
 
-- 优化内屏手势的动画效果
-- 优化内屏手势的游戏体验
-- 修：左侧边缘划入不返回
+- Optimized inner screen gesture animation effects
+- Optimized inner screen gesture gaming experience
+- Fix: sliding inward from left edge failed to trigger back gesture
 
 ## v4.18
 
 *2026-09-23*
 
-- 「副屏遥控板」已移除
+- Removed "Secondary Screen Remote Control"
 
 ## v4.17
 
 *2026-09-22*
 
-- 主界面快捷操作、双屏面板伪应用开关的排版调整
-- Beta 实验室应用黑边的设置移入「应用管理」，各设置项的说明文字精简
+- Layout adjustments for home page quick actions and dual-screen panel pseudo-app toggles
+- Moved app cutout settings in Beta Lab to "App Management", concise rewrites for all setting description texts
 
 ## v4.16
 
 *2026-09-22*
 
-- 投屏控制新增「全屏」，快捷操作新增「一键投屏」
-- 全屏期间外屏的侧滑栏与手势条自动收起；修：全屏画面铺不满、点着偏移，一键投屏退出后落到锁屏页
+- Screen cast control added "Full Screen" mode, quick actions added "One-key Cast"
+- Cover screen sidebar and gesture bar auto-hide during full screen; Fix: full-screen image not filling display, touch offset, one-key cast exiting to lock screen
 
 ## v4.15
 
 *2026-09-22*
 
-- 新增「状态展示柜」（副屏）与「刷新率」（内屏管理）
-- 文案：全应用的 ⓘ 说明再重写一轮
-- 修：Beta 实验室的「打开无线调试」会把自己关掉
+- Added "Status Board" (cover screen) and "Refresh Rate" (inner screen management)
+- Copywriting: full rewrite pass for all ⓘ descriptions across the app
+- Fix: "Open Wireless Debugging" in Beta Lab turned itself off
 
 ## v4.14
 
 *2026-09-22*
 
-- 外屏启动器可以设背景图片了（配置页顶栏的图片图标）
+- Cover launcher now supports setting background images (image icon on config top bar)
 
 ## v4.13
 
 *2026-09-22*
 
-- 「打开无线调试」改成一次性按钮（快捷操作）
-- 全应用的 ⓘ 说明重写；外屏启动器底板改名「不透明度」并重设档位，小组件右上角图标左移避开侧边栏
+- Changed "Open Wireless Debugging" into a one-time button (Quick Actions)
+- Rewrote ⓘ descriptions across the app; cover launcher base plate renamed "Opacity" with adjusted steps; top-right widget icon shifted left to clear sidebar
 
 ## v4.12
 
 *2026-09-21*
 
-- 新增「打开无线调试」按钮（快捷操作）
-- Beta 新增「应用管理」；外屏启动器长按菜单改为就地弹出
+- Added "Open Wireless Debugging" button (Quick Actions)
+- Beta section added "App Management"; cover launcher long-press menu changed to popup in place
 
 ## v4.11
 
 *2026-09-21*
 
-- 「双屏」页重排
-- 外屏启动器新增收藏夹
+- Rearranged "Dual Screen" tab
+- Added Favorites to Cover Launcher
 
 ## v4.10
 
 *2026-09-21*
 
-- 「自动旋转」页重排，「同步模式」整块删除
-- 「授权与状态」页新增「开机后进入」
+- Rearranged "Auto Rotation" tab, removed entire "Sync Mode" block
+- Added "Boot Entry Action" under "Authorization & Status" page
 
 ## v4.9
 
 *2026-09-20*
 
-- 「外屏手势后台」改名「手势条」，新增「外屏 0° 时固定在左下角」
-- 「副屏管理」搬进主界面「双屏」选项卡，新增「启动 DeX 模式」
+- Renamed "Cover Gesture Recents" to "Gesture Bar", added "Pin to bottom-left when cover screen is at 0°"
+- Moved "Cover Screen Management" into main tab "Dual Screen", added "Launch DeX Mode"
 
 ## v4.8
 
 *2026-09-20*
 
-- 修：外屏手势呼出最近任务时偶尔显示「无最近使用的应用程序」
+- Fix: cover gesture opening recents occasionally showed "No recent applications"
 
 ## v4.7
 
 *2026-09-20*
 
-- 底部手势区改成两个动作：上滑回主界面、上滑停住开最近任务
-- 手势区缩到导航条正中一段，非手势的触摸原样交给下面的应用
+- Changed bottom gesture area to two actions: swipe up for home, swipe & hold for recents
+- Shrunk gesture area to center segment of navigation bar; non-gesture touches passed through to underlying apps
 
 ## v4.5
 
 *2026-09-20*
 
-- 底部手势区与侧边栏各加一条常驻亮杠
-- 修：通知消失时应用崩溃
+- Added persistent indicator bars to bottom gesture area and sidebar
+- Fix: app crash when notification disappeared
 
 ## v4.4
 
 *2026-09-20*
 
-- 新增「外屏侧边栏」
+- Added "Cover Screen Sidebar"
 
 ## v4.3
 
 *2026-09-20*
 
-- 修：「外屏手势后台」误触发
-- 修：外屏应用底部按钮点不动
+- Fix: false trigger in "Cover Gesture Recents"
+- Fix: bottom buttons unclickable in cover screen apps
 
 ## v4.2
 
 *2026-09-19*
 
-- 「去掉应用黑边」改成按钮并移到「指令操作」页；「屏幕增强」页改名「手势增强」
-- 「外屏手势后台」触发时加一次短震动
+- Converted "Remove App Cutouts" to button and moved to "Command Operations" page; renamed "Screen Enhancement" page to "Gesture Enhancement"
+- Added short haptic feedback upon triggering "Cover Gesture Recents"
 
 ## v4.1
 
 *2026-09-19*
 
-- 新增「屏幕增强」页，收进「全局去掉黑边」与「外屏手势后台」
+- Added "Screen Enhancement" page, containing "Global Cutout Removal" and "Cover Gesture Recents"
 
 ## v4.0
 
 *2026-09-19*
 
-- 新增「投屏控制」
-- 「副屏触控屏」改名「副屏触控板」；副屏各功能的开关收进「副屏管理」
+- Added "Screen Cast Control"
+- Renamed "Cover Touch Screen" to "Cover Touchpad"; grouped cover screen feature switches under "Cover Screen Management"
 
 ## v3.2
 
 *2026-09-18*
 
-- 「手动顺序」与「副屏桌面顺序」拆成两份，各自独立
+- Separated "Manual Order" and "Cover Desktop Order" into independent configurations
 
 ## v3.1
 
 *2026-09-18*
 
-- 修：长按音量键会先掉一格音量；无障碍服务的能力声明一次备齐
+- Fix: long-pressing volume key dropped volume by 1 step first; fully declared accessibility service capabilities
 
 ## v3.0
 
 *2026-09-18*
 
-- 新增「Beta 实验室」，并加入可高度自定义的「外屏启动器」
-- 新增外屏分辨率与 DPI 覆盖、强制旋转、侧键操作与自定义指令
+- Added "Beta Lab" along with highly customizable "Cover Launcher"
+- Added cover screen resolution & DPI override, forced rotation, side key actions, and custom commands
 
 ## v2.17
 
 *2026-09-15*
 
-- 修：「保存参数设置」表里补回「方向同步」与「自动旋转」两行（v2.14 误删）
+- Fix: restored "Orientation Sync" and "Auto Rotation" rows in "Save Parameter Settings" table (accidentally deleted in v2.14)
 
 ## v2.16
 
 *2026-09-15*
 
-- 修：「折叠/展开模式切换」切到折叠后屏幕会黑
+- Fix: screen turned black after switching via "Fold/Unfold Mode Switch" to folded state
 
 ## v2.9–v2.15
 
 *2026-09-15*
 
-- 修：锁横与自适应旋转的联动、只支持竖屏的应用里画面留黑边、外屏小组件从列表消失、点「折叠/展开」连切两次
-- 改：外屏小组件铺满 2×2；接屏套用的档案不再改「方向同步 / 锁横」两个开关
+- Fix: interaction between landscape lock and adaptive rotation, black borders in portrait-only apps, cover widgets disappearing from list, double-click issue on "Fold/Unfold" switch
+- Change: cover widgets enlarged to 2×2 grid; applying external display profiles no longer modifies "Orientation Sync / Landscape Lock" toggles
 
 ## v2.8
 
 *2026-09-15*
 
-- 修：折叠/展开切换改看「内屏亮没亮」；参数表「自动旋转」显示反了
-- 改动：尝试缩小外屏小组件占位（v2.9 已按 2×2 重做）
+- Fix: fold/unfold switch state detection changed to "Is inner screen lit"; inverted display of "Auto Rotation" in parameter table
+- Change: attempted reducing cover widget footprint (redone in 2×2 format in v2.9)
 
 ## v2.7
 
 *2026-09-15*
 
-- 文案：全部详情按「功能 / 用法 / 注意事项」重写
-- 表格与命名调整（保存参数设置 · 分辨率自动加载 · 折叠/展开模式切换 · 启动双屏模式 · 快捷小组件）
+- Copywriting: rewrote all detail texts following "Feature / Usage / Precautions" format
+- Table and naming adjustments (Save parameter settings · Auto load resolution · Fold/unfold mode switch · Start dual-screen mode · Quick widgets)
 
 ## v2.6
 
 *2026-09-15*
 
-- 「按外接屏保存设置」提到页面顶端，改成已保存 / 当前两列对照
-- 修：封面屏小组件被拉伸铺满整页；折叠 / 展开切换偶尔要点两次
+- Moved "Save Settings by External Display" to top of page as side-by-side comparison between saved and current settings
+- Fix: cover screen widget stretched full screen; fold/unfold switch occasionally required double taps
 
 ## v2.5
 
 *2026-09-15*
 
-- 「锁手机方向」成为独立开关；新增「按外接屏保存设置」
-- 修：封面屏的小组件列表里看不到本应用
+- "Lock Phone Orientation" separated into an independent toggle; added "Save Settings by External Display"
+- Fix: app missing from cover screen widget list
 
 ## v2.4
 
 *2026-09-15*
 
-- 「内屏管理」页的状态信息提到最上面
-- 双屏页分节改名，两个开关并排成一行
+- Moved status info to top of "Inner Screen Management" page
+- Renamed sections in dual-screen page, aligned two toggles in a single row
 
 ## v2.3
 
 *2026-09-14*
 
-- 界面精简：详细说明收进操作名旁的「ⓘ」
-- 新增本页
+- Interface streamlined: detailed descriptions moved into "ⓘ" icons beside feature names
+- Added this page
 
 ## v2.2
 
 *2026-09-14*
 
-- 修：开启双屏模式后外接屏被锁死在 270°
-- 两个桌面小组件合并为一个「双屏快捷面板」
+- Fix: external display locked at 270° after enabling dual-screen mode
+- Merged two home screen widgets into a single "Dual Screen Quick Panel"
 
 ## v2.1
 
 *2026-09-14*
 
-- 首个选项卡重新排版
+- Rearranged layout for the first tab
 
 ## v2.0
 
 *2026-09-13*
 
-- 修：合盖或折叠时外接屏被当场转 270°、每转一次手机就多排一次版、关掉开关后仍被钉在横屏
-- 首个选项卡新增三个快捷操作
+- Fix: external display rotated 270° upon lid closing or folding, phone relaid out on every turn, screen remained stuck in landscape after toggling off
+- Added three quick actions to the first tab
 
 ## v1.9
 
 *2026-09-13*
 
-- 双屏页收敛成「一键启动双屏」
-- 新增桌面小组件
+- Consolidated dual-screen page into "One-key Dual-Screen Start"
+- Added home screen widgets
 
 ## v1.8
 
 *2026-09-13*
 
-- 封面屏点亮后不再是黑屏：往那块屏投一张副屏桌面
-- 新增「外接屏桌面模式」开关
+- Cover screen no longer stays black when lit: projects a secondary desktop to that screen
+- Added "External Screen Desktop Mode" toggle
 
 ## v1.7
 
 *2026-09-13*
 
-- 改名「自适应屏幕」，界面重排为四个选项卡
-- 新增折叠 / 展开状态切换与「内屏管理」选项卡
+- Renamed to "Adaptive Screen", rearranged UI into four tabs
+- Added fold / unfold state switch and "Inner Screen Management" tab
 
 ## v1.6
 
 *2026-09-13*
 
-- 修：偶发只剩 1/4 屏（改看几何校验）
-- 开关与系统状态双向同步
+- Fix: sporadic 1/4 screen issue (changed to geometric validation check)
+- Two-way sync between toggles and system state
 
 ## v1.5
 
 *2026-09-13*
 
-- 响应速度：方向跟随从 2.6~3.3 秒降到 0.44 秒
-- 改用显示变化事件驱动，不再定时轮询
+- Response speed: orientation tracking time reduced from 2.6~3.3s down to 0.44s
+- Event-driven display changes instead of periodic polling
 
 ## v1.4
 
 *2026-09-13*
 
-- 内屏分辨率改成按钮开关
-- 自动读取便携屏面板分辨率
+- Converted inner screen resolution to button toggle
+- Auto-read portable monitor panel resolution
 
 ## v1.3
 
 *2026-09-13*
 
-- 接管手机内屏分辨率，可替代 SecondScreen
-- 插入便携屏时弹窗询问，拔掉后自动还原
+- Took over phone inner screen resolution as SecondScreen replacement
+- Prompt dialog on portable screen connection, auto-restores upon unplugging
 
 ## v1.2
 
 *2026-09-13*
 
-- 修：手机横竖切换时镜像画面错位
-- 新增手机方向锁定
+- Fix: misaligned screen mirror when toggling phone between portrait and landscape
+- Added phone orientation lock
 
 ## v1.1
 
 *2026-09-13*
 
-- 修：Shizuku 显示已授权，应用却检测不到
+- Fix: app failed to detect Shizuku even when shown authorized
 
 ## v1.0
 
 *2026-09-13*
 
-- 初版：手机竖屏时自动把外接便携屏旋转 90°
+- Initial release: automatically rotates external portable display 90° when phone is in portrait mode

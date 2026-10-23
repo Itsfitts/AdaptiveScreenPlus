@@ -12,8 +12,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * 「内屏管理 → 刷新率」的落盘层：写系统 peak_refresh_rate / min_refresh_rate 上下界，取代自适应。
- * ⚠ 超过 60Hz 的档位要识别到内屏才有效（合盖时在用的是封面屏，只有 60Hz）。
+ * 「[comment] → [comment]」[comment]：[comment] peak_refresh_rate / min_refresh_rate [comment]，[comment]。
+ * ⚠ [comment] 60Hz [comment]（[comment]Yes[comment]，[comment] 60Hz）。
  */
 public final class RefreshRate {
 
@@ -22,13 +22,13 @@ public final class RefreshRate {
     private static final String KEY_PEAK = "peak_refresh_rate";
     private static final String KEY_MIN = "min_refresh_rate";
 
-    /** 档位读不到时的兜底表 */
+    /** [comment] */
     private static final float[] FALLBACK = {120f, 96f, 60f, 48f, 30f, 24f, 10f};
 
     private RefreshRate() {
     }
 
-    /** 内屏支持的全部档位，从高到低、去重 */
+    /** [comment]，[comment]、[comment] */
     public static float[] supported(Context c) {
         List<Float> out = new ArrayList<>();
         try {
@@ -43,7 +43,7 @@ public final class RefreshRate {
                 }
             }
         } catch (Throwable t) {
-            Log.w(TAG, "读内屏支持的档位失败：" + t);
+            Log.w(TAG, "TextFailed：" + t);
         }
         if (out.size() < 2) {
             return FALLBACK.clone();
@@ -56,17 +56,17 @@ public final class RefreshRate {
         return a;
     }
 
-    /** 系统当前的最高刷新率；没设过、读不到时返回 -1。 */
+    /** [comment]；[comment]、[comment] -1。 */
     public static float readPeak(Context c) {
         return read(c, KEY_PEAK);
     }
 
-    /** 系统当前的最低刷新率；没设过、读不到时返回 -1。 */
+    /** [comment]；[comment]、[comment] -1。 */
     public static float readMin(Context c) {
         return read(c, KEY_MIN);
     }
 
-    /** 下发。返回 null = 成功，否则是给人看的原因 */
+    /** [comment]。[comment] null = Success，No[comment]Yes[comment] */
     public static String apply(Context c, float a, float b) {
         float lo = Math.min(a, b), hi = Math.max(a, b);
         ContentResolver cr = c.getContentResolver();
@@ -75,12 +75,12 @@ public final class RefreshRate {
             Settings.System.putFloat(cr, KEY_MIN, lo);
             return null;
         } catch (Throwable t) {
-            Log.w(TAG, "写刷新率失败：" + t);
-            return "写不进去（" + t.getClass().getSimpleName() + "）";
+            Log.w(TAG, "TextFailed：" + t);
+            return "Text（" + t.getClass().getSimpleName() + "）";
         }
     }
 
-    /** 交回系统：删掉这两个值，重新归系统管 */
+    /** [comment]：[comment]，[comment] */
     public static String reset(Context c) {
         ContentResolver cr = c.getContentResolver();
         try {
@@ -88,12 +88,12 @@ public final class RefreshRate {
             Settings.System.putString(cr, KEY_MIN, null);
             return null;
         } catch (Throwable t) {
-            Log.w(TAG, "还原刷新率失败：" + t);
-            return "还原失败（" + t.getClass().getSimpleName() + "）";
+            Log.w(TAG, "TextFailed：" + t);
+            return "TextFailed（" + t.getClass().getSimpleName() + "）";
         }
     }
 
-    /** 内屏此刻在不在工作 */
+    /** [comment] */
     public static boolean innerActive(Context c) {
         try {
             DisplayManager dm = (DisplayManager) c.getSystemService(Context.DISPLAY_SERVICE);

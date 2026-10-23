@@ -8,27 +8,27 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
- * 「自定义操作」组件的配置页 —— 从组件上点空格子进来的。
+ * 「Custom[comment]」[comment] —— [comment]。
  *
- * <p>两种进来方式，共用一个类：
+ * <p>[comment]，[comment]：
  * <ul>
- *   <li>带着 {@link #EXTRA_SLOT}（点的是某一格）→ 直接把那一格的选单弹出来，选完就回桌面；</li>
- *   <li>不带（以后想做"整块设置"入口时用）→ 把四行都列出来，逐行点。</li>
+ *   <li>[comment] {@link #EXTRA_SLOT}（[comment]Yes[comment]）→ [comment]，[comment]；</li>
+ *   <li>[comment]（[comment]"[comment]Settings"[comment]）→ [comment]，[comment]。</li>
  * </ul>
  *
- * <p>为什么做成正经 Activity 而不是在组件里点几层：RemoteViews 的交互只有"点一下、
- * 发一个 PendingIntent"，没法在组件上摆下拉选单。而这一步又是必须有的（四格挂什么得用户自己定），
- * 所以干脆跳到应用这边用系统对话框选完再回来 —— 顺带选中项、当前值、取消这些都不用自己造。
+ * <p>[comment] Activity [comment]Yes[comment]：RemoteViews [comment]"[comment]、
+ * [comment] PendingIntent"，[comment]。[comment]Yes[comment]（[comment]），
+ * [comment] —— [comment]、[comment]、Cancel[comment]。
  *
- * <p>选完立刻 {@link CustomCoverWidgetProvider#refreshAll} 刷一遍组件，用户回到桌面
- * 就看见结果了，不用等下一次系统刷新。
+ * <p>[comment] {@link CustomCoverWidgetProvider#refreshAll} [comment]，[comment]
+ * [comment]，[comment]。
  *
- * <p>⚠ 这里是<b>唯一</b>写 {@link CustomWidgetCfg} 的地方；组件那边只读不写（写会跟它的
- * "画崩就整块报废"这条线混在一起）。
+ * <p>⚠ [comment]Yes<b>[comment]</b>[comment] {@link CustomWidgetCfg} [comment]；[comment]（[comment]
+ * "[comment]"[comment]）。
  */
 public class CustomCfgActivity extends Activity {
 
-    /** 点的是第几格（0 起）；不带就是"全列出来" */
+    /** [comment]Yes[comment]（0 [comment]）；[comment]Yes"[comment]" */
     public static final String EXTRA_SLOT = "slot";
 
     @Override
@@ -47,7 +47,7 @@ public class CustomCfgActivity extends Activity {
         }
     }
 
-    /** 四行全列出来（带当前挂的动作名） */
+    /** [comment]（[comment]） */
     private void build() {
         float d = getResources().getDisplayMetrics().density;
         int pad = (int) (16 * d);
@@ -77,9 +77,9 @@ public class CustomCfgActivity extends Activity {
     }
 
     /**
-     * 给第 idx 格挑一个动作。
+     * [comment] idx [comment]。
      *
-     * @param finishAfter 选完就退出（从组件点空格子进来时）；false = 留在本页接着配下一格
+     * @param finishAfter [comment]（[comment]）；false = [comment]
      */
     private void pick(final int idx, final boolean finishAfter) {
         final String[] keys = SlotConfig.choices(this);
@@ -88,7 +88,7 @@ public class CustomCfgActivity extends Activity {
         for (int i = 0; i < keys.length; i++) {
             names[i + 1] = QuickActions.label(this, keys[i]);
         }
-        // 当前挂的那条要预先选中
+        // [comment]
         int cur = 0;
         String now = CustomWidgetCfg.slot(this, idx);
         for (int i = 0; i < keys.length; i++) {

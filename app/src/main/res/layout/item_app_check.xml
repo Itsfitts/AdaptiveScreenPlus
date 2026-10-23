@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  「游戏模式」应用勾选对话框里的一行：图标 + 名字 + 勾选框。
-  勾选框不可点（clickable/focusable 都 false）—— 整行由 ListView 的
-  OnItemClickListener 接管，点哪里都是勾 / 取消这一行。
-  颜色写死，跟着 Activity 的深色主题走（同 dialog_beta_intro 的路子）。
+  「Game Mode」ApplyText：Text + Text + Text。
+  Text（clickable/focusable Text false）—— Text ListView Text
+  OnItemClickListener Text，Text / Text。
+  Text，Text Activity Text（Text dialog_beta_intro Text）。
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -18,7 +18,7 @@
         android:id="@+id/icon"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:contentDescription="应用图标" />
+        android:contentDescription="ApplyText" />
 
     <TextView
         android:id="@+id/label"

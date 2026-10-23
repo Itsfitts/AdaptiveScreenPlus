@@ -22,16 +22,16 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * 副屏桌面 —— 投到封面屏（或便携屏）上的一块可用桌面。
+ * [comment] —— [comment]（[comment]）[comment]。
  *
- * <p>为什么需要它：{@code cmd device_state state 4}（CONCURRENT）能把封面屏点亮，但系统只在那块
- * 屏上放一个空跑的 SubHomeActivity，看起来是黑的、谈不上「能操作的第二块屏」；本 Activity 就是
- * 往那块屏上放真正能点的东西。
+ * <p>[comment]：{@code cmd device_state state 4}（CONCURRENT）[comment]，[comment]
+ * [comment] SubHomeActivity，[comment]Yes[comment]、[comment]「[comment]」；[comment] Activity [comment]Yes
+ * [comment]。
  *
- * <p>它不关心跑在哪块屏上：用 {@code getDefaultDisplay()} 读出自己所在屏的 id，点图标就用
- * {@link SecondaryLauncher} 往<b>同一块屏</b>投 —— 既能当封面屏桌面，也能当便携屏桌面。
+ * <p>[comment]：[comment] {@code getDefaultDisplay()} [comment] id，[comment]
+ * {@link SecondaryLauncher} [comment]<b>[comment]</b>[comment] —— [comment]，[comment]。
  *
- * <p>图标数多时读图标是 IO，全部在后台线程做完再上屏。
+ * <p>[comment]Yes IO，[comment]。
  */
 public class SecondaryHomeActivity extends Activity {
 
@@ -42,19 +42,19 @@ public class SecondaryHomeActivity extends Activity {
     private final List<AppRepo.Item> items = new ArrayList<>();
     private AppAdapter adapter;
 
-    /** 本 Activity 落在哪块屏上 */
+    /** [comment] Activity [comment] */
     private int displayId = 0;
     private boolean loading = false;
     private int tick = 0;
 
     private final SimpleDateFormat fmtTime = new SimpleDateFormat("HH:mm", Locale.getDefault());
-    private final SimpleDateFormat fmtDate = new SimpleDateFormat("M月d日 EEEE", Locale.CHINA);
+    private final SimpleDateFormat fmtDate = new SimpleDateFormat("MTextdText EEEE", Locale.CHINA);
 
     private final Runnable clockTick = new Runnable() {
         @Override
         public void run() {
             updateClock();
-            // 电池不用每秒读，10 秒一次够了
+            // [comment]，10 [comment]
             if (tick % 10 == 0) {
                 updateBattery();
             }
@@ -79,7 +79,7 @@ public class SecondaryHomeActivity extends Activity {
         } catch (Throwable ignored) {
         }
 
-        // 按屏宽决定列数：封面屏 748px/340dpi ≈ 352dp → 4 列；便携屏更宽就多几列
+        // [comment]：[comment] 748px/340dpi ≈ 352dp → 4 [comment]；[comment]
         int wDp = 360;
         try {
             wDp = getResources().getConfiguration().screenWidthDp;
@@ -100,9 +100,9 @@ public class SecondaryHomeActivity extends Activity {
         findViewById(R.id.btnSHomeRefresh).setOnClickListener(v -> load());
         findViewById(R.id.btnSHomeHome).setOnClickListener(v -> {
             if (SecondaryLauncher.goHome(this, displayId)) {
-                toast("已让本屏回到系统桌面");
+                toast("Text");
             } else {
-                toast("需要 Shizuku 授权才能切回系统桌面");
+                toast("Text Shizuku Text");
             }
         });
         findViewById(R.id.btnSHomeExit).setOnClickListener(v -> finish());
@@ -125,13 +125,13 @@ public class SecondaryHomeActivity extends Activity {
         handler.removeCallbacks(clockTick);
     }
 
-    // ------------------------------------------------------------------ 启动应用
+    // ------------------------------------------------------------------ [comment]
 
     private void launch(AppRepo.Item it) {
         if (it.isPseudo()) {
-            // 三个控制页是拿来操作内屏的，用的时候本应用的旋转/分辨率那套一律别动 ——
-            // 这里先预置一个定时窗口，因为服务被系统拉回来的时刻可能早于页面 onStart
-            // （实测写锁 19:24:29.917、页面挂光标 19:24:29.984，早 70ms）。见 ExtControlMode。
+            // [comment]Yes[comment]，[comment]/[comment] ——
+            // [comment]，[comment] onStart
+            // （[comment] 19:24:29.917、[comment] 19:24:29.984，[comment] 70ms）。[comment] ExtControlMode。
             ExtControlMode.arm(20000L);
         }
         Intent li = null;
@@ -143,13 +143,13 @@ public class SecondaryHomeActivity extends Activity {
             li = it.toIntent();
         }
         if (SecondaryLauncher.launch(this, displayId, li)) {
-            toast("已在第 " + displayId + " 屏打开「" + it.label + "」");
+            toast("Text " + displayId + " Text「" + it.label + "」");
         } else {
-            toast("启动失败：可能没有 Shizuku 授权");
+            toast("TextFailed：Text Shizuku Text");
         }
     }
 
-    // ------------------------------------------------------------------ 应用列表
+    // ------------------------------------------------------------------ [comment]
 
     private void load() {
         if (loading) {
@@ -157,15 +157,15 @@ public class SecondaryHomeActivity extends Activity {
         }
         loading = true;
         tvEmpty.setVisibility(View.VISIBLE);
-        tvEmpty.setText("正在加载应用…");
+        tvEmpty.setText("Text…");
         new Thread(() -> {
             final List<AppRepo.Item> list = AppRepo.load(this);
-            // 副屏桌面自己的顺序：表里的排前面，其余按名称跟在后面。
-            // 没设过顺序时 HomePrefs.sort 直接返回，行为跟以前一样是纯名称序。
+            // [comment]：[comment]，[comment]。
+            // [comment] HomePrefs.sort [comment]，[comment]Yes[comment]。
             HomePrefs.sort(this, list);
-            // 伪应用恒置顶：它们不是真应用，AppRepo.load 里没有这几个，
-            // 在这里插到最前面 —— 排序对它们没有意义，所以"排完再插"，
-            // 顺序就永远由这一段说了算，不会被手动顺序或副屏桌面顺序搅乱。
+            // [comment]：[comment]Yes[comment]，AppRepo.load [comment]，
+            // [comment] —— [comment]，[comment]"[comment]"，
+            // [comment]，[comment]。
             list.addAll(0, AppRepo.pseudoItems(this));
             runOnUiThread(() -> {
                 loading = false;
@@ -174,7 +174,7 @@ public class SecondaryHomeActivity extends Activity {
                 adapter.notifyDataSetChanged();
                 if (items.isEmpty()) {
                     tvEmpty.setVisibility(View.VISIBLE);
-                    tvEmpty.setText("没有读到应用。\n如果装的是 release 版，请确认清单里声明了 <queries> 的 MAIN/LAUNCHER。");
+                    tvEmpty.setText("Text。\nTextYes release Text，Text <queries> Text MAIN/LAUNCHER。");
                 } else {
                     tvEmpty.setVisibility(View.GONE);
                 }
@@ -182,7 +182,7 @@ public class SecondaryHomeActivity extends Activity {
         }, "extrot-cover-apps").start();
     }
 
-    // ------------------------------------------------------------------ 时钟 / 电池
+    // ------------------------------------------------------------------ [comment] / [comment]
 
     private void updateClock() {
         Date now = new Date();
@@ -216,7 +216,7 @@ public class SecondaryHomeActivity extends Activity {
         Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
     }
 
-    // ------------------------------------------------------------------ 适配器
+    // ------------------------------------------------------------------ [comment]
 
     private class AppAdapter extends BaseAdapter {
         @Override
